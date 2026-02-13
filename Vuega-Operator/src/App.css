@@ -1,1 +1,78 @@
 @import "tailwindcss";
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════
+   VUEGA DESIGN SYSTEM — Global Color Tokens
+   
+   Ratio:
+     60%  → #FFFFFF  (Primary Background)
+     30%  → #FFFADF  (Secondary UI Elements)
+     30%  → #C6EDFF  (Aesthetic Accent)
+     Red  → #960000  (Alerts / Critical Only)
+     Text → Black default
+   ═══════════════════════════════════════════════ */
+
+:root {
+  /* ── Primary Background (60%) ── */
+  --color-primary-bg: #FFFFFF;
+
+  /* ── Secondary Surface (30%) ── */
+  --color-secondary: #FFFADF;
+  --color-secondary-hover: #FFF5C0;
+  --color-secondary-border: #F5E9A0;
+
+  /* ── Accent (30%) ── */
+  --color-accent: #C6EDFF;
+  --color-accent-hover: #A8DFFA;
+  --color-accent-dark: #7DCBF5;
+  --color-accent-border: #9AD8F5;
+
+  /* ── Critical / Alert ── */
+  --color-critical: #960000;
+  --color-critical-light: #FFF0F0;
+  --color-critical-border: #E8CCCC;
+
+  /* ── Text ── */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #4A4A4A;
+  --color-text-muted: #7A7A7A;
+  --color-text-placeholder: #A0A0A0;
+
+  /* ── Borders ── */
+  --color-border: #E8E8E8;
+  --color-border-light: #F0F0F0;
+
+  /* ── Login Branding Panel ── */
+  --color-brand-dark: #1A1A2E;
+  --color-brand-darker: #16162A;
+}
+
+@theme {
+  /* Tailwind v4 theme tokens */
+  --color-v-primary-bg: var(--color-primary-bg);
+  --color-v-secondary: var(--color-secondary);
+  --color-v-secondary-hover: var(--color-secondary-hover);
+  --color-v-secondary-border: var(--color-secondary-border);
+  --color-v-accent: var(--color-accent);
+  --color-v-accent-hover: var(--color-accent-hover);
+  --color-v-accent-dark: var(--color-accent-dark);
+  --color-v-accent-border: var(--color-accent-border);
+  --color-v-critical: var(--color-critical);
+  --color-v-critical-light: var(--color-critical-light);
+  --color-v-critical-border: var(--color-critical-border);
+  --color-v-text: var(--color-text-primary);
+  --color-v-text-secondary: var(--color-text-secondary);
+  --color-v-text-muted: var(--color-text-muted);
+  --color-v-text-placeholder: var(--color-text-placeholder);
+  --color-v-border: var(--color-border);
+  --color-v-border-light: var(--color-border-light);
+  --color-v-brand-dark: var(--color-brand-dark);
+  --color-v-brand-darker: var(--color-brand-darker);
+}
+
+/* Global defaults */
+body {
+  color: var(--color-text-primary);
+  background-color: var(--color-primary-bg);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
