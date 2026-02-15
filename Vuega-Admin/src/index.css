@@ -14,24 +14,24 @@
 
 @theme {
     /* ── Primary (60%) ── */
-    --color-vuega-primary: #FFFFFF;
+    --color-primary: #FFFFFF;
 
     /* ── Secondary (30%) ── */
-    --color-vuega-secondary: #FFFADF;
+    --color-secondary: #FFFADF;
 
     /* ── Accent (10%) ── */
-    --color-vuega-accent: #C6EDFF;
+    --color-accent: #C6EDFF;
 
     /* ── Alert ── */
-    --color-vuega-alert: #960000;
+    --color-alert: #960000;
 
     /* ── Text ── */
-    --color-vuega-text: #000000;
-    --color-vuega-text-muted: #6B7280;
+    --color-text: #000000;
+    --color-text-muted: #6B7280;
 
     /* ── Borders & Surfaces ── */
-    --color-vuega-border: #E5E7EB;
-    --color-vuega-surface: #F9FAFB;
+    --color-border: #E5E7EB;
+    --color-surface: #F9FAFB;
 
     /* ── Font Family ── */
     --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
