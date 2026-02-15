@@ -1,390 +1,471 @@
+
+
 import React, { useState } from 'react'
+import {
+  Building2,
+  CheckCircle,
+  Ban,
+  Bus,
+  MapPin,
+  IndianRupee,
+  Clock,
+  ClipboardList,
+  TrendingUp,
+  TrendingDown,
+  BarChart3,
+  PieChart,
+  Activity,
+  ArrowRight,
+  AlertTriangle,
+} from 'lucide-react'
+
+// ═══════════════════════════════════════════════════════════════
+//  MOCK DATA — Will be replaced by API calls via useEffect
+// ═══════════════════════════════════════════════════════════════
+// TODO: Replace with:
+//   useEffect(() => {
+//     const fetchSummary = async () => {
+//       const res = await fetch('/api/control-plane/dashboard/summary', {
+//         headers: { Authorization: `Bearer ${token}` }
+//       });
+//       const data = await res.json();
+//       setDashboardSummary(data);
+//     };
+//     fetchSummary();
+//   }, []);
+
+const dashboardSummary = {
+  totalCompanies: 48,
+  activeCompanies: 35,
+  suspendedCompanies: 5,
+  totalBuses: 312,
+  activeTrips: 87,
+  platformRevenue: 12450000,
+  pendingCompanyRequests: 8,
+  pendingBusRequests: 14,
+}
+
+// TODO: Replace with GET /api/control-plane/dashboard/recent-requests
+const recentRequests = [
+  {
+    id: 1,
+    companyName: 'SRS Travels Pvt Ltd',
+    requestType: 'Company Registration',
+    submittedDate: 'Feb 14, 2026',
+    status: 'Pending',
+  },
+  {
+    id: 2,
+    companyName: 'KPN Travels',
+    requestType: 'Bus Approval',
+    submittedDate: 'Feb 13, 2026',
+    status: 'Approved',
+  },
+  {
+    id: 3,
+    companyName: 'Parveen Travels',
+    requestType: 'Bus Approval',
+    submittedDate: 'Feb 13, 2026',
+    status: 'Pending',
+  },
+  {
+    id: 4,
+    companyName: 'Orange Tours',
+    requestType: 'Company Registration',
+    submittedDate: 'Feb 12, 2026',
+    status: 'Rejected',
+  },
+  {
+    id: 5,
+    companyName: 'VRL Travels',
+    requestType: 'Bus Approval',
+    submittedDate: 'Feb 12, 2026',
+    status: 'Approved',
+  },
+  {
+    id: 6,
+    companyName: 'Neeta Travels',
+    requestType: 'Company Registration',
+    submittedDate: 'Feb 11, 2026',
+    status: 'Pending',
+  },
+]
+
+// ═══════════════════════════════════════════════════════════════
+//  METRIC CARD CONFIGURATION
+// ═══════════════════════════════════════════════════════════════
+
+const metricCards = [
+  {
+    label: 'Total Registered Companies',
+    value: dashboardSummary.totalCompanies,
+    icon: Building2,
+    borderColor: 'border-t-vuega-accent',
+    iconBg: 'bg-vuega-accent/30',
+    trend: { value: '+6', direction: 'up', label: 'this month' },
+  },
+  {
+    label: 'Active Companies',
+    value: dashboardSummary.activeCompanies,
+    icon: CheckCircle,
+    borderColor: 'border-t-vuega-accent',
+    iconBg: 'bg-vuega-accent/30',
+    trend: { value: '+3', direction: 'up', label: 'this month' },
+  },
+  {
+    label: 'Suspended Companies',
+    value: dashboardSummary.suspendedCompanies,
+    icon: Ban,
+    borderColor: 'border-t-vuega-alert',
+    iconBg: 'bg-vuega-alert/10',
+    textColor: 'text-vuega-alert',
+    trend: { value: '+1', direction: 'up', label: 'this week' },
+    isAlert: true,
+  },
+  {
+    label: 'Total Buses Across Platform',
+    value: dashboardSummary.totalBuses,
+    icon: Bus,
+    borderColor: 'border-t-vuega-accent',
+    iconBg: 'bg-vuega-accent/30',
+    trend: { value: '+24', direction: 'up', label: 'this month' },
+  },
+  {
+    label: 'Active Trips (Today)',
+    value: dashboardSummary.activeTrips,
+    icon: MapPin,
+    borderColor: 'border-t-vuega-accent',
+    iconBg: 'bg-vuega-accent/30',
+    trend: { value: '+12', direction: 'up', label: 'vs yesterday' },
+  },
+  {
+    label: 'Platform Revenue',
+    value: `₹${(dashboardSummary.platformRevenue / 100000).toFixed(1)}L`,
+    icon: IndianRupee,
+    borderColor: 'border-t-vuega-secondary',
+    iconBg: 'bg-vuega-secondary',
+    trend: { value: '+18%', direction: 'up', label: 'this month' },
+  },
+  {
+    label: 'Pending Company Requests',
+    value: dashboardSummary.pendingCompanyRequests,
+    icon: Clock,
+    borderColor: 'border-t-vuega-secondary',
+    iconBg: 'bg-vuega-secondary',
+    trend: { value: '+2', direction: 'up', label: 'today' },
+  },
+  {
+    label: 'Pending Bus Requests',
+    value: dashboardSummary.pendingBusRequests,
+    icon: ClipboardList,
+    borderColor: 'border-t-vuega-secondary',
+    iconBg: 'bg-vuega-secondary',
+    trend: { value: '-3', direction: 'down', label: 'this week' },
+  },
+]
+
+// ═══════════════════════════════════════════════════════════════
+//  ANALYTICS CHART CONTAINERS
+// ═══════════════════════════════════════════════════════════════
+// TODO: Integrate Recharts or Chart.js for actual visualizations
+// Backend endpoints:
+//   GET /api/control-plane/analytics/companies
+//   GET /api/control-plane/analytics/routes
+//   GET /api/control-plane/analytics/trips
+//   GET /api/control-plane/analytics/revenue
+
+const analyticsCharts = [
+  { title: 'Company Performance Comparison', icon: BarChart3 },
+  { title: 'Route Distribution Overview', icon: PieChart },
+  { title: 'Trip Statistics', icon: Activity },
+  { title: 'Revenue Overview', icon: TrendingUp },
+]
+
+// ═══════════════════════════════════════════════════════════════
+//  HELPER: Status Badge
+// ═══════════════════════════════════════════════════════════════
+
+const getStatusBadge = (status) => {
+  switch (status) {
+    case 'Pending':
+      return 'bg-vuega-secondary text-vuega-text'
+    case 'Approved':
+      return 'bg-vuega-accent text-vuega-text'
+    case 'Rejected':
+      return 'bg-vuega-alert/10 text-vuega-alert'
+    default:
+      return 'bg-vuega-surface text-vuega-text'
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  DASHBOARD COMPONENT
+// ═══════════════════════════════════════════════════════════════
 
 const Dashboard = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  // TODO: Replace with API-driven state
+  // const [summary, setSummary] = useState(null);
+  // const [requests, setRequests] = useState([]);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState(null);
+
+  const [activeRequestTab, setActiveRequestTab] = useState('all')
+
+  // Filter logic separated from JSX for performance
+  const filteredRequests =
+    activeRequestTab === 'all'
+      ? recentRequests
+      : recentRequests.filter(
+        (r) => r.status.toLowerCase() === activeRequestTab
+      )
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-background-light font-sans">
-
-        {/* Main Area */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 bg-background-light scroll-smooth">
-          <div className="max-w-[1280px] mx-auto flex flex-col gap-6">
-
-            {/* ── Header Row ── */}
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div className="flex flex-col gap-1">
-                <h2 className="text-slate-900 text-2xl font-bold tracking-tight">Today's Overview</h2>
-                <p className="text-slate-400 text-sm">Monitor your fleet performance and sales channels in real-time.</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xs font-medium text-slate-500 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm flex items-center gap-2">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                  </span>
-                  Live Updates
-                </span>
-                <button className="flex items-center gap-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-all">
-                  <span className="material-symbols-outlined text-[18px]">calendar_today</span>
-                  <span>Oct 24, 2023</span>
-                </button>
-                <button className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-slate-900 px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-all">
-                  <span className="material-symbols-outlined text-[20px]">add</span>
-                  <span className="hidden sm:inline">Add Trip</span>
-                </button>
-              </div>
-            </div>
-
-            {/* ── Stat Cards ── */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Revenue */}
-              <div className="flex flex-col gap-1 p-5 rounded-xl bg-white border border-slate-200 shadow-sm relative overflow-hidden">
-                <div className="absolute right-0 top-0 h-full w-1 bg-aesthetic-teal"></div>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-slate-400 text-sm font-medium">Total Revenue</p>
-                    <h3 className="text-slate-900 text-2xl font-bold mt-1">₹45,200</h3>
-                  </div>
-                  <div className="bg-teal-50 p-2 rounded-lg text-aesthetic-teal">
-                    <span className="material-symbols-outlined text-[22px]">payments</span>
-                  </div>
-                </div>
-                <div className="mt-3 flex items-center gap-2">
-                  <span className="flex items-center text-xs font-bold text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded">
-                    <span className="material-symbols-outlined text-[14px] mr-0.5">trending_up</span>
-                    12%
-                  </span>
-                  <span className="text-xs text-slate-400">vs yesterday</span>
-                </div>
-              </div>
-              {/* Tickets */}
-              <div className="flex flex-col gap-1 p-5 rounded-xl bg-white border border-slate-200 shadow-sm relative overflow-hidden">
-                <div className="absolute right-0 top-0 h-full w-1 bg-aesthetic-lavender"></div>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-slate-400 text-sm font-medium">Tickets Sold</p>
-                    <h3 className="text-slate-900 text-2xl font-bold mt-1">124</h3>
-                  </div>
-                  <div className="bg-violet-50 p-2 rounded-lg text-aesthetic-lavender">
-                    <span className="material-symbols-outlined text-[22px]">confirmation_number</span>
-                  </div>
-                </div>
-                <div className="mt-3 flex items-center gap-2">
-                  <span className="flex items-center text-xs font-bold text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded">
-                    <span className="material-symbols-outlined text-[14px] mr-0.5">trending_up</span>
-                    5%
-                  </span>
-                  <span className="text-xs text-slate-400">vs yesterday</span>
-                </div>
-              </div>
-              {/* Active Trips */}
-              <div className="flex flex-col gap-1 p-5 rounded-xl bg-white border border-slate-200 shadow-sm relative overflow-hidden">
-                <div className="absolute right-0 top-0 h-full w-1 bg-aesthetic-teal"></div>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-slate-400 text-sm font-medium">Active Trips</p>
-                    <h3 className="text-slate-900 text-2xl font-bold mt-1">8</h3>
-                  </div>
-                  <div className="bg-teal-50 p-2 rounded-lg text-aesthetic-teal">
-                    <span className="material-symbols-outlined text-[22px]">directions_bus</span>
-                  </div>
-                </div>
-                <div className="mt-3 flex items-center gap-2">
-                  <span className="text-xs text-slate-400">All running on schedule</span>
-                </div>
-              </div>
-              {/* Occupancy Rate */}
-              <div className="flex flex-col gap-1 p-5 rounded-xl bg-white border border-slate-200 shadow-sm relative overflow-hidden">
-                <div className="absolute right-0 top-0 h-full w-1 bg-aesthetic-lavender"></div>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-slate-400 text-sm font-medium">Occupancy Rate</p>
-                    <h3 className="text-slate-900 text-2xl font-bold mt-1">78%</h3>
-                  </div>
-                  <div className="bg-violet-50 p-2 rounded-lg text-aesthetic-lavender">
-                    <span className="material-symbols-outlined text-[22px]">airline_seat_recline_normal</span>
-                  </div>
-                </div>
-                <div className="mt-3 flex items-center gap-2">
-                  <span className="flex items-center text-xs font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded">
-                    <span className="material-symbols-outlined text-[14px] mr-0.5">trending_down</span>
-                    2%
-                  </span>
-                  <span className="text-xs text-slate-400">vs last week</span>
-                </div>
-              </div>
-            </div>
-            {/* ── Charts + Right Column ── */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Left 2/3 */}
-              <div className="lg:col-span-2 flex flex-col gap-6">
-
-                {/* Occupancy Trends Chart */}
-                <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-slate-900 text-lg font-bold">Occupancy Trends (Last 7 Days)</h3>
-                    <button className="text-primary hover:text-primary-dark text-sm font-semibold">View Report</button>
-                  </div>
-                  <div className="grid min-h-[220px] grid-cols-7 gap-3 items-end justify-items-center px-2">
-                    {[
-                      { day: 'Mon', pct: 30, highlight: false },
-                      { day: 'Tue', pct: 55, highlight: false },
-                      { day: 'Wed', pct: 48, highlight: false },
-                      { day: 'Thu', pct: 65, highlight: false },
-                      { day: 'Fri', pct: 80, highlight: true },
-                      { day: 'Sat', pct: 90, highlight: false },
-                      { day: 'Sun', pct: 85, highlight: false },
-                    ].map((item) => (
-                      <div key={item.day} className="w-full flex flex-col items-center gap-2 h-full justify-end group cursor-pointer">
-                        <div
-                          className="w-full max-w-[42px] bg-aesthetic-teal/15 rounded-t-md relative group-hover:bg-aesthetic-teal/25 transition-all"
-                          style={{ height: `${item.pct}%` }}
-                        >
-                          <div className="absolute bottom-0 w-full bg-aesthetic-teal rounded-t-md" style={{ height: '100%' }}></div>
-                          <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                            {item.pct}%
-                          </div>
-                        </div>
-                        <p className={`text-xs font-medium ${item.highlight ? 'text-aesthetic-teal font-bold' : 'text-slate-400'}`}>
-                          {item.day}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Upcoming Departures Table */}
-                <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col">
-                  <div className="px-6 py-5 border-b border-slate-200 flex justify-between items-center">
-                    <div>
-                      <h3 className="text-slate-900 text-lg font-bold">Upcoming Departures</h3>
-                      <p className="text-slate-400 text-xs mt-0.5">Trips scheduled for the next 6 hours</p>
-                    </div>
-                    <button className="flex items-center gap-1.5 text-slate-400 hover:text-primary text-sm font-medium transition-colors">
-                      <span className="material-symbols-outlined text-[18px]">filter_list</span>
-                      Filter
-                    </button>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="bg-slate-50 text-[11px] uppercase text-slate-400 border-b border-slate-200">
-                          <th className="px-6 py-3 font-semibold tracking-wider">Route &amp; Bus</th>
-                          <th className="px-6 py-3 font-semibold tracking-wider">Departure</th>
-                          <th className="px-6 py-3 font-semibold tracking-wider">Occupancy</th>
-                          <th className="px-6 py-3 font-semibold tracking-wider">Status</th>
-                          <th className="px-6 py-3 font-semibold tracking-wider text-right">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 text-sm">
-                        {/* Row 1 */}
-                        <tr className="hover:bg-slate-50 transition-colors">
-                          <td className="px-6 py-4">
-                            <div className="flex flex-col">
-                              <span className="font-semibold text-slate-800">Bangalore <span className="text-slate-300 mx-1">→</span> Chennai</span>
-                              <span className="text-[11px] text-slate-400 mt-0.5">KA01 AB 1234 • Volvo AC Multi-Axle</span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 text-slate-600">
-                            <div className="flex items-center gap-1.5">
-                              <span className="material-symbols-outlined text-[16px] text-slate-300">schedule</span>
-                              10:00 PM
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 align-middle">
-                            <div className="w-full max-w-[120px]">
-                              <div className="flex justify-between text-xs mb-1">
-                                <span className="font-medium text-slate-600">32/40</span>
-                                <span className="text-slate-400">80%</span>
-                              </div>
-                              <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                                <div className="bg-green-500 h-1.5 rounded-full" style={{ width: '80%' }}></div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 border border-green-200">
-                              <span className="size-1.5 rounded-full bg-green-500"></span>
-                              On Time
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <button className="text-slate-300 hover:text-slate-600">
-                              <span className="material-symbols-outlined">more_vert</span>
-                            </button>
-                          </td>
-                        </tr>
-                        {/* Row 2 */}
-                        <tr className="hover:bg-slate-50 transition-colors">
-                          <td className="px-6 py-4">
-                            <div className="flex flex-col">
-                              <span className="font-semibold text-slate-800">Bangalore <span className="text-slate-300 mx-1">→</span> Hyderabad</span>
-                              <span className="text-[11px] text-slate-400 mt-0.5">KA53 MN 8899 • Scania Sleeper</span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 text-slate-600">
-                            <div className="flex items-center gap-1.5">
-                              <span className="material-symbols-outlined text-[16px] text-slate-300">schedule</span>
-                              10:30 PM
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 align-middle">
-                            <div className="w-full max-w-[120px]">
-                              <div className="flex justify-between text-xs mb-1">
-                                <span className="font-medium text-slate-600">18/30</span>
-                                <span className="text-slate-400">60%</span>
-                              </div>
-                              <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                                <div className="bg-yellow-500 h-1.5 rounded-full" style={{ width: '60%' }}></div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="inline-flex items-center gap-1.5 rounded-full bg-yellow-50 px-2.5 py-1 text-xs font-medium text-yellow-700 border border-yellow-200">
-                              <span className="size-1.5 rounded-full bg-yellow-500"></span>
-                              Boarding
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <button className="text-slate-300 hover:text-slate-600">
-                              <span className="material-symbols-outlined">more_vert</span>
-                            </button>
-                          </td>
-                        </tr>
-                        {/* Row 3 */}
-                        <tr className="hover:bg-slate-50 transition-colors">
-                          <td className="px-6 py-4">
-                            <div className="flex flex-col">
-                              <span className="font-semibold text-slate-800">Bangalore <span className="text-slate-300 mx-1">→</span> Mumbai</span>
-                              <span className="text-[11px] text-slate-400 mt-0.5">KA02 XY 5555 • AC Seater</span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 text-slate-600">
-                            <div className="flex items-center gap-1.5">
-                              <span className="material-symbols-outlined text-[16px] text-slate-300">schedule</span>
-                              11:15 PM
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 align-middle">
-                            <div className="w-full max-w-[120px]">
-                              <div className="flex justify-between text-xs mb-1">
-                                <span className="font-medium text-slate-600">42/42</span>
-                                <span className="text-slate-400">100%</span>
-                              </div>
-                              <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                                <div className="bg-aesthetic-teal h-1.5 rounded-full" style={{ width: '100%' }}></div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700 border border-red-200">
-                              <span className="size-1.5 rounded-full bg-red-500"></span>
-                              Delayed (15m)
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <button className="text-slate-300 hover:text-slate-600">
-                              <span className="material-symbols-outlined">more_vert</span>
-                            </button>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <div className="px-6 py-3 border-t border-slate-200 bg-slate-50/60 flex justify-center">
-                    <button className="text-sm font-semibold text-primary hover:text-primary-dark transition-colors">View All Trips</button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right 1/3 */}
-              <div className="lg:col-span-1 flex flex-col gap-6">
-
-                {/* Channel Health */}
-                <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-slate-900 text-lg font-bold">Channel Health</h3>
-                    <button className="p-1 rounded hover:bg-slate-100 text-slate-400 transition-colors">
-                      <span className="material-symbols-outlined text-[20px]">refresh</span>
-                    </button>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 rounded-lg border border-slate-100 bg-white">
-                      <div className="flex items-center gap-3">
-                        <div className="size-8 rounded-md bg-red-500 flex items-center justify-center text-white font-bold text-[11px]">RB</div>
-                        <span className="text-sm font-semibold text-slate-700">RedBus</span>
-                      </div>
-                      <span className="flex h-2.5 w-2.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
-                    </div>
-                    <div className="flex items-center justify-between p-3 rounded-lg border border-slate-100 bg-white">
-                      <div className="flex items-center gap-3">
-                        <div className="size-8 rounded-md bg-blue-500 flex items-center justify-center text-white font-bold text-[11px]">PM</div>
-                        <span className="text-sm font-semibold text-slate-700">Paytm</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-yellow-600 font-medium">Syncing...</span>
-                        <span className="flex h-2.5 w-2.5 rounded-full bg-yellow-400 animate-pulse"></span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between p-3 rounded-lg border border-slate-100 bg-white">
-                      <div className="flex items-center gap-3">
-                        <div className="size-8 rounded-md bg-orange-500 flex items-center justify-center text-white font-bold text-[11px]">AB</div>
-                        <span className="text-sm font-semibold text-slate-700">AbhiBus</span>
-                      </div>
-                      <span className="flex h-2.5 w-2.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
-                    </div>
-                    <div className="flex items-center justify-between p-3 rounded-lg border border-slate-100 bg-white">
-                      <div className="flex items-center gap-3">
-                        <div className="size-8 rounded-md bg-slate-700 flex items-center justify-center text-white font-bold text-[11px]">CN</div>
-                        <span className="text-sm font-semibold text-slate-700">Counter</span>
-                      </div>
-                      <span className="flex h-2.5 w-2.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Quick Actions */}
-                <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                  <h3 className="text-slate-900 text-lg font-bold mb-4">Quick Actions</h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button className="flex flex-col items-center justify-center gap-2 p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-                      <span className="material-symbols-outlined text-aesthetic-lavender text-[24px]">block</span>
-                      <span className="text-xs font-semibold text-slate-600">Block Seats</span>
-                    </button>
-                    <button className="flex flex-col items-center justify-center gap-2 p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-                      <span className="material-symbols-outlined text-primary text-[24px]">notification_important</span>
-                      <span className="text-xs font-semibold text-slate-600">Broadcast Delay</span>
-                    </button>
-                    <button className="flex flex-col items-center justify-center gap-2 p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-                      <span className="material-symbols-outlined text-aesthetic-teal text-[24px]">add_road</span>
-                      <span className="text-xs font-semibold text-slate-600">New Route</span>
-                    </button>
-                    <button className="flex flex-col items-center justify-center gap-2 p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-                      <span className="material-symbols-outlined text-aesthetic-lavender text-[24px]">support_agent</span>
-                      <span className="text-xs font-semibold text-slate-600">Contact Support</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Promo Card */}
-                <div className="bg-gradient-to-r from-teal-400 to-violet-500 rounded-xl p-5 text-white shadow-lg relative overflow-hidden">
-                  <div className="relative z-10">
-                    <h4 className="font-bold text-base mb-1">Get 20% Off Fuel</h4>
-                    <p className="text-teal-50 text-xs mb-3">Partner with IndianOil using your BusConnect card.</p>
-                    <button className="px-4 py-1.5 bg-white text-teal-700 rounded text-xs font-bold hover:bg-teal-50 transition-colors">
-                      Apply Now
-                    </button>
-                  </div>
-                  <div className="absolute right-[-20px] bottom-[-20px] opacity-20">
-                    <span className="material-symbols-outlined text-[100px]">local_gas_station</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </main>
+    <div className="flex flex-col gap-8">
+      {/* ── Page Header ── */}
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-bold text-vuega-text tracking-tight">
+          Platform Overview
+        </h1>
+        <p className="text-sm text-vuega-text-muted">
+          Governance dashboard for the centralized control plane. Monitor all
+          registered operators, approvals, and platform-wide analytics.
+        </p>
       </div>
+
+      {/* ══════════════════════════════════════════════════════════
+           SECTION 1 — Metric Cards
+           ══════════════════════════════════════════════════════════ */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        {metricCards.map((card) => {
+          const IconComponent = card.icon
+          return (
+            <div
+              key={card.label}
+              className={`
+                bg-vuega-primary rounded-xl border border-vuega-border
+                shadow-sm p-6 flex flex-col gap-4
+                border-t-[3px] ${card.borderColor}
+              `}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex flex-col gap-1">
+                  <p className="text-xs font-medium text-vuega-text-muted uppercase tracking-wider">
+                    {card.label}
+                  </p>
+                  <h3
+                    className={`text-2xl font-bold ${card.textColor || 'text-vuega-text'
+                      }`}
+                  >
+                    {card.value}
+                  </h3>
+                </div>
+                <div
+                  className={`p-2.5 rounded-lg ${card.iconBg} flex items-center justify-center`}
+                >
+                  <IconComponent
+                    size={20}
+                    className={card.isAlert ? 'text-vuega-alert' : 'text-vuega-text'}
+                  />
+                </div>
+              </div>
+              {card.trend && (
+                <div className="flex items-center gap-2">
+                  {card.trend.direction === 'up' ? (
+                    <TrendingUp size={14} className={card.isAlert ? 'text-vuega-alert' : 'text-vuega-text-muted'} />
+                  ) : (
+                    <TrendingDown size={14} className="text-vuega-text-muted" />
+                  )}
+                  <span className={`text-xs font-semibold ${card.isAlert ? 'text-vuega-alert' : 'text-vuega-text'}`}>
+                    {card.trend.value}
+                  </span>
+                  <span className="text-xs text-vuega-text-muted">
+                    {card.trend.label}
+                  </span>
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* ══════════════════════════════════════════════════════════
+           SECTION 2 — Recent Requests
+           ══════════════════════════════════════════════════════════ */}
+      {/* TODO: Replace mock data with GET /api/control-plane/dashboard/recent-requests */}
+      <div className="bg-vuega-primary rounded-xl border border-vuega-border shadow-sm">
+        {/* Section Header */}
+        <div className="px-6 py-5 border-b border-vuega-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-bold text-vuega-text">
+              Recent Requests
+            </h2>
+            <p className="text-xs text-vuega-text-muted mt-0.5">
+              Latest company registrations and bus approval submissions
+            </p>
+          </div>
+          {/* Filter Tabs */}
+          <div className="flex items-center gap-1 bg-vuega-surface rounded-lg p-1 border border-vuega-border">
+            {['all', 'pending', 'approved', 'rejected'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveRequestTab(tab)}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium capitalize transition-colors ${activeRequestTab === tab
+                  ? 'bg-vuega-primary text-vuega-text shadow-sm'
+                  : 'text-vuega-text-muted hover:text-vuega-text'
+                  }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-vuega-surface border-b border-vuega-border">
+                <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-vuega-text-muted">
+                  Company Name
+                </th>
+                <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-vuega-text-muted">
+                  Request Type
+                </th>
+                <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-vuega-text-muted">
+                  Submitted Date
+                </th>
+                <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-vuega-text-muted">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-vuega-text-muted text-right">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-vuega-border">
+              {filteredRequests.map((request) => (
+                <tr
+                  key={request.id}
+                  className="hover:bg-vuega-surface transition-colors"
+                >
+                  <td className="px-6 py-4">
+                    <span className="text-sm font-semibold text-vuega-text">
+                      {request.companyName}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-sm text-vuega-text-muted">
+                      {request.requestType}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-sm text-vuega-text-muted">
+                      {request.submittedDate}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${getStatusBadge(
+                        request.status
+                      )}`}
+                    >
+                      {request.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button className="inline-flex items-center gap-1 text-xs font-medium text-vuega-text-muted hover:text-vuega-text transition-colors">
+                      View
+                      <ArrowRight size={12} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-3 border-t border-vuega-border bg-vuega-surface flex justify-between items-center">
+          <span className="text-xs text-vuega-text-muted">
+            Showing {filteredRequests.length} of {recentRequests.length} requests
+          </span>
+          <button className="text-xs font-semibold text-vuega-text hover:underline">
+            View All Requests
+          </button>
+        </div>
+      </div>
+
+      {/* ══════════════════════════════════════════════════════════
+           SECTION 3 — Analytics Preview
+           ══════════════════════════════════════════════════════════ */}
+      {/* TODO: Replace with Recharts or Chart.js integration */}
+      {/* Backend: GET /api/control-plane/analytics/overview */}
+      <div>
+        <h2 className="text-lg font-bold text-vuega-text mb-4">
+          Analytics Overview
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {analyticsCharts.map((chart) => {
+            const ChartIcon = chart.icon
+            return (
+              <div
+                key={chart.title}
+                className="bg-vuega-primary rounded-xl border border-vuega-border shadow-sm p-6 flex flex-col"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 rounded-lg bg-vuega-secondary">
+                    <ChartIcon size={18} className="text-vuega-text" />
+                  </div>
+                  <h3 className="text-sm font-bold text-vuega-text">
+                    {chart.title}
+                  </h3>
+                </div>
+                {/* Chart Placeholder */}
+                <div className="h-52 rounded-lg bg-vuega-surface border border-vuega-border flex items-center justify-center">
+                  {/* TODO: Integrate Recharts or Chart.js here */}
+                  <div className="flex flex-col items-center gap-2">
+                    <ChartIcon size={32} className="text-vuega-border" />
+                    <span className="text-xs text-vuega-text-muted">
+                      Chart integration pending
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* ── Platform Health Footer ── */}
+      {/*
+        FUTURE ENHANCEMENTS:
+        - WebSocket heartbeat monitoring panel
+        - License expiry countdown alerts
+        - Role-based access control enforcement status
+        - JWT validation middleware integration
+        - Session expiry handling with auto-redirect
+        - Audit logging viewer for all Super Admin actions
+      */}
+      <div className="bg-vuega-secondary/50 rounded-xl border border-vuega-border p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="h-2 w-2 rounded-full bg-green-500" />
+          <span className="text-xs font-medium text-vuega-text">
+            All Systems Operational
+          </span>
+        </div>
+        <div className="flex items-center gap-6">
+          <span className="text-xs text-vuega-text-muted">
+            Control Plane: <span className="font-medium text-vuega-text">Online</span>
+          </span>
+          <span className="text-xs text-vuega-text-muted">
+            Data Plane: <span className="font-medium text-vuega-text">Connected</span>
+          </span>
+          <span className="text-xs text-vuega-text-muted">
+            Last Sync: <span className="font-medium text-vuega-text">2 min ago</span>
+          </span>
+        </div>
+      </div>
+    </div>
   )
 }
 

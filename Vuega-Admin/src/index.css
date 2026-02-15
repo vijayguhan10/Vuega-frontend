@@ -1,1 +1,38 @@
 @import "tailwindcss";
+
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  VUEGA DESIGN SYSTEM — Color Tokens
+ *  Strict 60/30/10 Rule
+ *  60% Primary   → #FFFFFF (backgrounds, cards)
+ *  30% Secondary → #FFFADF (highlights, badges, sections)
+ *  10% Accent    → #C6EDFF (borders, icons, active states)
+ *  Alert Red     → #960000 (errors, suspensions, critical only)
+ *  Text Default  → #000000 (black)
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+@theme {
+    /* ── Primary (60%) ── */
+    --color-vuega-primary: #FFFFFF;
+
+    /* ── Secondary (30%) ── */
+    --color-vuega-secondary: #FFFADF;
+
+    /* ── Accent (10%) ── */
+    --color-vuega-accent: #C6EDFF;
+
+    /* ── Alert ── */
+    --color-vuega-alert: #960000;
+
+    /* ── Text ── */
+    --color-vuega-text: #000000;
+    --color-vuega-text-muted: #6B7280;
+
+    /* ── Borders & Surfaces ── */
+    --color-vuega-border: #E5E7EB;
+    --color-vuega-surface: #F9FAFB;
+
+    /* ── Font Family ── */
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
