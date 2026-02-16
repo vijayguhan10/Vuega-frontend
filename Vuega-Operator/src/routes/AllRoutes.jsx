@@ -7,7 +7,7 @@ import Dashboard from '../pages/Dashboard/Dashboard'
 import Buses from '../pages/buses/Buses'
 import BusDetail from '../pages/buses/BusDetail'
 import TripSchedule from '../pages/Schedule/TripSchedule'
-import Inventory from '../pages/seatInventory/Inventory'
+import CreateLayoutTemplate from '../pages/layout-templates/CreateLayoutTemplate'
 
 // Placeholder for pages we'll build
 const ComingSoon = ({ title }) => (
@@ -34,7 +34,7 @@ const AllRoutes = () => {
         <Route path='/routes' element={<ComingSoon title="Routes" />} />
         <Route path='/trips' element={<TripSchedule />} />
         <Route path='/maintenance' element={<ComingSoon title="Maintenance" />} />
-        <Route path='/layout-designer' element={<Inventory />} />
+        <Route path='/layout-templates/create' element={<CreateLayoutTemplate />} />
       </Route>
 
       {/* Catch-all */}

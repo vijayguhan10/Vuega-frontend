@@ -18,7 +18,7 @@ const menuItems = [
   { name: "Routes", icon: FaMapMarkerAlt, path: "/routes" },
   { name: "Trips", icon: FaCalendarAlt, path: "/trips" },
   { name: "Maintenance", icon: FaWrench, path: "/maintenance" },
-  { name: "Layout Designer", icon: FaChair, path: "/layout-designer" },
+  { name: "Layout Designer", icon: FaChair, path: "/layout-templates/create" },
 ];
 
 const SideBar = ({ isOpen, onClose }) => {
