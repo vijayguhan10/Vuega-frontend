@@ -1,17 +1,5 @@
 @import "tailwindcss";
 
-/*
- * ═══════════════════════════════════════════════════════════════
- *  VUEGA DESIGN SYSTEM — Color Tokens
- *  Strict 60/30/10 Rule
- *  60% Primary   → #FFFFFF (backgrounds, cards)
- *  30% Secondary → #FFFADF (highlights, badges, sections)
- *  10% Accent    → #C6EDFF (borders, icons, active states)
- *  Alert Red     → #960000 (errors, suspensions, critical only)
- *  Text Default  → #000000 (black)
- * ═══════════════════════════════════════════════════════════════
- */
-
 @theme {
     /* ── Primary (60%) ── */
     --color-primary: #FFFFFF;
