@@ -1,47 +1,61 @@
 import React from 'react'
 import { FaBus } from 'react-icons/fa'
 import GovernanceCard from './GovernanceCard'
-import ProgressBar from './ProgressBar'
 
 // ═══════════════════════════════════════════════════════════════
-//  Entitlement Utilization Overview
+//  Entitlement Risk Overview — Compact card
 //  GET /api/control-plane/entitlements
 //
 //  @typedef {Object} EntitlementUsage
-//  @property {string} operatorName
-//  @property {number} busesUsed
-//  @property {number} busesAllowed
-//  @property {number} routesUsed
-//  @property {number} routesAllowed
-//  @property {number} apiQuotaUsed
-//  @property {number} apiQuotaAllowed
+//  @property {number} exceededCount    — operators who exceeded limits
+//  @property {number} nearLimitCount   — operators at >85% utilization
+//  @property {number} healthyCount     — operators within safe range
+//  @property {number} avgUtilization   — platform-wide average %
 // ═══════════════════════════════════════════════════════════════
 
 // Mock data — will be replaced by API call
-const entitlementData = [
-  { operatorName: 'SRS Travels', busesUsed: 14, busesAllowed: 15, routesUsed: 22, routesAllowed: 25, apiQuotaUsed: 8500, apiQuotaAllowed: 10000 },
-  { operatorName: 'KPN Travels', busesUsed: 8, busesAllowed: 10, routesUsed: 12, routesAllowed: 20, apiQuotaUsed: 4200, apiQuotaAllowed: 10000 },
-  { operatorName: 'VRL Travels', busesUsed: 20, busesAllowed: 20, routesUsed: 30, routesAllowed: 30, apiQuotaUsed: 9800, apiQuotaAllowed: 10000 },
-  { operatorName: 'Orange Tours', busesUsed: 5, busesAllowed: 12, routesUsed: 8, routesAllowed: 15, apiQuotaUsed: 2100, apiQuotaAllowed: 10000 },
-]
+const entitlementRisk = {
+  exceededCount: 3,
+  nearLimitCount: 5,
+  healthyCount: 40,
+  avgUtilization: 62,
+}
 
 const EntitlementOverview = () => {
   return (
-    <GovernanceCard title="Entitlement Utilization Overview" icon={FaBus}>
-      <div className="flex flex-col gap-5">
-        {entitlementData.map((op) => (
-          <div key={op.operatorName} className="flex flex-col gap-2.5 pb-4 border-b border-border/30 last:border-b-0 last:pb-0">
-            <span className="text-xs font-semibold text-text">{op.operatorName}</span>
-            <ProgressBar current={op.busesUsed} max={op.busesAllowed} label="Buses" />
-            <ProgressBar current={op.routesUsed} max={op.routesAllowed} label="Routes" />
-            <ProgressBar
-              current={op.apiQuotaUsed}
-              max={op.apiQuotaAllowed}
-              label="API Quota"
-              showFraction={false}
-            />
-          </div>
-        ))}
+    <GovernanceCard title="Entitlement Risk Overview" icon={FaBus}>
+      <div className="flex flex-col gap-3">
+        {/* Exceeded */}
+        <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-alert/5 border border-border/50">
+          <span className="w-3 h-3 rounded-full bg-alert flex-shrink-0" />
+          <span className="text-sm font-semibold text-alert">
+            {entitlementRisk.exceededCount} Operators Exceeded
+          </span>
+        </div>
+
+        {/* Near Limit */}
+        <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-secondary border border-border/50">
+          <span className="w-3 h-3 rounded-full bg-text flex-shrink-0" />
+          <span className="text-sm font-semibold text-text">
+            {entitlementRisk.nearLimitCount} Near Limit
+          </span>
+        </div>
+
+        {/* Healthy */}
+        <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-accent/20 border border-border/50">
+          <span className="w-3 h-3 rounded-full bg-accent flex-shrink-0" />
+          <span className="text-sm font-semibold text-text">
+            {entitlementRisk.healthyCount} Healthy
+          </span>
+        </div>
+
+        {/* Average Utilization */}
+        <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-white border border-border/50">
+          <span className="text-base">📈</span>
+          <span className="text-sm text-text-muted">
+            Avg Utilization: <span className="font-bold text-text">{entitlementRisk.avgUtilization}%</span>
+          </span>
+        </div>
       </div>
     </GovernanceCard>
   )
