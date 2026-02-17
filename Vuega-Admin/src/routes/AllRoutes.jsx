@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import AdminLayout from '../layouts/AdminLayout'
 import LoginSignup from '../components/Auth/LoginSignup'
 import Dashboard from '../pages/Dashboard/Dashboard'
+import BusApprovals from '../pages/BusApprovals/BusApprovals'
 import TripSchedule from '../pages/Schedule/TripSchedule'
 import Inventory from '../pages/seatInventory/Inventory'
 
@@ -16,7 +17,7 @@ const AllRoutes = () => {
             <Route element={<AdminLayout />}>
                 <Route path='/dashboard' element={<Dashboard />} />
                 <Route path='/companies' element={<div className="text-slate-500 text-sm">Companies page — coming soon</div>} />
-                <Route path='/bus-approvals' element={<div className="text-slate-500 text-sm">Bus Approvals page — coming soon</div>} />
+                <Route path='/bus-approvals' element={<BusApprovals />} />
                 <Route path='/analytics' element={<div className="text-slate-500 text-sm">Analytics page — coming soon</div>} />
                 <Route path='/tripSchedule' element={<TripSchedule />} />
                 <Route path='/inventory' element={<Inventory />} />

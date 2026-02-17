@@ -19,7 +19,8 @@
 
     /* ── Borders & Surfaces ── */
     --color-border: #E5E7EB;
-    --color-surface: #F9FAFB;
+    --color-surface: #FFFADF;
+    --color-highlight: #E0F2FE;
 
     /* ── Font Family ── */
     --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;

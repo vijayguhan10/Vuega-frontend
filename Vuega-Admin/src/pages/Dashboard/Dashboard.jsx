@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react'
+import Table from '../../components/Common/Table'
 import {
   FaBuilding,
   FaCheckCircle,
@@ -361,7 +362,7 @@ const Dashboard = () => {
             </p>
           </div>
           {/* Filter Tabs */}
-          <div className="flex items-center gap-1 bg-surface rounded-lg p-1 border border-border">
+          <div className="flex items-center gap-1 bg-white rounded-lg p-1 border border-border">
             {['all', 'pending', 'approved', 'rejected'].map((tab) => (
               <button
                 key={tab}
@@ -378,71 +379,66 @@ const Dashboard = () => {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-surface border-b border-border">
-                <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-text-muted">
-                  Company Name
-                </th>
-                <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-text-muted">
-                  Request Type
-                </th>
-                <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-text-muted">
-                  Submitted Date
-                </th>
-                <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-text-muted">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-[11px] font-semibold uppercase tracking-wider text-text-muted text-right">
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {filteredRequests.map((request) => (
-                <tr
-                  key={request.id}
-                  className="hover:bg-surface transition-colors"
+        <Table
+          data={filteredRequests}
+          columns={[
+            {
+              header: 'Company Name',
+              accessorKey: 'companyName',
+              cell: (info) => (
+                <span className="font-semibold text-text">
+                  {info.getValue()}
+                </span>
+              ),
+            },
+            {
+              header: 'Request Type',
+              accessorKey: 'requestType',
+              cell: (info) => (
+                <span className="text-text-muted">
+                  {info.getValue()}
+                </span>
+              ),
+            },
+            {
+              header: 'Submitted Date',
+              accessorKey: 'submittedDate',
+              cell: (info) => (
+                <span className="text-text-muted">
+                  {info.getValue()}
+                </span>
+              ),
+            },
+            {
+              header: 'Status',
+              accessorKey: 'status',
+              cell: (info) => (
+                <span
+                  className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${getStatusBadge(
+                    info.getValue()
+                  )}`}
                 >
-                  <td className="px-6 py-4">
-                    <span className="text-sm font-semibold text-text">
-                      {request.companyName}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm text-text-muted">
-                      {request.requestType}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-sm text-text-muted">
-                      {request.submittedDate}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${getStatusBadge(
-                        request.status
-                      )}`}
-                    >
-                      {request.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button className="inline-flex items-center gap-1 text-xs font-medium text-text-muted hover:text-text transition-colors">
-                      View
-                      <FaArrowRight size={12} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  {info.getValue()}
+                </span>
+              ),
+            },
+            {
+              header: 'Action',
+              id: 'actions',
+              cell: () => (
+                <div className="text-right">
+                  <button className="inline-flex items-center gap-1 text-xs font-medium text-text-muted hover:text-text transition-colors">
+                    View
+                    <FaArrowRight size={12} />
+                  </button>
+                </div>
+              ),
+            },
+          ]}
+        />
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-border bg-surface flex justify-between items-center">
+        <div className="px-6 py-3 border-t border-border bg-white flex justify-between items-center">
           <span className="text-xs text-text-muted">
             Showing {filteredRequests.length} of {recentRequests.length} requests
           </span>
