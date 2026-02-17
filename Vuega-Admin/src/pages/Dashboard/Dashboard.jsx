@@ -18,6 +18,14 @@ import {
   FaArrowRight,
   FaExclamationTriangle,
 } from 'react-icons/fa'
+
+// ── Governance Panel Components ──
+import GovernanceHealthPanel from './governance/GovernanceHealthPanel'
+import LicenseComplianceWidget from './governance/LicenseComplianceWidget'
+import EntitlementOverview from './governance/EntitlementOverview'
+import ApprovalGovernanceMetrics from './governance/ApprovalGovernanceMetrics'
+import RiskViolationPanel from './governance/RiskViolationPanel'
+import AuditEnforcementSummary from './governance/AuditEnforcementSummary'
 import {
   BarChart,
   Bar,
@@ -347,7 +355,34 @@ const Dashboard = () => {
       </div>
 
       {/* ══════════════════════════════════════════════════════════
-           SECTION 2 — Recent Requests
+           SECTION 2 — Governance Control Panels
+           GET /api/control-plane/governance-metrics
+           GET /api/control-plane/compliance
+           GET /api/control-plane/entitlements
+           GET /api/control-plane/audit-summary
+           ══════════════════════════════════════════════════════════ */}
+      <div>
+        <h2 className="text-lg font-bold text-text mb-4">
+          Governance & Compliance
+        </h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <GovernanceHealthPanel />
+          <LicenseComplianceWidget />
+          <ApprovalGovernanceMetrics />
+          <RiskViolationPanel />
+        </div>
+      </div>
+
+      {/* ══════════════════════════════════════════════════════════
+           SECTION 3 — Entitlement Utilization (full width)
+           ══════════════════════════════════════════════════════════ */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <EntitlementOverview />
+        <AuditEnforcementSummary />
+      </div>
+
+      {/* ══════════════════════════════════════════════════════════
+           SECTION 4 — Recent Requests
            ══════════════════════════════════════════════════════════ */}
       {/* TODO: Replace mock data with GET /api/control-plane/dashboard/recent-requests */}
       <div className="bg-primary rounded-xl border border-border shadow-sm">
@@ -449,7 +484,7 @@ const Dashboard = () => {
       </div>
 
       {/* ══════════════════════════════════════════════════════════
-           SECTION 3 — Analytics Preview
+           SECTION 5 — Analytics Preview
            ══════════════════════════════════════════════════════════ */}
       {/* TODO: Replace with Recharts or Chart.js integration */}
       {/* Backend: GET /api/control-plane/analytics/overview */}
