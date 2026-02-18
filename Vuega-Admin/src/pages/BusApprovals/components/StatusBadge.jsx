@@ -1,12 +1,5 @@
 import React from 'react'
 
-// ═══════════════════════════════════════════════════════════════
-//  StatusBadge — Reusable status indicator
-//  Uses the Vuega color system strictly:
-//    Pending  → secondary (#FFFADF)
-//    Approved → accent    (#C6EDFF)
-//    Rejected → alert     (#960000)
-// ═══════════════════════════════════════════════════════════════
 
 const statusMap = {
   Pending: 'bg-secondary text-text',

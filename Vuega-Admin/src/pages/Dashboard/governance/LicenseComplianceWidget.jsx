@@ -5,12 +5,6 @@ import GovernanceCard from './GovernanceCard'
 // ═══════════════════════════════════════════════════════════════
 //  License & Contract Compliance Widget
 //  GET /api/control-plane/compliance
-//
-//  @typedef {Object} LicenseStatus
-//  @property {number} expiringLicenses    — licenses expiring within 30 days
-//  @property {number} expiredLicenses     — currently expired (critical)
-//  @property {number} entitlementUtilization — % of entitlements used
-//  @property {number} upgradeRequired     — operators needing plan upgrade
 // ═══════════════════════════════════════════════════════════════
 
 // Mock data — will be replaced by API call

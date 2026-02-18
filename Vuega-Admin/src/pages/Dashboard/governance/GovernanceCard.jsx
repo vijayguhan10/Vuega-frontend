@@ -1,10 +1,5 @@
 import React from 'react'
 
-// ═══════════════════════════════════════════════════════════════
-//  GovernanceCard — Reusable card wrapper for all governance panels
-//  Matches existing Dashboard card styling exactly:
-//    bg-primary, rounded-xl, border border-border, shadow-sm, p-6
-// ═══════════════════════════════════════════════════════════════
 
 const GovernanceCard = ({ title, icon: Icon, children, className = '' }) => {
   return (

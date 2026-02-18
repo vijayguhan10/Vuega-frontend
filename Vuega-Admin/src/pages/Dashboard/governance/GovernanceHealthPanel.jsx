@@ -5,13 +5,6 @@ import GovernanceCard from './GovernanceCard'
 // ═══════════════════════════════════════════════════════════════
 //  Platform Governance Health Panel
 //  GET /api/control-plane/governance-metrics
-//
-//  @typedef {Object} GovernanceMetric
-//  @property {number} slaCompliancePercent
-//  @property {number} operatorsWithinSLA
-//  @property {number} slaViolations
-//  @property {'Healthy'|'Warning'|'Critical'} systemHealth
-//  @property {boolean} heartbeatActive
 // ═══════════════════════════════════════════════════════════════
 
 // Mock data — will be replaced by API call

@@ -5,12 +5,6 @@ import GovernanceCard from './GovernanceCard'
 // ═══════════════════════════════════════════════════════════════
 //  Entitlement Risk Overview — Compact card
 //  GET /api/control-plane/entitlements
-//
-//  @typedef {Object} EntitlementUsage
-//  @property {number} exceededCount    — operators who exceeded limits
-//  @property {number} nearLimitCount   — operators at >85% utilization
-//  @property {number} healthyCount     — operators within safe range
-//  @property {number} avgUtilization   — platform-wide average %
 // ═══════════════════════════════════════════════════════════════
 
 // Mock data — will be replaced by API call

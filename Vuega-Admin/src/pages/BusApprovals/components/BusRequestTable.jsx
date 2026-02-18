@@ -5,15 +5,6 @@ import {
   flexRender,
 } from '@tanstack/react-table'
 
-// ═══════════════════════════════════════════════════════════════
-//  BusRequestTable — Reusable table with columns config + data
-//  Accepts a `columns` array with accessorKey, header, and cell
-//  render functions (same pattern as Dashboard Recent Requests).
-//  Matches Dashboard table styling exactly:
-//    Header:    bg-secondary, uppercase, tracking-wider
-//    Rows:      bg-[#F5F5F4], hover:bg-white
-//    Dividers:  divide-y divide-border/10
-// ═══════════════════════════════════════════════════════════════
 
 const BusRequestTable = ({ data, columns, isLoading, emptyMessage = 'No bus approval requests found' }) => {
   const table = useReactTable({

@@ -14,7 +14,6 @@ import {
   FaArrowDown,
   FaChartBar,
   FaArrowRight,
-  FaExclamationTriangle,
 } from 'react-icons/fa'
 
 // ── Governance Panel Components ──
@@ -227,12 +226,7 @@ const metricCards = [
   },
 ]
 
-// ═══════════════════════════════════════════════════════════════
-//  ANALYTICS CHART CONTAINERS
-// ═══════════════════════════════════════════════════════════════
-// ═══════════════════════════════════════════════════════════════
-//  HELPER: Status Badge
-// ═══════════════════════════════════════════════════════════════
+
 
 const getStatusBadge = (status) => {
   switch (status) {
@@ -337,13 +331,6 @@ const Dashboard = () => {
         })}
       </div>
 
-      {/* ══════════════════════════════════════════════════════════
-           SECTION 2 — Governance Control Panels
-           GET /api/control-plane/governance-metrics
-           GET /api/control-plane/compliance
-           GET /api/control-plane/entitlements
-           GET /api/control-plane/audit-summary
-           ══════════════════════════════════════════════════════════ */}
       <div>
         <h2 className="text-lg font-bold text-text mb-4">
           Governance & Compliance
@@ -603,16 +590,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* ── Platform Health Footer ── */}
-      {/*
-        FUTURE ENHANCEMENTS:
-        - WebSocket heartbeat monitoring panel
-        - License expiry countdown alerts
-        - Role-based access control enforcement status
-        - JWT validation middleware integration
-        - Session expiry handling with auto-redirect
-        - Audit logging viewer for all Super Admin actions
-      */}
     </div>
   )
 }

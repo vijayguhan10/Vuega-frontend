@@ -1,12 +1,5 @@
 import React from 'react'
 
-// ═══════════════════════════════════════════════════════════════
-//  FilterTabs — Reusable tab filter control
-//  Matches the Dashboard Recent Requests filter tabs exactly:
-//    Container: bg-surface rounded-lg p-1 border border-border
-//    Active:    bg-primary text-text shadow-sm
-//    Inactive:  text-text-muted hover:text-text
-// ═══════════════════════════════════════════════════════════════
 
 const FilterTabs = ({ tabs, activeTab, onTabChange }) => {
   return (

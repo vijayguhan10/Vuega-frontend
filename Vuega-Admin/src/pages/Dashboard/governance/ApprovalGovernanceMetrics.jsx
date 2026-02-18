@@ -3,15 +3,6 @@ import { FaGavel } from 'react-icons/fa'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import GovernanceCard from './GovernanceCard'
 
-// ═══════════════════════════════════════════════════════════════
-//  Approval Governance Metrics
-//  GET /api/control-plane/governance-metrics
-//
-//  Shows:
-//    - Approval vs Rejection ratio (donut chart)
-//    - Average approval processing time
-//    - Pending request aging indicator
-// ═══════════════════════════════════════════════════════════════
 
 // Mock data — will be replaced by API call
 const approvalMetrics = {

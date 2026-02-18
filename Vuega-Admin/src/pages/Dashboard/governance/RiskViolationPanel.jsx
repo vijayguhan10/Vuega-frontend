@@ -5,13 +5,6 @@ import GovernanceCard from './GovernanceCard'
 // ═══════════════════════════════════════════════════════════════
 //  Risk & Violation Monitoring Panel
 //  GET /api/control-plane/governance-metrics
-//
-//  @typedef {Object} RiskFlag
-//  @property {string} operatorName
-//  @property {'Low'|'Medium'|'High'} fraudRiskScore
-//  @property {number} repeatedRejections
-//  @property {boolean} manualOverrideAlert
-//  @property {string} flagReason
 // ═══════════════════════════════════════════════════════════════
 
 // Mock data — will be replaced by API call

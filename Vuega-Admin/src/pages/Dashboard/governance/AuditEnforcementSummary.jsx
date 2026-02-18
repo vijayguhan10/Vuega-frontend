@@ -5,11 +5,6 @@ import GovernanceCard from './GovernanceCard'
 // ═══════════════════════════════════════════════════════════════
 //  Audit & Enforcement Summary
 //  GET /api/control-plane/audit-summary
-//
-//  @typedef {Object} AuditSummary
-//  @property {number} totalActionsToday
-//  @property {number} criticalActions
-//  @property {Array}  recentEnforcementEvents
 // ═══════════════════════════════════════════════════════════════
 
 // Mock data — will be replaced by API call
