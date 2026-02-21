@@ -5,6 +5,7 @@ import CompanyTable from './components/CompanyTable'
 import CompanyStatusBadge from './components/CompanyStatusBadge'
 import ActionDropdown from './components/ActionDropdown'
 import ConfirmationModal from './components/ConfirmationModal'
+import CompanyDetailDrawer from './components/CompanyDetailDrawer'
 
 // ═══════════════════════════════════════════════════════════════
 //  SECURITY AWARENESS
@@ -241,6 +242,11 @@ const CompanyManagement = () => {
   const [modalAction, setModalAction] = useState(null) // 'approve' | 'reject' | 'suspend' | 'reactivate'
   const [selectedCompany, setSelectedCompany] = useState(null)
 
+  // Detail drawer state (Stage 2)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [drawerCompany, setDrawerCompany] = useState(null)
+  const [drawerInitialTab, setDrawerInitialTab] = useState('overview')
+
   // Governance summary (memoized)
   const govSummary = useMemo(() => computeGovernanceSummary(companies), [companies])
 
@@ -272,14 +278,17 @@ const CompanyManagement = () => {
     setSelectedCompany(company)
 
     if (action === 'view') {
-      // Stage 2: Will open the detail drawer
-      // TODO: setDrawerOpen(true); setDrawerCompany(company);
+      setDrawerCompany(company)
+      setDrawerInitialTab('overview')
+      setDrawerOpen(true)
       return
     }
 
     if (action === 'kyc') {
       // Stage 3: Will open KYC tab in drawer
-      // TODO: setDrawerOpen(true); setDrawerCompany(company); setDrawerTab('kyc');
+      setDrawerCompany(company)
+      setDrawerInitialTab('overview') // Will be 'kyc' in Stage 3
+      setDrawerOpen(true)
       return
     }
 
@@ -339,10 +348,19 @@ const CompanyManagement = () => {
         cell: (info) => {
           const row = info.row.original
           return (
-            <div className="flex flex-col gap-0.5">
-              <span className="font-semibold text-text">{info.getValue()}</span>
+            <button
+              onClick={() => {
+                setDrawerCompany(row)
+                setDrawerInitialTab('overview')
+                setDrawerOpen(true)
+              }}
+              className="flex flex-col gap-0.5 text-left group"
+            >
+              <span className="font-semibold text-text group-hover:text-[#2E86AB] transition-colors">
+                {info.getValue()}
+              </span>
               <span className="text-[10px] font-mono text-text-muted">{row.operatorCode}</span>
-            </div>
+            </button>
           )
         },
       },
@@ -552,9 +570,17 @@ const CompanyManagement = () => {
       )}
 
       {/* ═══════════════════════════════════════════════════════
-           DETAIL DRAWER — Stage 2 (placeholder)
+           DETAIL DRAWER — Stage 2
            ═══════════════════════════════════════════════════════ */}
-      {/* TODO: Stage 2 — CompanyDetailDrawer component */}
+      <CompanyDetailDrawer
+        isOpen={drawerOpen}
+        onClose={() => {
+          setDrawerOpen(false)
+          setDrawerCompany(null)
+        }}
+        company={drawerCompany}
+        initialTab={drawerInitialTab}
+      />
     </div>
   )
 }
