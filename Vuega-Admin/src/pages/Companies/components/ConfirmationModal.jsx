@@ -1,14 +1,6 @@
 import React from 'react'
 import { AlertTriangle, ShieldCheck, RotateCcw, XCircle } from 'lucide-react'
 
-// ═══════════════════════════════════════════════════════════════
-//  ConfirmationModal — Governance action confirmation dialog
-//  Used for Approve, Reject, Suspend, and Reactivate actions.
-//  Destructive actions (Reject, Suspend) use alert styling.
-//  Non-destructive actions (Approve, Reactivate) use accent.
-//  All actions display an immutable audit notice footer.
-// ═══════════════════════════════════════════════════════════════
-
 const actionConfig = {
   approve: {
     title: 'Approve Company',

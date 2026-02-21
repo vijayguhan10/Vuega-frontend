@@ -12,9 +12,7 @@ import {
 import { FaShieldAlt } from 'react-icons/fa'
 import CompanyStatusBadge from './CompanyStatusBadge'
 
-// ═══════════════════════════════════════════════════════════════
-//  OVERVIEW TAB — Stage 2
-//  Renders company identity, compliance card, entitlements gauge
+
 // ═══════════════════════════════════════════════════════════════
 //  Data source:
 //    GET /api/companies/:id/details  → overview section

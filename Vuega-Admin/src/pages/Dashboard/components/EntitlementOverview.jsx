@@ -3,7 +3,6 @@ import { FaBus } from 'react-icons/fa'
 import GovernanceCard from './GovernanceCard'
 
 // ═══════════════════════════════════════════════════════════════
-//  Entitlement Risk Overview — Compact card
 //  GET /api/control-plane/entitlements
 // ═══════════════════════════════════════════════════════════════
 

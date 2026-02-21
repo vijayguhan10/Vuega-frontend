@@ -3,7 +3,6 @@ import { FaFileContract, FaExclamationTriangle } from 'react-icons/fa'
 import GovernanceCard from './GovernanceCard'
 
 // ═══════════════════════════════════════════════════════════════
-//  License & Contract Compliance Widget
 //  GET /api/control-plane/compliance
 // ═══════════════════════════════════════════════════════════════
 

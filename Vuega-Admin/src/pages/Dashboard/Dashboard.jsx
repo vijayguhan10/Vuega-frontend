@@ -16,13 +16,12 @@ import {
   FaArrowRight,
 } from 'react-icons/fa'
 
-// ── Governance Panel Components ──
-import GovernanceHealthPanel from './governance/GovernanceHealthPanel'
-import LicenseComplianceWidget from './governance/LicenseComplianceWidget'
-import EntitlementOverview from './governance/EntitlementOverview'
-import ApprovalGovernanceMetrics from './governance/ApprovalGovernanceMetrics'
-import RiskViolationPanel from './governance/RiskViolationPanel'
-import AuditEnforcementSummary from './governance/AuditEnforcementSummary'
+import GovernanceHealthPanel from './components/GovernanceHealthPanel'
+import LicenseComplianceWidget from './components/LicenseComplianceWidget'
+import EntitlementOverview from './components/EntitlementOverview'
+import ApprovalGovernanceMetrics from './components/ApprovalGovernanceMetrics'
+import RiskViolationPanel from './components/RiskViolationPanel'
+import AuditEnforcementSummary from './components/AuditEnforcementSummary'
 import {
   BarChart,
   Bar,

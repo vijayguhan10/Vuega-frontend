@@ -4,11 +4,11 @@ import { FaShieldAlt } from 'react-icons/fa'
 import OverviewTab from './OverviewTab'
 import BusesTab from './BusesTab'
 import TripsTab from './TripsTab'
+import EmployeesTab from './EmployeesTab'
+import AnalyticsTab from './AnalyticsTab'
+import KYCTab from './KYCTab'
+import ActivityLogTab from './ActivityLogTab'
 
-// ═══════════════════════════════════════════════════════════════
-//  COMPANY DETAIL DRAWER — Stage 2
-//  Right-side slide-in drawer with tabbed navigation:
-//    Overview | Buses | Trips
 // ═══════════════════════════════════════════════════════════════
 //  Data source:
 //    GET /api/companies/:id/details  → full company object
@@ -19,11 +19,10 @@ const tabs = [
   { id: 'overview', label: 'Overview' },
   { id: 'buses', label: 'Buses' },
   { id: 'trips', label: 'Trips' },
-  // Stage 3 tabs (placeholder):
-  // { id: 'employees', label: 'Employees' },
-  // { id: 'analytics', label: 'Analytics' },
-  // { id: 'kyc', label: 'KYC' },
-  // { id: 'activity', label: 'Activity' },
+  { id: 'employees', label: 'Employees' },
+  { id: 'analytics', label: 'Analytics' },
+  { id: 'kyc', label: 'KYC' },
+  { id: 'activity', label: 'Activity' },
 ]
 
 const CompanyDetailDrawer = ({ isOpen, onClose, company, initialTab = 'overview' }) => {
@@ -46,6 +45,14 @@ const CompanyDetailDrawer = ({ isOpen, onClose, company, initialTab = 'overview'
         return <BusesTab company={company} />
       case 'trips':
         return <TripsTab company={company} />
+      case 'employees':
+        return <EmployeesTab company={company} />
+      case 'analytics':
+        return <AnalyticsTab company={company} />
+      case 'kyc':
+        return <KYCTab company={company} />
+      case 'activity':
+        return <ActivityLogTab company={company} />
       default:
         return <OverviewTab company={company} />
     }
@@ -85,12 +92,12 @@ const CompanyDetailDrawer = ({ isOpen, onClose, company, initialTab = 'overview'
         </div>
 
         {/* ── Tab Navigation ── */}
-        <div className="flex border-b border-border px-6 shrink-0">
+        <div className="flex border-b border-border px-4 shrink-0 overflow-x-auto scrollbar-hide">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`relative px-4 py-3 text-xs font-semibold transition-colors ${
+              className={`relative px-3 py-3 text-xs font-semibold transition-colors whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'text-text'
                   : 'text-text-muted hover:text-text'

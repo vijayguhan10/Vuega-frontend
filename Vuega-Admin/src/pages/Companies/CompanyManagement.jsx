@@ -35,9 +35,6 @@ import CompanyDetailDrawer from './components/CompanyDetailDrawer'
 //          → Audit log: action = KYC_VERIFIED | KYC_REJECTED
 // ═══════════════════════════════════════════════════════════════
 
-// ═══════════════════════════════════════════════════════════════
-//  TYPE DEFINITIONS (Backend-ready interfaces)
-// ═══════════════════════════════════════════════════════════════
 
 /**
  * @typedef {Object} Company
@@ -215,9 +212,6 @@ const computeGovernanceSummary = (companies) => {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  FILTER OPTIONS
-// ═══════════════════════════════════════════════════════════════
 
 const filterOptions = [
   { label: 'All', value: 'all' },
@@ -227,9 +221,6 @@ const filterOptions = [
   { label: 'Rejected', value: 'Rejected' },
 ]
 
-// ═══════════════════════════════════════════════════════════════
-//  COMPANY MANAGEMENT PAGE — Stage 1: Company List View
-// ═══════════════════════════════════════════════════════════════
 
 const CompanyManagement = () => {
   // --- State ---
@@ -285,9 +276,8 @@ const CompanyManagement = () => {
     }
 
     if (action === 'kyc') {
-      // Stage 3: Will open KYC tab in drawer
       setDrawerCompany(company)
-      setDrawerInitialTab('overview') // Will be 'kyc' in Stage 3
+      setDrawerInitialTab('kyc')
       setDrawerOpen(true)
       return
     }
@@ -407,10 +397,6 @@ const CompanyManagement = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [companies]
   )
-
-  // ═══════════════════════════════════════════════════════════
-  //  RENDER
-  // ═══════════════════════════════════════════════════════════
 
   return (
     <div className="flex flex-col gap-6">
@@ -568,10 +554,6 @@ const CompanyManagement = () => {
           onCancel={handleCancelModal}
         />
       )}
-
-      {/* ═══════════════════════════════════════════════════════
-           DETAIL DRAWER — Stage 2
-           ═══════════════════════════════════════════════════════ */}
       <CompanyDetailDrawer
         isOpen={drawerOpen}
         onClose={() => {

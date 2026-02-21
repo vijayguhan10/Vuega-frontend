@@ -3,7 +3,6 @@ import { FaHeartbeat, FaCheckCircle, FaExclamationTriangle, FaTimesCircle } from
 import GovernanceCard from './GovernanceCard'
 
 // ═══════════════════════════════════════════════════════════════
-//  Platform Governance Health Panel
 //  GET /api/control-plane/governance-metrics
 // ═══════════════════════════════════════════════════════════════
 

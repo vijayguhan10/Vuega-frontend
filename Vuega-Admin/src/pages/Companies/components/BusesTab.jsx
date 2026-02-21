@@ -8,9 +8,6 @@ import { FaShieldAlt } from 'react-icons/fa'
 import { Bus, CheckCircle, XCircle, Clock, AlertTriangle } from 'lucide-react'
 
 // ═══════════════════════════════════════════════════════════════
-//  BUSES TAB — Stage 2
-//  Lists all buses registered under this company
-// ═══════════════════════════════════════════════════════════════
 //  Data source:
 //    GET /api/companies/:id/details → buses array
 // ═══════════════════════════════════════════════════════════════

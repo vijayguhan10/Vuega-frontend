@@ -15,9 +15,6 @@ import {
 } from 'lucide-react'
 
 // ═══════════════════════════════════════════════════════════════
-//  TRIPS TAB — Stage 2
-//  Lists active & recent trips for this company
-// ═══════════════════════════════════════════════════════════════
 //  Data source:
 //    GET /api/companies/:id/details → trips array
 // ═══════════════════════════════════════════════════════════════

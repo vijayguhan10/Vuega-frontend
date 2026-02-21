@@ -5,12 +5,6 @@ import {
   flexRender,
 } from '@tanstack/react-table'
 
-// ═══════════════════════════════════════════════════════════════
-//  CompanyTable — Governance table for company list
-//  Same @tanstack/react-table pattern as BusRequestTable
-//  and Dashboard Table — identical header/row styling.
-// ═══════════════════════════════════════════════════════════════
-
 const CompanyTable = ({ data, columns, isLoading, emptyMessage = 'No companies found.' }) => {
   const table = useReactTable({
     data,

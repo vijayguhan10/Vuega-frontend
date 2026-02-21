@@ -3,7 +3,6 @@ import { FaClipboardCheck, FaArrowRight, FaExclamationTriangle } from 'react-ico
 import GovernanceCard from './GovernanceCard'
 
 // ═══════════════════════════════════════════════════════════════
-//  Audit & Enforcement Summary
 //  GET /api/control-plane/audit-summary
 // ═══════════════════════════════════════════════════════════════
 

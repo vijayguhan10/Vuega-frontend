@@ -3,7 +3,6 @@ import { FaShieldAlt, FaExclamationTriangle } from 'react-icons/fa'
 import GovernanceCard from './GovernanceCard'
 
 // ═══════════════════════════════════════════════════════════════
-//  Risk & Violation Monitoring Panel
 //  GET /api/control-plane/governance-metrics
 // ═══════════════════════════════════════════════════════════════
 
