@@ -16,7 +16,7 @@ export default function CreateLayoutTemplate() {
  <div className="space-y-4">
  {/* Page header */}
  <div>
- <h2 className="text-v-text font-bold tracking-tight">Layout Template Designer</h2>
+ <h2 className="text-v-text font-bold  tracking-tight">Layout Template Designer</h2>
  <p className="text-v-text-muted mt-0.5">
  Create and customise bus seat-layout templates
  </p>
