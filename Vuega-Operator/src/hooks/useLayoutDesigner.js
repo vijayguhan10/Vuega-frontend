@@ -35,6 +35,7 @@ function buildDeck(rows, leftSeats, rightSeats, defaultSeatType, deckLabel, star
           type: defaultSeatType,
           deck: deckLabel,
           removed: false,
+          merged: false,
           isLadies: false,
           isBlocked: false,
           row: r,
@@ -45,17 +46,67 @@ function buildDeck(rows, leftSeats, rightSeats, defaultSeatType, deckLabel, star
     deck.push(row);
   }
 
+  // If default type is sleeper, apply merge pairing to every seat column
+  if (defaultSeatType === 'sleeper') {
+    const aisleCol = leftSeats;
+    for (let c = 0; c < cols; c++) {
+      if (c === aisleCol) continue;
+      applySleeperMergeInPlace(deck, c);
+    }
+  }
+
   return { deck, nextNumber: seatCounter };
 }
 
-/** Count non-removed seats across all decks. */
+/**
+ * Pair consecutive non-removed seats in a column for sleeper merge (in-place).
+ * First of each pair keeps seatNumber, second gets merged = true.
+ */
+function applySleeperMergeInPlace(deck, colIndex) {
+  const available = [];
+  for (let r = 0; r < deck.length; r++) {
+    const cell = deck[r][colIndex];
+    if (cell && !cell.removed) available.push(r);
+  }
+  for (let i = 0; i < available.length; i += 2) {
+    const r1 = available[i];
+    deck[r1][colIndex].type = 'sleeper';
+    deck[r1][colIndex].merged = false;
+    if (i + 1 < available.length) {
+      const r2 = available[i + 1];
+      deck[r2][colIndex].type = 'sleeper';
+      deck[r2][colIndex].merged = true;
+    }
+  }
+}
+
+/** Return a deep-cloned deck with sleeper merge applied to one column. */
+function applySleeperMerge(deck, colIndex) {
+  const newDeck = deck.map((row) => row.map((cell) => (cell ? { ...cell } : null)));
+  applySleeperMergeInPlace(newDeck, colIndex);
+  return newDeck;
+}
+
+/** Return a deep-cloned deck with sleeper merge removed from one column. */
+function removeSleeperMerge(deck, colIndex, newType) {
+  return deck.map((row) =>
+    row.map((cell) => {
+      if (cell && cell.col === colIndex && !cell.removed) {
+        return { ...cell, type: newType, merged: false };
+      }
+      return cell;
+    }),
+  );
+}
+
+/** Count non-removed, non-merged seats across all decks. */
 function countSeats(lowerDeck, upperDeck) {
   let count = 0;
   const countInDeck = (d) => {
     if (!d) return;
     d.forEach((row) =>
       row.forEach((cell) => {
-        if (cell && !cell.removed) count++;
+        if (cell && !cell.removed && !cell.merged) count++;
       }),
     );
   };
@@ -116,7 +167,7 @@ export default function useLayoutDesigner() {
     setLowerDeck(lower.deck);
 
     if (hasUpperDeck) {
-      const upper = buildDeck(rows, leftSeats, rightSeats, defaultSeatType, 'upper', lower.nextNumber);
+      const upper = buildDeck(rows, leftSeats, rightSeats, 'sleeper', 'upper', lower.nextNumber);
       setUpperDeck(upper.deck);
     } else {
       setUpperDeck(null);
@@ -197,10 +248,78 @@ export default function useLayoutDesigner() {
     [mutateSeat],
   );
 
+  /** Change a single seat's type — handles sleeper merge / un-merge logic. */
+  const changeSeatType = useCallback(
+    (seatId, newType) => {
+      // Find the seat in the lower deck (upper deck type changes are blocked)
+      let targetSeat = null;
+      for (const row of lowerDeck) {
+        for (const cell of row) {
+          if (cell && cell.id === seatId) {
+            targetSeat = cell;
+            break;
+          }
+        }
+        if (targetSeat) break;
+      }
+
+      if (!targetSeat || targetSeat.deck === 'upper' || targetSeat.merged) return;
+      if (targetSeat.type === newType) return;
+
+      pushHistory();
+
+      setLowerDeck((prev) => {
+        const nd = prev.map((r) => r.map((c) => (c ? { ...c } : null)));
+        const { row, col } = targetSeat;
+
+        if (newType === 'sleeper') {
+          // Changing TO sleeper — merge with the seat directly below
+          nd[row][col].type = 'sleeper';
+          if (
+            row + 1 < nd.length &&
+            nd[row + 1][col] &&
+            !nd[row + 1][col].removed &&
+            !nd[row + 1][col].merged
+          ) {
+            nd[row + 1][col].merged = true;
+            nd[row + 1][col].type = 'sleeper';
+          }
+        } else if (targetSeat.type === 'sleeper') {
+          // Changing FROM sleeper — un-merge the cell below if it was merged
+          nd[row][col].type = newType;
+          if (
+            row + 1 < nd.length &&
+            nd[row + 1][col] &&
+            nd[row + 1][col].merged
+          ) {
+            nd[row + 1][col].merged = false;
+            nd[row + 1][col].type = newType;
+          }
+        } else {
+          // Non-sleeper to non-sleeper (e.g. seater → semi-sleeper)
+          nd[row][col].type = newType;
+        }
+
+        return nd;
+      });
+    },
+    [pushHistory, lowerDeck],
+  );
+
   const updateSeatProperty = useCallback(
-    (seatId, key, value) =>
-      mutateSeat(seatId, (s) => ({ ...s, [key]: value })),
-    [mutateSeat],
+    (seatId, key, value) => {
+      // Upper deck seats are always sleeper — block type changes
+      if (key === 'type') {
+        // For type changes, use the dedicated changeSeatType logic
+        changeSeatType(seatId, value);
+        return;
+      }
+      mutateSeat(seatId, (s) => {
+        if (s.deck === 'upper' && key === 'type') return s;
+        return { ...s, [key]: value };
+      });
+    },
+    [mutateSeat, changeSeatType],
   );
 
   /* ---------- auto-renumber ---------- */
@@ -212,7 +331,7 @@ export default function useLayoutDesigner() {
     const renumber = (deck) =>
       deck.map((row) =>
         row.map((cell) => {
-          if (!cell || cell.removed) return cell;
+          if (!cell || cell.removed || cell.merged) return cell;
           return { ...cell, seatNumber: String(counter++) };
         }),
       );
@@ -227,25 +346,21 @@ export default function useLayoutDesigner() {
 
   /* ---------- column operations ---------- */
 
-  /** Update the seat type for every non-removed seat in a given column (both decks). */
+  /** Update the seat type for every non-removed seat in a given column (lower deck only — upper deck is always sleeper). */
   const updateColumnType = useCallback(
     (colIndex, newType) => {
       pushHistory();
 
-      const updateDeck = (deck) =>
-        deck.map((row) =>
-          row.map((cell) => {
-            if (cell && cell.col === colIndex && !cell.removed) {
-              return { ...cell, type: newType };
-            }
-            return cell;
-          }),
-        );
-
-      setLowerDeck((prev) => updateDeck(prev));
-      if (upperDeck) setUpperDeck((prev) => (prev ? updateDeck(prev) : prev));
+      if (newType === 'sleeper') {
+        // Apply sleeper merge pairing
+        setLowerDeck((prev) => applySleeperMerge(prev, colIndex));
+      } else {
+        // Remove merge and set new type
+        setLowerDeck((prev) => removeSleeperMerge(prev, colIndex, newType));
+      }
+      // Upper deck stays sleeper — no change
     },
-    [pushHistory, upperDeck],
+    [pushHistory],
   );
 
   /** Collect all non-removed seats in a column (across both decks). */

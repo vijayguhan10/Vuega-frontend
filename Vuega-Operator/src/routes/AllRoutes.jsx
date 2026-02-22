@@ -9,6 +9,11 @@ import BusDetail from '../pages/buses/BusDetail'
 import TripSchedule from '../pages/Schedule/TripSchedule'
 import CreateLayoutTemplate from '../pages/layout-templates/CreateLayoutTemplate'
 
+// Routes module
+import RoutesList from '../pages/routes/RoutesList'
+import CreateRoute from '../pages/routes/CreateRoute'
+import RouteDetail from '../pages/routes/RouteDetail'
+
 // Placeholder for pages we'll build
 const ComingSoon = ({ title }) => (
   <div className="flex flex-col items-center justify-center h-64 text-center">
@@ -31,7 +36,9 @@ const AllRoutes = () => {
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/buses' element={<Buses />} />
         <Route path='/buses/:busId' element={<BusDetail />} />
-        <Route path='/routes' element={<ComingSoon title="Routes" />} />
+        <Route path='/routes' element={<RoutesList />} />
+        <Route path='/routes/create' element={<CreateRoute />} />
+        <Route path='/routes/:routeId' element={<RouteDetail />} />
         <Route path='/trips' element={<TripSchedule />} />
         <Route path='/maintenance' element={<ComingSoon title="Maintenance" />} />
         <Route path='/layout-templates/create' element={<CreateLayoutTemplate />} />

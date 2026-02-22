@@ -83,7 +83,7 @@ export default function SeatPropertiesPanel({
 
         {/* Info */}
         <p className="text-[10px] text-v-text-muted leading-relaxed">
-          Changing the type here will update <span className="font-semibold">all non-removed seats</span> in this column across both decks.
+          Changing the type here will update <span className="font-semibold">all non-removed lower-deck seats</span> in this column. Upper deck seats remain as sleeper.
         </p>
       </aside>
     );
@@ -126,16 +126,23 @@ export default function SeatPropertiesPanel({
 
       {/* Seat type */}
       <Field label="Seat Type">
-        <select
-          value={seat.type}
-          onChange={(e) => updateSeatProperty(seat.id, 'type', e.target.value)}
-          className="input-base"
-        >
-          <option value="seater">Seater</option>
-          <option value="sleeper">Sleeper</option>
-          <option value="semi-sleeper">Semi Sleeper</option>
-        </select>
+        {seat.deck === 'upper' ? (
+          <div className="input-base bg-gray-50 text-v-text-muted cursor-not-allowed">Sleeper</div>
+        ) : (
+          <select
+            value={seat.type}
+            onChange={(e) => updateSeatProperty(seat.id, 'type', e.target.value)}
+            className="input-base"
+          >
+            <option value="seater">Seater</option>
+            <option value="sleeper">Sleeper</option>
+            <option value="semi-sleeper">Semi Sleeper</option>
+          </select>
+        )}
       </Field>
+      {seat.deck === 'upper' && (
+        <p className="text-[10px] text-v-text-muted">Upper deck seats are always sleeper</p>
+      )}
 
       {/* Toggles */}
       <div className="space-y-3">

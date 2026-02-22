@@ -1,5 +1,4 @@
 import React, { memo } from 'react';
-import driverSvg from '../../assets/driver.svg';
 import sleeperSvg from '../../assets/sleeper.svg';
 import semiSleeperSvg from '../../assets/semisleeper.svg';
 
@@ -24,7 +23,7 @@ const SeatCell = memo(function SeatCell({
 }) {
   /* ── aisle column ── */
   if (!seat) {
-    return <div className="w-12 h-12 md:w-14 md:h-14" />;
+    return <div className="w-full h-full" />;
   }
 
   /* ── removed seat ── */
@@ -33,7 +32,7 @@ const SeatCell = memo(function SeatCell({
       <button
         onClick={() => onRestore(seat.id)}
         title="Restore seat"
-        className="w-12 h-12 md:w-14 md:h-14 rounded-lg border-2 border-dashed border-gray-300
+        className="w-full h-full min-h-12 rounded-lg border-2 border-dashed border-gray-300
                    flex items-center justify-center text-gray-400 text-xs
                    hover:border-v-accent-dark hover:text-v-accent-dark transition-colors cursor-pointer"
       >
@@ -73,7 +72,7 @@ const SeatCell = memo(function SeatCell({
       }}
       title={`Seat ${seat.seatNumber} (${seat.type})${seat.isLadies ? ' — Ladies' : ''}${seat.isBlocked ? ' — Blocked' : ''}\nRight-click to remove`}
       className={`
-        relative w-12 h-12 md:w-14 md:h-14 rounded-lg
+        relative w-full h-full min-h-12 rounded-lg
         flex items-center justify-center
         ${bgClass} ${ringClass}
         hover:shadow-md transition-all cursor-pointer select-none
@@ -110,13 +109,25 @@ const SeatCell = memo(function SeatCell({
 /* ── Driver placeholder ── */
 export const DriverCell = memo(function DriverCell() {
   return (
-    <div className="w-12 h-12 md:w-14 md:h-14 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center">
-      <img
-        src={driverSvg}
-        alt="Driver"
-        className="w-8 h-8 md:w-10 md:h-10 object-contain opacity-50"
-        draggable={false}
-      />
+    <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="w-7 h-7 text-gray-500 opacity-70"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="m3.3 7 7 4" />
+        <path d="m13.7 11 7-4" />
+        <path d="M12 14v8" />
+        <circle cx="12" cy="12" r="2" />
+      </svg>
     </div>
   );
 });

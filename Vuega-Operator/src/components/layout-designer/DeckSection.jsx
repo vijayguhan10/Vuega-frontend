@@ -38,11 +38,11 @@ const DeckSection = memo(function DeckSection({
 
         {/* left-side spacers to push driver to the right end */}
         {Array.from({ length: leftSeats }).map((_, i) => (
-          <div key={`sp-${i}`} className="w-12 h-12 md:w-14 md:h-14" />
+          <div key={`sp-${i}`} className="w-12 h-12" />
         ))}
 
         {/* aisle spacer */}
-        <div className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center">
+        <div className="w-12 h-12 flex items-center justify-center">
           <span className="text-[10px] text-v-text-muted font-semibold uppercase tracking-wider select-none">
             Front
           </span>
@@ -53,7 +53,7 @@ const DeckSection = memo(function DeckSection({
           <>
             {/* spacers for rightSeats minus 1 (driver takes last spot) */}
             {Array.from({ length: Math.max(0, (deck[0]?.length ?? 0) - leftSeats - 1 - 1) }).map((_, i) => (
-              <div key={`dr-sp-${i}`} className="w-12 h-12 md:w-14 md:h-14" />
+              <div key={`dr-sp-${i}`} className="w-12 h-12" />
             ))}
             <DriverCell />
           </>
