@@ -180,7 +180,10 @@ const Buses = () => {
  <FaEye size={14} />
  View
  </button>
- <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium text-v-text-secondary border border-v-border hover:bg-v-secondary hover:border-v-secondary-border transition-colors">
+ <button
+ onClick={() => navigate(`/buses/${row.id}?edit=true`)}
+ className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium text-v-text-secondary border border-v-border hover:bg-v-secondary hover:border-v-secondary-border transition-colors"
+ >
  <FaPencilAlt size={14} />
  Edit
  </button>

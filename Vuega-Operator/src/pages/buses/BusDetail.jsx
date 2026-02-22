@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { FaArrowLeft, FaPencilAlt, FaShieldAlt } from "react-icons/fa";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { FaArrowLeft, FaPencilAlt, FaShieldAlt, FaSave } from "react-icons/fa";
 import StatusBadge from "../../components/ui/StatusBadge";
 import BusOverview from "./components/BusOverview";
 import BusLayoutView from "./components/BusLayoutView";
@@ -95,12 +95,15 @@ const ALL_TABS = [
 const BusDetail = () => {
  const { busId } = useParams();
  const navigate = useNavigate();
+ const [searchParams] = useSearchParams();
+ const isEditMode = searchParams.get("edit") === "true";
  const [activeTab, setActiveTab] = useState("overview");
 
  // TODO: Replace with API call — GET /api/buses/:busId
  const bus = BUSES_MAP[busId];
 
  const isApproved = bus?.status === "active" || bus?.status === "under-maintenance";
+ const isEditable = isEditMode && isApproved;
  const visibleTabs = isApproved ? ALL_TABS : ALL_TABS.filter((t) => t.key === "overview");
 
  if (!bus) {
@@ -127,7 +130,7 @@ const BusDetail = () => {
  const renderTab = () => {
  switch (activeTab) {
  case "overview":
- return <BusOverview bus={bus} />;
+ return <BusOverview bus={bus} isEditable={isEditable} />;
  case "layout":
  return <BusLayoutView bus={bus} />;
  case "trips":
@@ -163,10 +166,19 @@ const BusDetail = () => {
  </div>
  </div>
 
- <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-v-text-secondary border border-v-border hover:bg-v-secondary hover:border-v-secondary-border transition-colors">
+ {isApproved && (
+ <button
+ onClick={() => navigate(`/buses/${busId}${isEditMode ? '' : '?edit=true'}`)}
+ className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium border transition-colors ${
+ isEditMode
+ ? 'text-v-text bg-v-accent border-v-accent-border hover:bg-v-accent-hover'
+ : 'text-v-text-secondary border-v-border hover:bg-v-secondary hover:border-v-secondary-border'
+ }`}
+ >
  <FaPencilAlt size={16} />
- Edit Bus
+ {isEditMode ? 'Editing' : 'Edit Bus'}
  </button>
+ )}
  </div>
 
  {/* ── Restriction Banner (non-active buses) ── */}
@@ -207,8 +219,38 @@ const BusDetail = () => {
  </nav>
  </div>
 
+ {/* ── Edit Mode Banner ── */}
+ {isEditable && (
+ <div className="flex items-start gap-3 px-4 py-3.5 rounded-lg bg-v-accent/20 border border-v-accent-border">
+ <FaPencilAlt size={16} className="text-blue-600 flex-shrink-0 mt-0.5" />
+ <div>
+ <p className="font-semibold text-v-text">Edit Mode</p>
+ <p className="text-v-text-muted mt-0.5">
+ You can edit all bus details except the bus number.
+ </p>
+ </div>
+ </div>
+ )}
+
  {/* ── Tab Content ── */}
  <div>{renderTab()}</div>
+
+ {/* ── Save Button ── */}
+ {isEditable && (
+ <div className="flex justify-end">
+ <button
+ onClick={() => {
+ // TODO: Save changes via API
+ alert('Changes saved successfully!');
+ navigate(`/buses/${busId}`);
+ }}
+ className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg font-semibold bg-v-accent hover:bg-v-accent-hover text-v-text border border-v-accent-border transition-colors shadow-sm"
+ >
+ <FaSave size={16} />
+ Save Changes
+ </button>
+ </div>
+ )}
  </div>
  );
 };

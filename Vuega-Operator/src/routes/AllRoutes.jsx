@@ -11,7 +11,6 @@ import CreateLayoutTemplate from '../pages/layout-templates/CreateLayoutTemplate
 
 // Routes module
 import RoutesList from '../pages/routes/RoutesList'
-import CreateRoute from '../pages/routes/CreateRoute'
 import RouteDetail from '../pages/routes/RouteDetail'
 
 // Placeholder for pages we'll build
@@ -37,7 +36,6 @@ const AllRoutes = () => {
  <Route path='/buses' element={<Buses />} />
  <Route path='/buses/:busId' element={<BusDetail />} />
  <Route path='/routes' element={<RoutesList />} />
- <Route path='/routes/create' element={<CreateRoute />} />
  <Route path='/routes/:routeId' element={<RouteDetail />} />
  <Route path='/trips' element={<TripSchedule />} />
  <Route path='/maintenance' element={<ComingSoon title="Maintenance" />} />

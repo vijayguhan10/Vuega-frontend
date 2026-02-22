@@ -26,6 +26,13 @@ const statusConfig = {
  text: "text-v-critical",
  border: "border-v-critical-border",
  },
+ approved: {
+ label: "Approved",
+ dot: "bg-blue-500",
+ bg: "bg-blue-50",
+ text: "text-blue-700",
+ border: "border-blue-200",
+ },
  "under-maintenance": {
  label: "Under Maintenance",
  dot: "bg-orange-500",
