@@ -19,18 +19,18 @@ import CompanyDetailDrawer from './components/CompanyDetailDrawer'
 // ═══════════════════════════════════════════════════════════════
 
 // ═══════════════════════════════════════════════════════════════
-//  BACKEND INTEGRATION ENDPOINTS (placeholder comments)
+//  CLOUD CONTROL PLANE API ENDPOINTS (placeholders)
 // ═══════════════════════════════════════════════════════════════
-// GET    /api/companies
-//          → Returns paginated list of companies with status, metrics
+// GET    /api/control-plane/companies
+//          → Returns paginated list of tenant companies with status, metrics
 //          → Query params: ?search=, ?status=, ?page=, ?limit=
-// GET    /api/companies/:id/details
-//          → Returns full company detail (buses, trips, employees, KYC, logs)
-// PATCH  /api/companies/:id/status
+// GET    /api/control-plane/companies/{id}
+//          → Returns full company (tenant) detail (buses, trips, employees, KYC, logs)
+// PATCH  /api/control-plane/companies/{id}/lifecycle
 //          → Body: { status: 'Active' | 'Rejected' | 'Suspended', remarks? }
 //          → Enforces lifecycle governance server-side
-//          → Audit log: action = COMPANY_STATUS_CHANGED
-// PATCH  /api/companies/:id/kyc
+//          → Audit log: action = COMPANY_LIFECYCLE_CHANGED
+// PATCH  /api/control-plane/companies/{id}/kyc
 //          → Body: { documentId, action: 'verify' | 'reject' }
 //          → Audit log: action = KYC_VERIFIED | KYC_REJECTED
 // ═══════════════════════════════════════════════════════════════
@@ -62,16 +62,16 @@ import CompanyDetailDrawer from './components/CompanyDetailDrawer'
 // TODO: Replace with:
 //   useEffect(() => {
 //     const fetchCompanies = async () => {
-//       const res = await fetch('/api/companies', {
+//       const res = await fetch('/api/control-plane/companies', {
 //         headers: { Authorization: `Bearer ${token}` }
 //       });
 //       const data = await res.json();
-//       setCompanies(data);
+//       setControlPlaneCompanies(data);
 //     };
 //     fetchCompanies();
 //   }, []);
 
-const initialCompanies = [
+const initialTenantCompanies = [
   {
     id: 'C-101',
     name: 'SRS Travels Pvt Ltd',
@@ -224,7 +224,8 @@ const filterOptions = [
 
 const CompanyManagement = () => {
   // --- State ---
-  const [companies, setCompanies] = useState(initialCompanies)
+  // Companies represent tenant operators in the Operator Plane
+  const [controlPlaneCompanies, setControlPlaneCompanies] = useState(initialTenantCompanies)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [filterDropdownOpen, setFilterDropdownOpen] = useState(false)
@@ -239,11 +240,11 @@ const CompanyManagement = () => {
   const [drawerInitialTab, setDrawerInitialTab] = useState('overview')
 
   // Governance summary (memoized)
-  const govSummary = useMemo(() => computeGovernanceSummary(companies), [companies])
+  const govSummary = useMemo(() => computeGovernanceSummary(controlPlaneCompanies), [controlPlaneCompanies])
 
   // --- Filtering logic ---
   const filteredCompanies = useMemo(() => {
-    let result = companies
+    let result = controlPlaneCompanies
 
     // Status filter
     if (statusFilter !== 'all') {
@@ -262,7 +263,7 @@ const CompanyManagement = () => {
     }
 
     return result
-  }, [companies, statusFilter, searchQuery])
+  }, [controlPlaneCompanies, statusFilter, searchQuery])
 
   // --- Action handler from dropdown ---
   const handleAction = (company, action) => {
@@ -288,10 +289,10 @@ const CompanyManagement = () => {
     }
   }
 
-  // --- Status change handler (simulated) ---
-  // TODO: Replace with updateCompanyStatus(id, status)
-  //   const updateCompanyStatus = async (id, status, remarks) => {
-  //     await fetch(`/api/companies/${id}/status`, {
+  // --- Lifecycle status change handler (simulated) ---
+  // TODO: Replace with updateCompanyLifecycleStatus(id, status)
+  //   const updateCompanyLifecycleStatus = async (id, status, remarks) => {
+  //     await fetch(`/api/control-plane/companies/${id}/lifecycle`, {
   //       method: 'PATCH',
   //       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
   //       body: JSON.stringify({ status, remarks }),
@@ -300,6 +301,11 @@ const CompanyManagement = () => {
   const handleConfirmAction = (remarks) => {
     if (!selectedCompany || !modalAction) return
 
+    // Status transitions — tenant service impact:
+    // Approve     → activates tenant environment
+    // Suspend     → disables operator access
+    // Reactivate  → restores tenant access
+    // Reject      → keeps tenant inactive and isolated
     const statusMap = {
       approve: 'Active',
       reject: 'Rejected',
@@ -309,7 +315,7 @@ const CompanyManagement = () => {
 
     const newStatus = statusMap[modalAction]
 
-    setCompanies((prev) =>
+    setControlPlaneCompanies((prev) =>
       prev.map((c) =>
         c.id === selectedCompany.id
           ? { ...c, status: newStatus }
@@ -534,7 +540,7 @@ const CompanyManagement = () => {
         {/* Footer */}
         <div className="px-6 py-3 border-t border-border bg-white flex justify-between items-center">
           <span className="text-xs text-text-muted">
-            Showing {filteredCompanies.length} of {companies.length} companies
+            Showing {filteredCompanies.length} of {controlPlaneCompanies.length} companies
           </span>
           <div className="flex items-center gap-2 text-[10px] text-text-muted">
             <FaShieldAlt className="w-3 h-3" />
