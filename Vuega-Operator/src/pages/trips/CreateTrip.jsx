@@ -1,0 +1,283 @@
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaArrowLeft, FaRocket, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import TripForm from './components/TripForm';
+import SeatPricingPanel from './components/SeatPricingPanel';
+import SeatCell from './components/SeatCell';
+import {
+  availableRoutes,
+  availableBuses,
+  getLayoutSeats,
+  buildTripSeats,
+  generateTripId,
+} from './data/dummyTrips';
+
+const CreateTrip = () => {
+  const navigate = useNavigate();
+
+  /* ── Form state ── */
+  const [form, setForm] = useState({
+    routeId: '',
+    busId: '',
+    departureDate: '',
+    departureTime: '',
+    arrivalTime: '',
+  });
+
+  const [pricing, setPricing] = useState({
+    seater: 0,
+    sleeper: 0,
+    'semi-sleeper': 0,
+  });
+
+  const [tripSeats, setTripSeats] = useState([]);
+  const [selectedSeatId, setSelectedSeatId] = useState(null);
+  const [showSeatMap, setShowSeatMap] = useState(false);
+
+  /* ── Derived data ── */
+  const selectedRoute = availableRoutes.find((r) => r.id === form.routeId);
+  const selectedBus = availableBuses.find((b) => b.id === form.busId);
+
+  const isValid =
+    form.routeId &&
+    form.busId &&
+    form.departureDate &&
+    form.departureTime &&
+    form.arrivalTime &&
+    selectedBus?.layoutTemplateId &&
+    selectedBus?.status === 'active';
+
+  /* ── When bus changes, load layout seats ── */
+  const handleFormChange = (newForm) => {
+    setForm(newForm);
+
+    if (newForm.busId !== form.busId) {
+      const bus = availableBuses.find((b) => b.id === newForm.busId);
+      if (bus?.layoutTemplateId) {
+        const layout = getLayoutSeats(bus.layoutTemplateId);
+        const seats = buildTripSeats(layout, pricing);
+        setTripSeats(seats);
+        setSelectedSeatId(null);
+        setShowSeatMap(true);
+      } else {
+        setTripSeats([]);
+        setShowSeatMap(false);
+      }
+    }
+  };
+
+  /* ── Pricing change → recalculate all non-overridden seats ── */
+  const handlePricingChange = (newPricing) => {
+    setPricing(newPricing);
+    setTripSeats((prev) =>
+      prev.map((s) => {
+        const newBase = newPricing[s.type] || 0;
+        return {
+          ...s,
+          basePrice: newBase,
+          finalPrice: s.customPrice !== null ? s.customPrice : newBase,
+        };
+      })
+    );
+  };
+
+  /* ── Custom price override ── */
+  const handleCustomPriceSet = (seatId, price) => {
+    setTripSeats((prev) =>
+      prev.map((s) => {
+        if (s.id !== seatId) return s;
+        if (price === null) {
+          return { ...s, customPrice: null, finalPrice: s.basePrice };
+        }
+        return { ...s, customPrice: price, finalPrice: price };
+      })
+    );
+  };
+
+  const selectedSeat = tripSeats.find((s) => s.id === selectedSeatId) || null;
+
+  /* ── Build seat grid from flat array ── */
+  const seatGrid = useMemo(() => {
+    if (tripSeats.length === 0) return { rows: 0, cols: 0, grid: [] };
+    const maxRow = Math.max(...tripSeats.map((s) => s.row));
+    const maxCol = Math.max(...tripSeats.map((s) => s.col));
+    const grid = [];
+    for (let r = 0; r <= maxRow; r++) {
+      const row = [];
+      for (let c = 0; c <= maxCol; c++) {
+        row.push(tripSeats.find((s) => s.row === r && s.col === c) || null);
+      }
+      grid.push(row);
+    }
+    return { rows: maxRow + 1, cols: maxCol + 1, grid };
+  }, [tripSeats]);
+
+  /* ── Create Trip ── */
+  const handleCreate = () => {
+    const route = selectedRoute;
+    const tripObject = {
+      id: generateTripId(),
+      routeId: form.routeId,
+      route: `${route.fromCity} → ${route.toCity}`,
+      busId: form.busId,
+      busNumber: selectedBus.busNumber,
+      layoutTemplateId: selectedBus.layoutTemplateId,
+      departureDate: form.departureDate,
+      departureTime: form.departureTime,
+      arrivalTime: form.arrivalTime,
+      status: 'scheduled',
+      occupancy: 0,
+      totalSeats: tripSeats.length,
+      bookedSeats: 0,
+      pricing: { ...pricing },
+      tripSeats: tripSeats.map((s) => ({ ...s })),
+    };
+
+    console.log('═══════════════════════════════════════');
+    console.log('TRIP CREATED (Frontend Simulation)');
+    console.log('═══════════════════════════════════════');
+    console.log(JSON.stringify(tripObject, null, 2));
+    console.log('═══════════════════════════════════════');
+
+    alert('Trip created successfully! Check console for the full trip object.');
+    navigate('/trips');
+  };
+
+  return (
+    <div className="max-w-[1360px] mx-auto flex flex-col gap-6">
+      {/* ── Header ── */}
+      <div className="flex items-center gap-4">
+        <button
+          onClick={() => navigate('/trips')}
+          className="p-2 rounded-lg border border-v-border hover:bg-v-secondary transition-colors text-v-text-muted"
+        >
+          <FaArrowLeft size={18} />
+        </button>
+        <div>
+          <h2 className="text-v-text font-bold tracking-tight">Create Trip</h2>
+          <p className="text-v-text-muted mt-0.5">
+            Assign a route, bus, and set pricing for a new trip.
+          </p>
+        </div>
+      </div>
+
+      {/* ── Section A: Basic Info ── */}
+      <TripForm form={form} onChange={handleFormChange} selectedBus={selectedBus} />
+
+      {/* ── Section B: Pricing + Seat Map ── */}
+      {tripSeats.length > 0 && (
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Pricing Panel (left) */}
+            <div className="lg:col-span-1">
+              <SeatPricingPanel
+                pricing={pricing}
+                onPricingChange={handlePricingChange}
+                selectedSeat={selectedSeat}
+                onCustomPriceSet={handleCustomPriceSet}
+                tripSeats={tripSeats}
+              />
+            </div>
+
+            {/* Seat Map Preview (right) */}
+            <div className="lg:col-span-2">
+              <div className="bg-v-primary-bg border border-v-border rounded-xl shadow-sm overflow-hidden">
+                <button
+                  onClick={() => setShowSeatMap(!showSeatMap)}
+                  className="w-full flex items-center justify-between px-5 py-4 hover:bg-v-secondary/20 transition-colors"
+                >
+                  <h3 className="font-semibold text-v-text">
+                    Seat Map Preview ({tripSeats.length} seats)
+                  </h3>
+                  {showSeatMap ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
+                </button>
+
+                {showSeatMap && (
+                  <div className="px-5 pb-5">
+                    <p className="text-v-text-muted mb-4">
+                      Click a seat to select it and override its price in the panel.
+                    </p>
+
+                    {/* Legend */}
+                    <div className="flex flex-wrap gap-4 mb-4">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-4 h-4 rounded bg-v-secondary border border-v-secondary-border" />
+                        <span className="text-v-text-muted">Available</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-4 h-4 rounded bg-green-100 border border-green-300" />
+                        <span className="text-v-text-muted">Booked</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-4 h-4 rounded bg-gray-200 border border-gray-400" />
+                        <span className="text-v-text-muted">Blocked</span>
+                      </div>
+                    </div>
+
+                    {/* Grid */}
+                    <div className="overflow-x-auto">
+                      <div
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: `repeat(${seatGrid.cols}, 3.5rem)`,
+                          gridTemplateRows: `repeat(${seatGrid.rows}, 3.5rem)`,
+                          gap: '6px',
+                        }}
+                      >
+                        {seatGrid.grid.flatMap((row, rowIdx) =>
+                          row.map((seat, colIdx) => (
+                            <div
+                              key={`${rowIdx}-${colIdx}`}
+                              style={{
+                                gridRow: rowIdx + 1,
+                                gridColumn: colIdx + 1,
+                              }}
+                            >
+                              {seat ? (
+                                <SeatCell
+                                  seat={seat}
+                                  isSelected={seat.id === selectedSeatId}
+                                  onSelect={setSelectedSeatId}
+                                />
+                              ) : (
+                                <div className="w-full h-full" />
+                              )}
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Create Button ── */}
+      <div className="flex items-center justify-end gap-3 pt-2">
+        <button
+          onClick={() => navigate('/trips')}
+          className="px-5 py-2.5 rounded-lg font-medium text-v-text-secondary border border-v-border hover:bg-v-secondary transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleCreate}
+          disabled={!isValid}
+          className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-lg font-semibold border transition-colors shadow-sm ${
+            isValid
+              ? 'bg-v-accent hover:bg-v-accent-hover text-v-text border-v-accent-border'
+              : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+          }`}
+        >
+          <FaRocket size={16} />
+          Create Trip
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default CreateTrip;

@@ -68,12 +68,26 @@ const statusConfig = {
  text: "text-gray-700",
  border: "border-gray-200",
  },
+ ongoing: {
+ label: "Ongoing",
+ dot: "bg-blue-500",
+ bg: "bg-blue-50",
+ text: "text-blue-700",
+ border: "border-blue-200",
+ },
  completed: {
  label: "Completed",
  dot: "bg-green-500",
  bg: "bg-green-50",
  text: "text-green-700",
  border: "border-green-200",
+ },
+ cancelled: {
+ label: "Cancelled",
+ dot: "bg-v-critical",
+ bg: "bg-v-critical-light",
+ text: "text-v-critical",
+ border: "border-v-critical-border",
  },
  pending: {
  label: "Pending",
