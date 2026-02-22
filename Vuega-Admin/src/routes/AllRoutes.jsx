@@ -5,6 +5,7 @@ import LoginSignup from '../components/Auth/LoginSignup'
 import Dashboard from '../pages/Dashboard/Dashboard'
 import BusApprovals from '../pages/BusApprovals/BusApprovals'
 import CompanyManagement from '../pages/Companies/CompanyManagement'
+import PlatformAnalytics from '../pages/Analytics/PlatformAnalytics'
 
 const AllRoutes = () => {
     return (
@@ -17,7 +18,7 @@ const AllRoutes = () => {
                 <Route path='/dashboard' element={<Dashboard />} />
                 <Route path='/companies' element={<CompanyManagement />} />
                 <Route path='/bus-approvals' element={<BusApprovals />} />
-                <Route path='/analytics' element={<div className="text-slate-500 text-sm">Analytics page — coming soon</div>} />
+                <Route path='/analytics' element={<PlatformAnalytics />} />
             </Route>
 
             {/* Catch-all */}
