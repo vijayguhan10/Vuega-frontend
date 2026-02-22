@@ -7,7 +7,7 @@ const AdminLayout = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (
-        <div className="flex h-screen w-full overflow-hidden bg-white">
+        <div className="flex h-screen w-full overflow-hidden bg-primary">
             {/* Sidebar */}
             <SideBar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 

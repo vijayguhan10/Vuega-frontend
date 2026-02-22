@@ -11,10 +11,6 @@ import {
 // ═══════════════════════════════════════════════════════════════
 //  COMPLIANCE STATUS DISTRIBUTION — Donut Chart
 // ═══════════════════════════════════════════════════════════════
-// Shows how operators are distributed across compliance states:
-// Verified, Expiring Soon, and Expired — aggregated across all
-// tenants from the Control Plane compliance monitoring service.
-//
 // API Placeholder:
 // GET /api/control-plane/analytics/compliance-distribution
 //     → Returns compliance status breakdown across operators

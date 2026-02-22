@@ -14,9 +14,6 @@ import {
 // ═══════════════════════════════════════════════════════════════
 //  APPROVAL VS REJECTION TREND — BarChart
 // ═══════════════════════════════════════════════════════════════
-// Reflects governance-level bus/company approval and rejection
-// trends over time, aggregated across all tenant operators from
-// the Control Plane analytics service.
 //
 // API Placeholder:
 // GET /api/control-plane/analytics/approval-trend
