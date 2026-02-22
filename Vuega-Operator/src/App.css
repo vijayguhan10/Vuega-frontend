@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "tailwindcss";
 
 /* ═══════════════════════════════════════════════
    VUEGA DESIGN SYSTEM — Global Color Tokens
@@ -85,7 +84,6 @@ body {
   border: 1px solid var(--color-border);
   background-color: var(--color-primary-bg);
   color: var(--color-text-primary);
-  font-size: 0.8125rem;
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
 }

@@ -5,9 +5,11 @@ import AllRoutes from './routes/AllRoutes'
 
 function App() {
   return (
-    <BrowserRouter>
+    <div>
+      <BrowserRouter>
       <AllRoutes />
     </BrowserRouter>
+    </div>
   )
 }
 

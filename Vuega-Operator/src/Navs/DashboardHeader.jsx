@@ -2,76 +2,76 @@ import { FaSearch, FaBell, FaChevronDown, FaUserCircle, FaBars } from "react-ico
 import { useLocation } from "react-router-dom";
 
 const pageTitles = {
-  "/dashboard": "Dashboard",
-  "/buses": "Buses",
-  "/routes": "Routes",
-  "/trips": "Trips",
-  "/maintenance": "Maintenance",
-  "/layout-designer": "Layout Designer",
+ "/dashboard": "Dashboard",
+ "/buses": "Buses",
+ "/routes": "Routes",
+ "/trips": "Trips",
+ "/maintenance": "Maintenance",
+ "/layout-designer": "Layout Designer",
 };
 
 const DashboardHeader = ({ onMenuClick }) => {
-  const location = useLocation();
+ const location = useLocation();
 
-  // Match exact path first, then check prefix for dynamic routes
-  const currentTitle =
-    pageTitles[location.pathname] ||
-    (location.pathname.startsWith("/buses/") ? "Bus Details" : "Dashboard");
+ // Match exact path first, then check prefix for dynamic routes
+ const currentTitle =
+ pageTitles[location.pathname] ||
+ (location.pathname.startsWith("/buses/") ? "Bus Details" : "Dashboard");
 
-  return (
-    <header className="flex items-center justify-between px-6 py-3 w-full bg-v-primary-bg border-b border-v-border shrink-0">
-      {/* Left: Mobile menu + Page title */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={onMenuClick}
-          className="p-1.5 rounded-lg hover:bg-v-secondary text-v-text-muted sm:hidden"
-        >
-          <FaBars className="w-5 h-5" />
-        </button>
-        <div>
-          <h1 className="text-lg font-bold text-v-text">{currentTitle}</h1>
-          <p className="text-xs text-v-text-muted hidden sm:block">
-            Technical Operator Panel
-          </p>
-        </div>
-      </div>
+ return (
+ <header className="flex items-center justify-between px-6 py-3 w-full bg-v-primary-bg border-b border-v-border shrink-0">
+ {/* Left: Mobile menu + Page title */}
+ <div className="flex items-center gap-3">
+ <button
+ onClick={onMenuClick}
+ className="p-1.5 rounded-lg hover:bg-v-secondary text-v-text-muted sm:hidden"
+ >
+ <FaBars className="w-5 h-5" />
+ </button>
+ <div>
+ <h1 className=" font-bold text-v-text">{currentTitle}</h1>
+ <p className=" text-v-text-muted hidden sm:block">
+ Technical Operator Panel
+ </p>
+ </div>
+ </div>
 
-      {/* Center: Search */}
-      <div className="hidden md:flex relative max-w-sm w-full mx-6">
-        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <FaSearch className="w-4 h-4 text-v-text-muted" />
-        </div>
-        <input
-          type="text"
-          placeholder="Search buses, routes, trips..."
-          className="w-full py-2 pl-10 pr-4 text-sm text-v-text bg-v-secondary border border-v-border rounded-lg placeholder-v-text-placeholder focus:ring-2 focus:ring-v-accent/50 focus:border-v-accent-border focus:bg-v-primary-bg outline-none transition-all"
-        />
-      </div>
+ {/* Center: Search */}
+ <div className="hidden md:flex relative max-w-sm w-full mx-6">
+ <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+ <FaSearch className="w-4 h-4 text-v-text-muted" />
+ </div>
+ <input
+ type="text"
+ placeholder="Search buses, routes, trips..."
+ className="w-full py-2 pl-10 pr-4 text-v-text bg-v-secondary border border-v-border rounded-lg placeholder-v-text-placeholder focus:ring-2 focus:ring-v-accent/50 focus:border-v-accent-border focus:bg-v-primary-bg outline-none transition-all"
+ />
+ </div>
 
-      {/* Right: Notifications + Profile */}
-      <div className="flex items-center gap-3">
-        <button className="relative p-2 text-v-text-muted rounded-lg hover:bg-v-secondary transition-colors">
-          <FaBell className="w-5 h-5" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-v-critical rounded-full border-2 border-white" />
-        </button>
+ {/* Right: Notifications + Profile */}
+ <div className="flex items-center gap-3">
+ <button className="relative p-2 text-v-text-muted rounded-lg hover:bg-v-secondary transition-colors">
+ <FaBell className="w-5 h-5" />
+ <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-v-critical rounded-full border-2 border-white" />
+ </button>
 
-        <div className="h-6 w-px bg-v-border" />
+ <div className="h-6 w-px bg-v-border" />
 
-        <button className="flex items-center gap-2">
-          <div className="flex items-center justify-center w-8 h-8 bg-v-accent rounded-full">
-            <FaUserCircle className="w-4 h-4 text-v-text" />
-          </div>
-          <div className="hidden sm:flex flex-col items-start">
-            <span className="text-sm font-semibold text-v-text">Operator</span>
-            <span className="text-[11px] text-v-text-muted leading-tight">
-              Technical Ops
-            </span>
-          </div>
-          <FaChevronDown className="w-3 h-3 text-v-text-muted hidden sm:block" />
-        </button>
-      </div>
-    </header>
-  );
+ <button className="flex items-center gap-2">
+ <div className="flex items-center justify-center w-8 h-8 bg-v-accent rounded-full">
+ <FaUserCircle className="w-4 h-4 text-v-text" />
+ </div>
+ <div className="hidden sm:flex flex-col items-start">
+ <span className=" font-semibold text-v-text">Operator</span>
+ <span className=" text-v-text-muted leading-tight">
+ Technical Ops
+ </span>
+ </div>
+ <FaChevronDown className="w-3 h-3 text-v-text-muted hidden sm:block" />
+ </button>
+ </div>
+ </header>
+ );
 };
 
 export default DashboardHeader;

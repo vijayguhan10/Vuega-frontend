@@ -1,1 +1,30 @@
 @import "tailwindcss";
+
+/* ═══════════════════════════════════════════════
+   Global Base Tag Sizes — single source of truth.
+   No individual text-size classes in components.
+   ═══════════════════════════════════════════════ */
+
+@layer base {
+  /* Headings */
+  h1 { @apply text-4xl font-bold; }
+  h2 { @apply text-3xl font-semibold; }
+  h3 { @apply text-2xl font-semibold; }
+
+  /* Content */
+  p  { @apply text-xl; }
+  span { @apply text-xl; }
+
+  /* Tables */
+  th { @apply text-xl font-semibold; }
+  td { @apply text-xl; }
+
+  /* Forms */
+  label { @apply text-lg font-medium; }
+  input, select, textarea { @apply text-lg; }
+  button { @apply text-lg font-medium; }
+  a { @apply text-lg underline; }
+
+  /* Div used for text display */
+  .text-display { @apply text-xl; }
+}
