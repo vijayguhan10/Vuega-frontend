@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Table from '../../components/Common/Table'
 import {
   FaBuilding,
@@ -12,8 +13,7 @@ import {
   FaClipboardList,
   FaArrowUp,
   FaArrowDown,
-  FaChartBar,
-  FaArrowRight,
+  FaEye,
 } from 'react-icons/fa'
 
 import GovernanceHealthPanel from './components/GovernanceHealthPanel'
@@ -22,63 +22,6 @@ import EntitlementOverview from './components/EntitlementOverview'
 import ApprovalGovernanceMetrics from './components/ApprovalGovernanceMetrics'
 import RiskViolationPanel from './components/RiskViolationPanel'
 import AuditEnforcementSummary from './components/AuditEnforcementSummary'
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Cell,
-  LineChart,
-  Line,
-} from 'recharts'
-
-// ═══════════════════════════════════════════════════════════════
-//  MOCK DATA — Will be replaced by API calls via useEffect
-// ═══════════════════════════════════════════════════════════════
-
-// Chart 1: Operator Compliance Score Comparison
-const complianceScoreData = [
-  { name: 'SRS', score: 94 },
-  { name: 'KPN', score: 87 },
-  { name: 'VRL', score: 52 },
-  { name: 'Orange', score: 91 },
-  { name: 'Neeta', score: 78 },
-]
-
-// Chart 2: Approval vs Rejection Trend
-const approvalTrendData = [
-  { month: 'Sep', approved: 18, rejected: 3 },
-  { month: 'Oct', approved: 22, rejected: 5 },
-  { month: 'Nov', approved: 15, rejected: 2 },
-  { month: 'Dec', approved: 28, rejected: 4 },
-  { month: 'Jan', approved: 20, rejected: 6 },
-  { month: 'Feb', approved: 24, rejected: 3 },
-]
-
-// Chart 3: Entitlement Utilization Distribution
-const entitlementDistData = [
-  { name: 'SRS', buses: 14, routes: 22, api: 85 },
-  { name: 'KPN', buses: 8, routes: 12, api: 42 },
-  { name: 'VRL', buses: 20, routes: 30, api: 98 },
-  { name: 'Orange', buses: 5, routes: 8, api: 21 },
-  { name: 'Neeta', buses: 7, routes: 14, api: 55 },
-]
-
-// Chart 4: Platform Revenue Trend
-const revenueData = [
-  { date: 'Mon', amount: 4000 },
-  { date: 'Tue', amount: 3000 },
-  { date: 'Wed', amount: 5000 },
-  { date: 'Thu', amount: 2780 },
-  { date: 'Fri', amount: 6890 },
-  { date: 'Sat', amount: 8390 },
-  { date: 'Sun', amount: 7490 },
-]
-
 
 // ═══════════════════════════════════════════════════════════════
 //  MOCK DATA — Will be replaced by API calls via useEffect
@@ -251,6 +194,7 @@ const Dashboard = () => {
   // const [loading, setLoading] = useState(true);
   // const [error, setError] = useState(null);
 
+  const navigate = useNavigate()
   const [activeRequestTab, setActiveRequestTab] = useState('all')
 
   // Filter logic separated from JSX for performance
@@ -337,7 +281,9 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <GovernanceHealthPanel />
           <LicenseComplianceWidget />
-          <ApprovalGovernanceMetrics />
+          <div className="min-h-[120px]">
+            <ApprovalGovernanceMetrics />
+          </div>
           <RiskViolationPanel />
         </div>
       </div>
@@ -427,16 +373,27 @@ const Dashboard = () => {
               ),
             },
             {
-              header: 'Action',
+              header: () => <span className="block text-center">Action</span>,
               id: 'actions',
-              cell: () => (
-                <div className="text-right">
-                  <button className="inline-flex items-center gap-1 text-xs font-medium text-text-muted hover:text-text transition-colors">
-                    View
-                    <FaArrowRight size={12} />
-                  </button>
-                </div>
-              ),
+              cell: (info) => {
+                const row = info.row.original
+                const path =
+                  row.requestType === 'Bus Approval'
+                    ? `/bus-approvals?company=${encodeURIComponent(row.companyName)}`
+                    : `/companies?company=${encodeURIComponent(row.companyName)}`
+                return (
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => navigate(path)}
+                      title="View details"
+                      className="inline-flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg text-text-muted hover:text-text hover:bg-border/40 transition-colors"
+                    >
+                      <FaEye size={15} />
+                      <span className="text-[10px] font-medium leading-none">View</span>
+                    </button>
+                  </div>
+                )
+              },
             },
           ]}
         />
@@ -449,143 +406,6 @@ const Dashboard = () => {
           <button className="text-xs font-semibold text-text hover:underline">
             View All Requests
           </button>
-        </div>
-      </div>
-
-      {/* ══════════════════════════════════════════════════════════
-           SECTION 5 — Governance Analytics
-           ══════════════════════════════════════════════════════════ */}
-      {/* Backend: GET /api/control-plane/analytics/overview */}
-      <div>
-        <h2 className="text-lg font-bold text-text mb-4">
-          Governance Analytics
-        </h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          {/* Chart 1: Operator Compliance Score Comparison (Bar Chart) */}
-          <div className="bg-primary rounded-xl border border-border shadow-sm p-6 flex flex-col">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 rounded-lg bg-secondary">
-                <FaChartBar size={18} className="text-text" />
-              </div>
-              <h3 className="text-sm font-bold text-text">
-                Operator Compliance Score Comparison
-              </h3>
-            </div>
-            <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={complianceScoreData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                  <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis fontSize={12} tickLine={false} axisLine={false} domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid #E5E7EB' }}
-                    formatter={(value) => [`${value}%`, 'Compliance']}
-                  />
-                  <Bar
-                    dataKey="score"
-                    name="Compliance Score"
-                    radius={[4, 4, 0, 0]}
-                  >
-                    {complianceScoreData.map((entry, idx) => (
-                      <Cell
-                        key={idx}
-                        fill={entry.score < 60 ? '#960000' : entry.score < 80 ? '#C6EDFF' : '#000000'}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Chart 2: Approval vs Rejection Trend (Line Chart) */}
-          <div className="bg-primary rounded-xl border border-border shadow-sm p-6 flex flex-col">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 rounded-lg bg-secondary">
-                <FaChartBar size={18} className="text-text" />
-              </div>
-              <h3 className="text-sm font-bold text-text">
-                Approval vs Rejection Trend
-              </h3>
-            </div>
-            <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={approvalTrendData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                  <XAxis dataKey="month" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis fontSize={12} tickLine={false} axisLine={false} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid #E5E7EB' }}
-                  />
-                  <Legend wrapperStyle={{ paddingTop: '12px' }} />
-                  <Line type="monotone" dataKey="approved" name="Approved" stroke="#000000" strokeWidth={2.5} dot={{ fill: '#000000', r: 3 }} />
-                  <Line type="monotone" dataKey="rejected" name="Rejected" stroke="#960000" strokeWidth={2.5} dot={{ fill: '#960000', r: 3 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Chart 3: Entitlement Utilization Distribution (Stacked Bar) */}
-          <div className="bg-primary rounded-xl border border-border shadow-sm p-6 flex flex-col">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 rounded-lg bg-secondary">
-                <FaBus size={18} className="text-text" />
-              </div>
-              <h3 className="text-sm font-bold text-text">
-                Entitlement Utilization Distribution
-              </h3>
-            </div>
-            <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={entitlementDistData} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" horizontal={false} />
-                  <XAxis type="number" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis type="category" dataKey="name" fontSize={12} tickLine={false} axisLine={false} width={60} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid #E5E7EB' }}
-                  />
-                  <Legend wrapperStyle={{ paddingTop: '12px' }} />
-                  <Bar dataKey="buses" name="Buses" stackId="a" fill="#000000" radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="routes" name="Routes" stackId="a" fill="#C6EDFF" radius={[0, 0, 0, 0]} />
-                  <Bar dataKey="api" name="API Quota %" stackId="a" fill="#FFFADF" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Chart 4: Platform Revenue Trend — Governance Impact View (Line Chart) */}
-          <div className="bg-primary rounded-xl border border-border shadow-sm p-6 flex flex-col">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 rounded-lg bg-secondary">
-                <FaArrowUp size={18} className="text-text" />
-              </div>
-              <h3 className="text-sm font-bold text-text">
-                Platform Revenue Trend (Governance Impact View)
-              </h3>
-            </div>
-            <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={revenueData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                  <XAxis dataKey="date" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid #E5E7EB' }}
-                  />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="amount"
-                    name="Revenue"
-                    stroke="#000000"
-                    strokeWidth={3}
-                    dot={{ fill: '#000000', r: 4 }}
-                    activeDot={{ r: 8 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
         </div>
       </div>
 

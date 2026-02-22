@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Search, History, ShieldCheck, Key, AlertTriangle } from 'lucide-react'
 import { FaShieldAlt } from 'react-icons/fa'
 import FilterTabs from './components/FilterTabs'
@@ -259,9 +260,16 @@ const filterTabs = [
 
 const BusApprovals = () => {
   // --- State ---
+  const [searchParams] = useSearchParams()
   const [requests, setRequests] = useState(initialRequests)
   const [activeTab, setActiveTab] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
+
+  // Pre-fill search from Dashboard "View" navigation (?company=Name)
+  useEffect(() => {
+    const company = searchParams.get('company')
+    if (company) setSearchQuery(company)
+  }, [searchParams])
 
   // Modal state
   const [approveModalOpen, setApproveModalOpen] = useState(false)

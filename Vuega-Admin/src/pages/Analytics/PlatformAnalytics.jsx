@@ -1,16 +1,6 @@
-import React, { useState, useMemo } from 'react'
-import {
-  FaBuilding,
-  FaCheckCircle,
-  FaBan,
-  FaBus,
-  FaMapMarkerAlt,
-  FaRupeeSign,
-  FaArrowUp,
-  FaArrowDown,
-  FaShieldAlt,
-} from 'react-icons/fa'
-import { ChevronDown, Building2, ShieldCheck } from 'lucide-react'
+import React, { useState, useMemo, useEffect, useRef } from 'react'
+import { FaShieldAlt } from 'react-icons/fa'
+import { ChevronDown, Building2, TrendingUp, Route, Bus, IndianRupee } from 'lucide-react'
 import CompanyPerformanceChart from './components/CompanyPerformanceChart'
 import RouteDistributionChart from './components/RouteDistributionChart'
 import TripStatisticsChart from './components/TripStatisticsChart'
@@ -28,9 +18,6 @@ import RevenueOverviewChart from './components/RevenueOverviewChart'
 // ═══════════════════════════════════════════════════════════════
 //  CLOUD CONTROL PLANE API ENDPOINTS (placeholders)
 // ═══════════════════════════════════════════════════════════════
-// GET  /api/control-plane/analytics/platform-summary
-//        → Returns aggregated KPI metrics across all tenants
-//        → Query params: ?dateRange=today|7d|30d|custom&startDate=&endDate=
 // GET  /api/control-plane/analytics/company-performance
 //        → Returns top operator performance comparison data
 //        → Query params: ?dateRange=, ?limit=, ?companyId=
@@ -47,40 +34,16 @@ import RevenueOverviewChart from './components/RevenueOverviewChart'
 
 /**
  * @typedef {Object} PlatformAnalytics
- * @property {Object}  kpis                    — Aggregated KPI metrics
  * @property {Array}   companyPerformance      — Top operator comparison data
  * @property {Array}   routeDistribution       — Route category breakdown
- * @property {Array}   tripStats               — Trip trend over time (Stage 2)
- * @property {Array}   revenueTrend            — Revenue trend over time (Stage 2)
- * @property {Array}   approvalTrend           — Approval/rejection trend (Stage 3)
- * @property {Array}   entitlementDistribution — Entitlement utilization (Stage 3)
- * @property {Array}   complianceDistribution  — Compliance status breakdown (Stage 3)
+ * @property {Array}   tripStats               — Trip trend over time
+ * @property {Array}   revenueTrend            — Revenue trend over time
  */
 
 // ═══════════════════════════════════════════════════════════════
-//  MOCK DATA — Platform-aggregated analytics
+//  MOCK DATA — Platform analytics
 //  Will be replaced by API calls via useEffect
 // ═══════════════════════════════════════════════════════════════
-// TODO: Replace with:
-//   useEffect(() => {
-//     const fetchAnalytics = async () => {
-//       const res = await fetch('/api/control-plane/analytics/platform-summary', {
-//         headers: { Authorization: `Bearer ${token}` }
-//       });
-//       const data = await res.json();
-//       setPlatformKpis(data);
-//     };
-//     fetchAnalytics();
-//   }, [dateRange, companyFilter]);
-
-const platformKpis = {
-  totalCompanies: 48,
-  activeCompanies: 35,
-  suspendedCompanies: 5,
-  totalBuses: 312,
-  activeTripsToday: 87,
-  platformRevenue: 12450000,
-}
 
 // TODO: Replace with GET /api/control-plane/analytics/company-performance
 const companyPerformanceData = [
@@ -191,63 +154,6 @@ const companyFilterOptions = [
 ]
 
 // ═══════════════════════════════════════════════════════════════
-//  KPI CARD CONFIGURATION
-// ═══════════════════════════════════════════════════════════════
-
-const kpiCards = [
-  {
-    label: 'Total Registered Companies',
-    value: platformKpis.totalCompanies,
-    icon: FaBuilding,
-    borderColor: 'border-t-accent',
-    iconBg: 'bg-accent/30',
-    trend: { value: '+6', direction: 'up', label: 'this month' },
-  },
-  {
-    label: 'Active Companies',
-    value: platformKpis.activeCompanies,
-    icon: FaCheckCircle,
-    borderColor: 'border-t-accent',
-    iconBg: 'bg-accent/30',
-    trend: { value: '+3', direction: 'up', label: 'this month' },
-  },
-  {
-    label: 'Suspended Companies',
-    value: platformKpis.suspendedCompanies,
-    icon: FaBan,
-    borderColor: 'border-t-alert',
-    iconBg: 'bg-alert/10',
-    textColor: 'text-alert',
-    trend: { value: '+1', direction: 'up', label: 'this week' },
-    isAlert: true,
-  },
-  {
-    label: 'Total Buses Across Platform',
-    value: platformKpis.totalBuses,
-    icon: FaBus,
-    borderColor: 'border-t-accent',
-    iconBg: 'bg-accent/30',
-    trend: { value: '+24', direction: 'up', label: 'this month' },
-  },
-  {
-    label: 'Active Trips (Today)',
-    value: platformKpis.activeTripsToday,
-    icon: FaMapMarkerAlt,
-    borderColor: 'border-t-accent',
-    iconBg: 'bg-accent/30',
-    trend: { value: '+12', direction: 'up', label: 'vs yesterday' },
-  },
-  {
-    label: 'Platform Revenue',
-    value: `₹${(platformKpis.platformRevenue / 100000).toFixed(1)}L`,
-    icon: FaRupeeSign,
-    borderColor: 'border-t-secondary',
-    iconBg: 'bg-secondary',
-    trend: { value: '+18%', direction: 'up', label: 'this month' },
-  },
-]
-
-// ═══════════════════════════════════════════════════════════════
 //  PLATFORM ANALYTICS COMPONENT
 // ═══════════════════════════════════════════════════════════════
 
@@ -258,7 +164,19 @@ const PlatformAnalytics = () => {
   const [dateDropdownOpen, setDateDropdownOpen] = useState(false)
   const [companyDropdownOpen, setCompanyDropdownOpen] = useState(false)
 
-  // Close dropdowns on outside click
+  // Refs for closing dropdowns on outside click
+  const dateRef = useRef(null)
+  const companyRef = useRef(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dateRef.current && !dateRef.current.contains(e.target)) setDateDropdownOpen(false)
+      if (companyRef.current && !companyRef.current.contains(e.target)) setCompanyDropdownOpen(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
   const handleDateSelect = (value) => {
     setDateRange(value)
     setDateDropdownOpen(false)
@@ -273,9 +191,6 @@ const PlatformAnalytics = () => {
   const activeCompanyLabel = companyFilterOptions.find((o) => o.value === companyFilter)?.label || 'All Companies'
 
   // --- Date-range-driven data selection ---
-  // In production, dateRange and companyFilter are sent as query params
-  // to the Control Plane analytics API. Here we simulate by selecting
-  // the appropriate mock dataset keyed by dateRange.
   const tripStatsData = useMemo(
     () => tripStatisticsDataByRange[dateRange] || tripStatisticsDataByRange['30d'],
     [dateRange]
@@ -284,6 +199,18 @@ const PlatformAnalytics = () => {
     () => revenueTrendDataByRange[dateRange] || revenueTrendDataByRange['30d'],
     [dateRange]
   )
+
+  // --- Computed Insights for Summary Strip ---
+  const insights = useMemo(() => {
+    const totalTrips = tripStatsData.reduce((sum, d) => sum + d.completed, 0)
+    const totalScheduled = tripStatsData.reduce((sum, d) => sum + d.scheduled, 0)
+    const completionRate = totalScheduled > 0 ? ((totalTrips / totalScheduled) * 100).toFixed(1) : 0
+    const totalRevenue = revenueTrendData.reduce((sum, d) => sum + d.totalRevenue, 0)
+    const avgRevenuePerDay = revenueTrendData.length > 0 ? totalRevenue / revenueTrendData.length : 0
+    const totalRoutes = routeDistributionData.reduce((sum, d) => sum + d.count, 0)
+    const topOperator = [...companyPerformanceData].sort((a, b) => b.revenue - a.revenue)[0]
+    return { totalTrips, completionRate, totalRevenue, avgRevenuePerDay, totalRoutes, topOperator }
+  }, [tripStatsData, revenueTrendData])
 
   return (
     <div className="flex flex-col gap-6">
@@ -294,14 +221,14 @@ const PlatformAnalytics = () => {
             Platform Analytics
           </h1>
           <p className="text-sm text-text-muted">
-            System-wide performance, compliance, and utilization intelligence
+            Company performance, route distribution, trip statistics, and revenue insights
           </p>
         </div>
 
         {/* Filters */}
         <div className="flex items-center gap-3">
           {/* Date Range Filter */}
-          <div className="relative">
+          <div className="relative" ref={dateRef}>
             <button
               onClick={() => {
                 setDateDropdownOpen(!dateDropdownOpen)
@@ -332,7 +259,7 @@ const PlatformAnalytics = () => {
           </div>
 
           {/* Company Filter */}
-          <div className="relative">
+          <div className="relative" ref={companyRef}>
             <button
               onClick={() => {
                 setCompanyDropdownOpen(!companyDropdownOpen)
@@ -366,63 +293,53 @@ const PlatformAnalytics = () => {
       </div>
 
       {/* ══════════════════════════════════════════════════════════
-           SECTION 1 — KPI Summary Strip
+           ANALYTICS SUMMARY STRIP — Computed Insights
            ══════════════════════════════════════════════════════════ */}
-      {/* Data source: GET /api/control-plane/analytics/platform-summary */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {kpiCards.map((card) => {
-          const IconComponent = card.icon
-          return (
-            <div
-              key={card.label}
-              className={`
-                bg-primary rounded-xl border border-border
-                shadow-sm p-6 flex flex-col gap-4
-                border-t-[3px] ${card.borderColor}
-              `}
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex flex-col gap-1">
-                  <p className="text-xs font-medium text-text-muted uppercase tracking-wider">
-                    {card.label}
-                  </p>
-                  <h3
-                    className={`text-2xl font-bold ${card.textColor || 'text-text'}`}
-                  >
-                    {card.value}
-                  </h3>
-                </div>
-                <div
-                  className={`p-2.5 rounded-lg ${card.iconBg} flex items-center justify-center`}
-                >
-                  <IconComponent
-                    size={20}
-                    className={card.isAlert ? 'text-alert' : 'text-text'}
-                  />
-                </div>
-              </div>
-              {card.trend && (
-                <div className="flex items-center gap-2">
-                  {card.trend.direction === 'up' ? (
-                    <FaArrowUp size={14} className={card.isAlert ? 'text-alert' : 'text-text-muted'} />
-                  ) : (
-                    <FaArrowDown size={14} className="text-text-muted" />
-                  )}
-                  <span className={`text-xs font-semibold ${card.isAlert ? 'text-alert' : 'text-text'}`}>
-                    {card.trend.value}
-                  </span>
-                  <span className="text-xs text-text-muted">
-                    {card.trend.label}
-                  </span>
-                </div>
-              )}
-            </div>
-          )
-        })}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-primary rounded-xl border border-border shadow-sm px-5 py-4 flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-accent/20">
+            <TrendingUp className="w-4 h-4 text-text" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wider">Trips Completed</span>
+            <span className="text-lg font-bold text-text">{insights.totalTrips.toLocaleString()}</span>
+            <span className="text-[10px] text-text-muted">{insights.completionRate}% completion rate</span>
+          </div>
+        </div>
+        <div className="bg-primary rounded-xl border border-border shadow-sm px-5 py-4 flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-secondary">
+            <IndianRupee className="w-4 h-4 text-text" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wider">Avg Revenue / Period</span>
+            <span className="text-lg font-bold text-text">₹{(insights.avgRevenuePerDay / 100000).toFixed(1)}L</span>
+            <span className="text-[10px] text-text-muted">per {dateRange === 'today' ? 'hour' : dateRange === '7d' ? 'day' : 'week'}</span>
+          </div>
+        </div>
+        <div className="bg-primary rounded-xl border border-border shadow-sm px-5 py-4 flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-accent/20">
+            <Route className="w-4 h-4 text-text" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wider">Total Routes</span>
+            <span className="text-lg font-bold text-text">{insights.totalRoutes}</span>
+            <span className="text-[10px] text-text-muted">across all categories</span>
+          </div>
+        </div>
+        <div className="bg-primary rounded-xl border border-border shadow-sm px-5 py-4 flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-secondary">
+            <Bus className="w-4 h-4 text-text" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wider">Top Operator</span>
+            <span className="text-lg font-bold text-text">{insights.topOperator?.name || '—'}</span>
+            <span className="text-[10px] text-text-muted">{insights.topOperator ? `${insights.topOperator.utilization}% utilization` : ''}</span>
+          </div>
+        </div>
       </div>
 
       {/* ══════════════════════════════════════════════════════════
-           SECTION 2 — Analytics Charts (Stage 1)
+           SECTION 1 — Company Performance & Route Distribution
            ══════════════════════════════════════════════════════════ */}
       <div>
         <div className="flex items-center gap-3 mb-4">
@@ -436,15 +353,19 @@ const PlatformAnalytics = () => {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {/* Chart 1: Company Performance Comparison (BarChart) */}
-          <CompanyPerformanceChart data={companyPerformanceData} />
+          <div className="w-full">
+            <CompanyPerformanceChart data={companyPerformanceData} />
+          </div>
 
           {/* Chart 2: Route Distribution Overview (PieChart / Donut) */}
-          <RouteDistributionChart data={routeDistributionData} />
+          <div className="w-full">
+            <RouteDistributionChart data={routeDistributionData} />
+          </div>
         </div>
       </div>
 
       {/* ══════════════════════════════════════════════════════════
-           SECTION 3 — Trip Statistics & Revenue Overview (Stage 2)
+           SECTION 2 — Trip Statistics & Revenue Overview
            ══════════════════════════════════════════════════════════ */}
       <div>
         <div className="flex items-center gap-3 mb-4">
@@ -458,10 +379,14 @@ const PlatformAnalytics = () => {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {/* Chart 3: Trip Statistics (LineChart) */}
-          <TripStatisticsChart data={tripStatsData} dateRangeLabel={activeDateLabel} />
+          <div className="w-full">
+            <TripStatisticsChart data={tripStatsData} dateRangeLabel={activeDateLabel} />
+          </div>
 
           {/* Chart 4: Revenue Overview (AreaChart) */}
-          <RevenueOverviewChart data={revenueTrendData} dateRangeLabel={activeDateLabel} />
+          <div className="w-full">
+            <RevenueOverviewChart data={revenueTrendData} dateRangeLabel={activeDateLabel} />
+          </div>
         </div>
       </div>
 

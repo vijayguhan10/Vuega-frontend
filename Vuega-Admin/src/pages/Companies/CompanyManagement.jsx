@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Search, Building2, ShieldCheck, ChevronDown } from 'lucide-react'
 import { FaShieldAlt } from 'react-icons/fa'
 import CompanyTable from './components/CompanyTable'
@@ -225,6 +226,7 @@ const filterOptions = [
 const CompanyManagement = () => {
   // --- State ---
   // Companies represent tenant operators in the Operator Plane
+  const [searchParams] = useSearchParams()
   const [controlPlaneCompanies, setControlPlaneCompanies] = useState(initialTenantCompanies)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -238,6 +240,20 @@ const CompanyManagement = () => {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [drawerCompany, setDrawerCompany] = useState(null)
   const [drawerInitialTab, setDrawerInitialTab] = useState('overview')
+
+  // Auto-open drawer when navigated from Dashboard "View" (?company=Name)
+  useEffect(() => {
+    const companyName = searchParams.get('company')
+    if (!companyName) return
+    const match = initialTenantCompanies.find(
+      (c) => c.name.toLowerCase() === companyName.toLowerCase()
+    )
+    if (match) {
+      setDrawerCompany(match)
+      setDrawerInitialTab('overview')
+      setDrawerOpen(true)
+    }
+  }, [searchParams])
 
   // Governance summary (memoized)
   const govSummary = useMemo(() => computeGovernanceSummary(controlPlaneCompanies), [controlPlaneCompanies])
@@ -401,7 +417,7 @@ const CompanyManagement = () => {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [companies]
+    [controlPlaneCompanies]
   )
 
   return (

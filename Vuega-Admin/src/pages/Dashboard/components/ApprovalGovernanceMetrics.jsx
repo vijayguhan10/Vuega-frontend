@@ -31,27 +31,29 @@ const ApprovalGovernanceMetrics = () => {
         <div className="flex items-center gap-6">
           {/* Chart */}
           <div className="w-28 h-28 flex-shrink-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={30}
-                  outerRadius={45}
-                  paddingAngle={3}
-                  dataKey="value"
-                  strokeWidth={0}
-                >
-                  {chartData.map((_, idx) => (
-                    <Cell key={idx} fill={CHART_COLORS[idx]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid #E5E7EB', fontSize: '12px' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+            <div style={{ minWidth: 0, minHeight: 112, width: 112, height: 112 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={30}
+                    outerRadius={45}
+                    paddingAngle={3}
+                    dataKey="value"
+                    strokeWidth={0}
+                  >
+                    {chartData.map((_, idx) => (
+                      <Cell key={idx} fill={CHART_COLORS[idx]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid #E5E7EB', fontSize: '12px' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
           </div>
           {/* Stats */}
           <div className="flex flex-col gap-2">
