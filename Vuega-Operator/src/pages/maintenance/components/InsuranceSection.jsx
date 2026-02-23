@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { FaShieldAlt, FaPencilAlt, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaShieldAlt, FaPencilAlt, FaCheck, FaTimes, FaClock } from 'react-icons/fa';
 import Card from '../../../components/ui/Card';
+import { canPerform, ACTIONS } from '../utils/permissions';
 
 /* ══════════════════════════════════════════════════════
-   InsuranceSection — displays & allows inline update
-   of insurance details.
+   InsuranceSection — displays insurance details.
+   Updates require approval — submits a pending change
+   request instead of applying directly.
    ══════════════════════════════════════════════════════ */
 
 const formatDate = (d) =>
@@ -19,12 +21,14 @@ const isExpired = (d) => {
   return new Date(d) < today;
 };
 
-const InsuranceSection = ({ insurance, onUpdate }) => {
+const InsuranceSection = ({ insurance, onRequestUpdate, currentRole, hasPendingChange }) => {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ ...insurance });
 
+  const canRequest = canPerform(ACTIONS.REQUEST_INSURANCE_UPDATE, currentRole);
+
   const handleSave = () => {
-    onUpdate({ ...form });
+    onRequestUpdate({ ...form });
     setEditing(false);
   };
 
@@ -41,12 +45,12 @@ const InsuranceSection = ({ insurance, onUpdate }) => {
         <h3 className="font-semibold text-v-text flex items-center gap-2">
           <FaShieldAlt size={16} className="text-blue-500" /> Insurance
         </h3>
-        {!editing && (
+        {!editing && canRequest && (
           <button
             onClick={() => setEditing(true)}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-v-text-secondary border border-v-border hover:bg-v-secondary transition-colors"
           >
-            <FaPencilAlt size={12} /> Update Insurance
+            <FaPencilAlt size={12} /> Request Update
           </button>
         )}
       </div>
@@ -93,28 +97,36 @@ const InsuranceSection = ({ insurance, onUpdate }) => {
               onClick={handleSave}
               className="px-4 py-2 rounded-lg font-medium text-white bg-green-600 border border-green-700 hover:bg-green-700 transition-colors"
             >
-              <FaCheck size={14} className="inline mr-1" /> Save
+              <FaCheck size={14} className="inline mr-1" /> Submit for Approval
             </button>
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <span className="text-v-text-muted block">Provider</span>
-            <span className="font-medium text-v-text">{insurance.provider}</span>
+        <>
+          {hasPendingChange && (
+            <div className="mb-4 flex items-center gap-2 px-3 py-2.5 rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-700 font-medium">
+              <FaClock size={14} />
+              Pending Approval from Company Admin
+            </div>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <span className="text-v-text-muted block">Provider</span>
+              <span className="font-medium text-v-text">{insurance.provider}</span>
+            </div>
+            <div>
+              <span className="text-v-text-muted block">Policy Number</span>
+              <span className="font-medium text-v-text">{insurance.policyNumber}</span>
+            </div>
+            <div>
+              <span className="text-v-text-muted block">Expiry Date</span>
+              <span className={`font-medium ${expired ? 'text-red-600' : 'text-v-text'}`}>
+                {formatDate(insurance.expiryDate)}
+                {expired && <span className="ml-2 text-red-600 font-semibold">(Expired)</span>}
+              </span>
+            </div>
           </div>
-          <div>
-            <span className="text-v-text-muted block">Policy Number</span>
-            <span className="font-medium text-v-text">{insurance.policyNumber}</span>
-          </div>
-          <div>
-            <span className="text-v-text-muted block">Expiry Date</span>
-            <span className={`font-medium ${expired ? 'text-red-600' : 'text-v-text'}`}>
-              {formatDate(insurance.expiryDate)}
-              {expired && <span className="ml-2 text-red-600 font-semibold">(Expired)</span>}
-            </span>
-          </div>
-        </div>
+        </>
       )}
     </Card>
   );

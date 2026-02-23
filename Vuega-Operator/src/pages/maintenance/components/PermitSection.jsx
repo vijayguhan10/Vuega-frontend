@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { FaIdCard, FaPencilAlt, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaIdCard, FaPencilAlt, FaCheck, FaTimes, FaClock } from 'react-icons/fa';
 import Card from '../../../components/ui/Card';
+import { canPerform, ACTIONS } from '../utils/permissions';
 
 /* ══════════════════════════════════════════════════════
-   PermitSection — displays & allows inline update
-   of permit details.
+   PermitSection — displays permit details.
+   Updates require approval — submits a pending change
+   request instead of applying directly.
    ══════════════════════════════════════════════════════ */
 
 const formatDate = (d) =>
@@ -19,12 +21,14 @@ const isExpired = (d) => {
   return new Date(d) < today;
 };
 
-const PermitSection = ({ permit, onUpdate }) => {
+const PermitSection = ({ permit, onRequestUpdate, currentRole, hasPendingChange }) => {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ ...permit });
 
+  const canRequest = canPerform(ACTIONS.REQUEST_PERMIT_UPDATE, currentRole);
+
   const handleSave = () => {
-    onUpdate({ ...form });
+    onRequestUpdate({ ...form });
     setEditing(false);
   };
 
@@ -41,12 +45,12 @@ const PermitSection = ({ permit, onUpdate }) => {
         <h3 className="font-semibold text-v-text flex items-center gap-2">
           <FaIdCard size={16} className="text-purple-500" /> Permit
         </h3>
-        {!editing && (
+        {!editing && canRequest && (
           <button
             onClick={() => setEditing(true)}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-v-text-secondary border border-v-border hover:bg-v-secondary transition-colors"
           >
-            <FaPencilAlt size={12} /> Update Permit
+            <FaPencilAlt size={12} /> Request Update
           </button>
         )}
       </div>
@@ -84,24 +88,32 @@ const PermitSection = ({ permit, onUpdate }) => {
               onClick={handleSave}
               className="px-4 py-2 rounded-lg font-medium text-white bg-green-600 border border-green-700 hover:bg-green-700 transition-colors"
             >
-              <FaCheck size={14} className="inline mr-1" /> Save
+              <FaCheck size={14} className="inline mr-1" /> Submit for Approval
             </button>
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <span className="text-v-text-muted block">Permit Number</span>
-            <span className="font-medium text-v-text">{permit.permitNumber}</span>
+        <>
+          {hasPendingChange && (
+            <div className="mb-4 flex items-center gap-2 px-3 py-2.5 rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-700 font-medium">
+              <FaClock size={14} />
+              Pending Approval from Company Admin
+            </div>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <span className="text-v-text-muted block">Permit Number</span>
+              <span className="font-medium text-v-text">{permit.permitNumber}</span>
+            </div>
+            <div>
+              <span className="text-v-text-muted block">Expiry Date</span>
+              <span className={`font-medium ${expired ? 'text-red-600' : 'text-v-text'}`}>
+                {formatDate(permit.expiryDate)}
+                {expired && <span className="ml-2 text-red-600 font-semibold">(Expired)</span>}
+              </span>
+            </div>
           </div>
-          <div>
-            <span className="text-v-text-muted block">Expiry Date</span>
-            <span className={`font-medium ${expired ? 'text-red-600' : 'text-v-text'}`}>
-              {formatDate(permit.expiryDate)}
-              {expired && <span className="ml-2 text-red-600 font-semibold">(Expired)</span>}
-            </span>
-          </div>
-        </div>
+        </>
       )}
     </Card>
   );

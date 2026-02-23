@@ -13,6 +13,7 @@ const INITIAL = {
   cost: '',
   performedBy: '',
   nextServiceDue: '',
+  correctionOf: '', // optional: reference to previous record id being corrected
 };
 
 const AddServiceModal = ({ isOpen, onClose, onConfirm }) => {
@@ -47,6 +48,7 @@ const AddServiceModal = ({ isOpen, onClose, onConfirm }) => {
       cost: Number(form.cost),
       performedBy: form.performedBy.trim(),
       nextServiceDue: form.nextServiceDue,
+      correctionOf: form.correctionOf.trim() || null,
     });
     setForm(INITIAL);
     setErrors({});
@@ -133,6 +135,21 @@ const AddServiceModal = ({ isOpen, onClose, onConfirm }) => {
             className={`input-base ${errors.nextServiceDue ? 'border-v-critical' : ''}`}
           />
           {errors.nextServiceDue && <span className="text-v-critical font-medium">{errors.nextServiceDue}</span>}
+        </div>
+
+        {/* Correction Reference (optional) */}
+        <div className="flex flex-col gap-1">
+          <label className="font-medium text-v-text-secondary">
+            Correction Of Record ID{' '}
+            <span className="text-v-text-muted font-normal">(optional — if this corrects a previous entry)</span>
+          </label>
+          <input
+            type="text"
+            value={form.correctionOf}
+            onChange={(e) => handleChange('correctionOf', e.target.value)}
+            placeholder="e.g. svc-001"
+            className="input-base"
+          />
         </div>
 
         {/* Actions */}
