@@ -33,7 +33,7 @@ function StatCard({
 
   return (
     <div
-      className={`${bg} rounded-xl p-4 md:p-5 border border-gray-100 relative ${
+      className={`${bg} rounded-xl p-4 md:p-4 border border-gray-100 relative ${
         borderColor ? `border-l-[3px] ${borderColor}` : ''
       }`}
     >

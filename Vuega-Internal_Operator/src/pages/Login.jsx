@@ -28,14 +28,6 @@ export default function Login() {
     <div className="min-h-dvh flex flex-col lg:flex-row">
       {/* ───── Left Panel — Brand / Hero ───── */}
       <div className="relative hidden lg:flex lg:w-[48%] xl:w-[45%] flex-col justify-between overflow-hidden bg-[#960000]">
-        {/* Decorative circles */}
-        <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full bg-white/5" />
-        <div className="absolute top-1/3 -right-16 w-64 h-64 rounded-full bg-white/5" />
-        <div className="absolute -bottom-20 left-1/4 w-72 h-72 rounded-full bg-white/5" />
-        {/* Decorative lines */}
-        <div className="absolute top-20 left-16 w-40 h-[1px] bg-white/10 rotate-12" />
-        <div className="absolute top-32 left-24 w-28 h-[1px] bg-white/10 -rotate-6" />
-        <div className="absolute bottom-40 right-20 w-36 h-[1px] bg-white/10 rotate-45" />
 
         {/* Top — Logo */}
         <div className="relative z-10 px-10 xl:px-14 pt-10">
@@ -49,7 +41,8 @@ export default function Login() {
         {/* Center — Headline */}
         <div className="relative z-10 px-10 xl:px-14 flex-1 flex flex-col justify-center -mt-8">
           <h1 className="text-3xl xl:text-4xl font-bold text-white leading-snug tracking-tight">
-            Hello<br />Vuega! <span className="inline-block animate-bounce">👋</span>
+            Hello<br />Vuega!
+            
           </h1>
           <p className="mt-4 text-sm xl:text-base text-white/70 leading-relaxed max-w-sm">
             Manage your bus routes, passengers and seating — all in one streamlined portal built for crew efficiency.

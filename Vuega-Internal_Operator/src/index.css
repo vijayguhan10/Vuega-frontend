@@ -61,14 +61,10 @@ body {
 }
 
 .passenger-filters-scroll {
-  scrollbar-width: thin;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .passenger-filters-scroll::-webkit-scrollbar {
-  height: 2px;
-}
-
-.passenger-filters-scroll::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 999px;
+  display: none;
 }

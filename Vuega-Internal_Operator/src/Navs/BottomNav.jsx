@@ -1,17 +1,14 @@
 import { memo } from 'react';
 import { NavLink } from 'react-router-dom';
-import { FaTachometerAlt, FaUsers, FaChair, FaUserCircle } from 'react-icons/fa';
+import { FaHome, FaUsers, FaThLarge, FaUserCircle } from 'react-icons/fa';
 
 const navItems = [
-  { to: '/', label: 'Dashboard', icon: FaTachometerAlt },
+  { to: '/', label: 'Dashboard', icon: FaHome },
   { to: '/passengers', label: 'Passengers', icon: FaUsers },
-  { to: '/seat-map', label: 'Seats', icon: FaChair },
+  { to: '/seat-map', label: 'Seats', icon: FaThLarge },
   { to: '/profile', label: 'Profile', icon: FaUserCircle },
 ];
 
-/**
- * Fixed bottom navigation bar for mobile-first navigation.
- */
 function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 safe-bottom md:hidden">
@@ -29,8 +26,8 @@ function BottomNav() {
               }`
             }
           >
-            <Icon className="text-base leading-none" />
-            <span className="text-[10px] font-medium">{label}</span>
+            <Icon size={16} className="leading-none shrink-0" aria-hidden="true" />
+            <span className="text-[10px] font-medium leading-none">{label}</span>
           </NavLink>
         ))}
       </div>

@@ -1,17 +1,13 @@
 import { memo } from 'react';
 import { FaBell, FaUserCircle } from 'react-icons/fa';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
 
-/**
- * Top page header with title, subtitle, notification bell and user info.
- */
 function PageHeader({ title, subtitle, rightAction }) {
   const { user } = useAuth();
 
   return (
-    <header className="sticky top-0 bg-white z-30 border-b border-gray-200 px-5 py-3 md:px-6 md:py-3.5">
+    <header className="hidden md:block sticky top-0 bg-white z-30 border-b border-gray-200 px-5 py-3 md:px-6 md:py-3.5">
       <div className="flex items-center justify-between">
-        {/* Left — Title */}
         <div>
           <h1 className="text-base md:text-lg font-bold text-gray-900 leading-tight">{title}</h1>
           {subtitle && (
@@ -19,16 +15,13 @@ function PageHeader({ title, subtitle, rightAction }) {
           )}
         </div>
 
-        {/* Right — Actions + User */}
         <div className="flex items-center gap-4">
           {rightAction && <div>{rightAction}</div>}
 
-          {/* Notification bell */}
           <button className="relative text-gray-400 hover:text-gray-600 transition-colors">
             <FaBell className="text-base" />
           </button>
 
-          {/* User info */}
           <div className="flex items-center gap-2.5 pl-4 border-l border-gray-200">
             <FaUserCircle className="text-xl text-gray-400" />
             <div className="hidden sm:block">

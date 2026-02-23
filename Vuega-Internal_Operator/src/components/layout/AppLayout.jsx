@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Outlet } from 'react-router-dom';
-import Sidebar from './Sidebar';
-import BottomNav from './BottomNav';
+import Sidebar from '../../Navs/Sidebar';
+import BottomNav from '../../Navs/BottomNav';
 
 /**
  * Main app layout with sidebar on md+ and bottom nav on mobile.

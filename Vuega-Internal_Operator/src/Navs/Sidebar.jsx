@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
 import { FaBus, FaTachometerAlt, FaUsers, FaChair, FaUserCircle, FaSignOutAlt } from 'react-icons/fa';
 
 const navItems = [
@@ -10,9 +10,6 @@ const navItems = [
   { to: '/profile', label: 'Profile', icon: FaUserCircle },
 ];
 
-/**
- * Sidebar navigation for md+ screens. Hidden on mobile.
- */
 function Sidebar() {
   const { logout } = useAuth();
   const navigate = useNavigate();
@@ -24,7 +21,6 @@ function Sidebar() {
 
   return (
     <aside className="hidden md:flex flex-col w-56 lg:w-60 shrink-0 bg-white border-r border-gray-200 min-h-dvh sticky top-0">
-      {/* Brand */}
       <div className="flex items-center gap-3 px-5 py-5">
         <div className="w-9 h-9 bg-[#960000] rounded-lg flex items-center justify-center">
           <FaBus className="text-white text-sm" />
@@ -35,12 +31,10 @@ function Sidebar() {
         </div>
       </div>
 
-      {/* Section label */}
       <div className="px-5 pt-4 pb-2">
         <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Main Menu</span>
       </div>
 
-      {/* Nav links */}
       <nav className="flex-1 px-3 space-y-0.5">
         {navItems.map(({ to, label, icon: Icon }) => (
           <NavLink
@@ -65,7 +59,6 @@ function Sidebar() {
         ))}
       </nav>
 
-      {/* Logout */}
       <div className="px-3 py-4">
         <button
           onClick={handleLogout}

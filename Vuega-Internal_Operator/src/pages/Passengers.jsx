@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useTrip } from '../hooks/useTrip';
-import PageHeader from '../components/layout/PageHeader';
+import PageHeader from '../Navs/PageHeader';
 import Loader from '../components/common/Loader';
 import ErrorBanner from '../components/common/ErrorBanner';
 import EmptyState from '../components/common/EmptyState';
@@ -115,7 +115,7 @@ export default function Passengers() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="px-4 md:px-6 lg:px-8 pt-3 flex gap-2 overflow-x-auto passenger-filters-scroll pb-1">
+      <div className="px-4 md:px-6 lg:px-8 pt-3 flex gap-2 overflow-x-auto overflow-y-hidden passenger-filters-scroll pb-1">
         {FILTERS.map((f) => (
           <button
             key={f}

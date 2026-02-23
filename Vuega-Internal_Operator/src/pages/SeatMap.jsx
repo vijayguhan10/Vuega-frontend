@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTrip } from '../hooks/useTrip';
 import realTripService from '../services/tripService';
 import mockTripService from '../services/mockTripService';
-import PageHeader from '../components/layout/PageHeader';
+import PageHeader from '../Navs/PageHeader';
 import Loader from '../components/common/Loader';
 import ErrorBanner from '../components/common/ErrorBanner';
 import EmptyState from '../components/common/EmptyState';
