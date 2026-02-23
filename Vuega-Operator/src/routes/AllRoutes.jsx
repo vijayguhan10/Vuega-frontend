@@ -18,6 +18,10 @@ import TripsList from '../pages/trips/TripsList'
 import CreateTrip from '../pages/trips/CreateTrip'
 import TripDetail from '../pages/trips/TripDetail'
 
+// Maintenance module
+import MaintenanceList from '../pages/maintenance/MaintenanceList'
+import BusMaintenanceDetail from '../pages/maintenance/BusMaintenanceDetail'
+
 // Placeholder for pages we'll build
 const ComingSoon = ({ title }) => (
  <div className="flex flex-col items-center justify-center h-64 text-center">
@@ -46,7 +50,8 @@ const AllRoutes = () => {
  <Route path='/trips/create' element={<CreateTrip />} />
  <Route path='/trips/:tripId' element={<TripDetail />} />
  <Route path='/schedule' element={<TripSchedule />} />
- <Route path='/maintenance' element={<ComingSoon title="Maintenance" />} />
+ <Route path='/maintenance' element={<MaintenanceList />} />
+ <Route path='/maintenance/:busId' element={<BusMaintenanceDetail />} />
  <Route path='/layout-templates/create' element={<CreateLayoutTemplate />} />
  </Route>
 

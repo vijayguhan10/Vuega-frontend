@@ -51,7 +51,7 @@ const MetricsSection = () => {
  return (
  <div
  key={metric.label}
- className={`flex flex-col gap-1 p-5 rounded-xl bg-v-primary-bg border border-v-border shadow-sm border-l-4 ${metric.borderColor}`}
+ className={`flex flex-col gap-0.5 px-4 pt-3 rounded-xl bg-v-primary-bg border border-v-border shadow-sm border-l-4 ${metric.borderColor}`}
  >
  <div className="flex justify-between items-start">
  <div>
@@ -68,9 +68,9 @@ const MetricsSection = () => {
  </div>
 
  {metric.change && (
- <div className="mt-2 flex items-center gap-2">
+ <div className="mb-2 flex items-center gap-2">
  {metric.change.direction === "alert" ? (
- <span className=" font-semibold text-v-critical bg-v-critical-light px-1.5 py-0.5 rounded">
+ <span className=" font-semibold text-v-critical bg-v-critical-light px-1.5 rounded-sm">
  {metric.change.value}
  </span>
  ) : (

@@ -117,6 +117,27 @@ const statusConfig = {
  text: "text-v-text-secondary",
  border: "border-v-accent-border",
  },
+  healthy: {
+    label: "Healthy",
+    dot: "bg-green-500",
+    bg: "bg-green-50",
+    text: "text-green-700",
+    border: "border-green-200",
+  },
+  "due-soon": {
+    label: "Due Soon",
+    dot: "bg-yellow-500",
+    bg: "bg-yellow-50",
+    text: "text-yellow-700",
+    border: "border-yellow-200",
+  },
+  expired: {
+    label: "Expired",
+    dot: "bg-red-600",
+    bg: "bg-red-50",
+    text: "text-red-700",
+    border: "border-red-200",
+  },
 };
 
 const StatusBadge = ({ status, className = "" }) => {
