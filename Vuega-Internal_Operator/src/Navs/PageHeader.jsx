@@ -1,9 +1,9 @@
 import { memo } from 'react';
 import { FaBell, FaUserCircle } from 'react-icons/fa';
-import { useAuth } from '../hooks/useAuth';
+import { getStoredUser } from '../utils/authStorage';
 
 function PageHeader({ title, subtitle, rightAction }) {
-  const { user } = useAuth();
+  const user = getStoredUser();
 
   return (
     <header className="hidden md:block sticky top-0 bg-white z-30 border-b border-gray-200 px-5 py-3 md:px-6 md:py-3.5">

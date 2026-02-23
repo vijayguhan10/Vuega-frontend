@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
 import PageHeader from '../Navs/PageHeader';
 import { FaBus, FaRoute, FaSignOutAlt } from 'react-icons/fa';
+import { clearAuthSession, getStoredUser } from '../utils/authStorage';
 
 const MOCK_TRIP = {
   route: 'Bangalore → Chennai',
@@ -22,7 +22,7 @@ const MOCK_BUS_PROFILE = {
 };
 
 export default function Profile() {
-  const { user, logout } = useAuth();
+  const user = getStoredUser();
   const trip = MOCK_TRIP;
   const navigate = useNavigate();
 
@@ -32,10 +32,10 @@ export default function Profile() {
     setBusProfile((prev) => prev || MOCK_BUS_PROFILE);
   }, []);
 
-  const handleLogout = useCallback(async () => {
-    await logout();
+  const handleLogout = useCallback(() => {
+    clearAuthSession();
     navigate('/login', { replace: true });
-  }, [logout, navigate]);
+  }, [navigate]);
 
   const profile = user || busProfile;
 
