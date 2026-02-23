@@ -32,11 +32,15 @@ const STATUS_STYLES = {
   },
 };
 
-const SeatCell = memo(function SeatCell({ seat, isSelected, onSelect }) {
+const SeatCell = memo(function SeatCell({ seat, isSelected, isColumnSelected, onSelect }) {
   if (!seat) return <div className="w-full h-full" />;
 
   const statusStyle = STATUS_STYLES[seat.status] || STATUS_STYLES.available;
-  const ringClass = isSelected ? 'ring-2 ring-v-accent-dark ring-offset-1' : '';
+  const ringClass = isSelected
+    ? 'ring-2 ring-v-accent-dark ring-offset-1'
+    : isColumnSelected
+    ? 'ring-2 ring-blue-400/60 ring-offset-1'
+    : '';
 
   const svgSrc = TYPE_SVG[seat.type];
 

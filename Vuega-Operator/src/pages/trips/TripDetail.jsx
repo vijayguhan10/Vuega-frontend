@@ -22,7 +22,7 @@ const TripDetail = () => {
 
   /* ── Find trip (simulate API) ── */
   const tripData = dummyTrips.find((t) => t.id === tripId);
-  const [tripSeats, setTripSeats] = useState(tripData?.tripSeats || []);
+  const [tripSeatGrid, setTripSeatGrid] = useState(tripData?.tripSeatGrid || []);
 
   if (!tripData) {
     return (
@@ -42,7 +42,7 @@ const TripDetail = () => {
     );
   }
 
-  const trip = { ...tripData, tripSeats };
+  const trip = { ...tripData, tripSeatGrid };
 
   const isScheduled = trip.status === 'scheduled';
   const isReadOnly = trip.status === 'completed' || trip.status === 'cancelled';
@@ -55,8 +55,8 @@ const TripDetail = () => {
       case 'seatmap':
         return (
           <TripSeatMap
-            tripSeats={tripSeats}
-            onSeatsChange={setTripSeats}
+            tripSeatGrid={tripSeatGrid}
+            onGridChange={setTripSeatGrid}
             isReadOnly={isReadOnly}
           />
         );

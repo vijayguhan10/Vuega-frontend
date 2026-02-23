@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { FaRupeeSign, FaPencilAlt, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaRupeeSign, FaPencilAlt, FaCheck, FaTimes, FaColumns } from 'react-icons/fa';
 import Card from '../../../components/ui/Card';
 
 /* ══════════════════════════════════════════════════════
-   SeatPricingPanel — manages base pricing per seat type
-   and shows per-seat custom overrides.
+   SeatPricingPanel — manages base pricing per seat type,
+   column-wide pricing, and per-seat custom overrides.
    ══════════════════════════════════════════════════════ */
 
 const SEAT_TYPES = [
@@ -18,13 +18,19 @@ const SeatPricingPanel = ({
   onPricingChange,
   selectedSeat,
   onCustomPriceSet,
-  tripSeats = [],
+  tripSeats = [],        // flat array for overrides summary
+  selectedColumn,         // colIndex number | null
+  onColumnPriceSet,       // (colIndex, price) => void
+  aisleIndex,             // aisle column index (for label)
 }) => {
   const [editingSeatPrice, setEditingSeatPrice] = useState(false);
   const [customPriceInput, setCustomPriceInput] = useState('');
+  const [columnPriceInput, setColumnPriceInput] = useState('');
+  const [editingColumnPrice, setEditingColumnPrice] = useState(false);
 
   const overriddenSeats = tripSeats.filter((s) => s.customPrice !== null);
 
+  /* ── Seat price editing ── */
   const handleStartEdit = () => {
     setCustomPriceInput(String(selectedSeat?.customPrice ?? selectedSeat?.basePrice ?? ''));
     setEditingSeatPrice(true);
@@ -40,6 +46,31 @@ const SeatPricingPanel = ({
 
   const handleCancelEdit = () => {
     setEditingSeatPrice(false);
+  };
+
+  /* ── Column price editing ── */
+  const colLabel =
+    selectedColumn !== null && aisleIndex !== undefined
+      ? `C${selectedColumn < aisleIndex ? selectedColumn + 1 : selectedColumn}`
+      : '';
+
+  const handleStartColumnEdit = () => {
+    setColumnPriceInput('');
+    setEditingColumnPrice(true);
+  };
+
+  const handleConfirmColumnPrice = () => {
+    const price = parseFloat(columnPriceInput);
+    if (!isNaN(price) && price >= 0 && selectedColumn !== null) {
+      onColumnPriceSet?.(selectedColumn, price);
+    }
+    setEditingColumnPrice(false);
+  };
+
+  const handleResetColumnPrice = () => {
+    if (selectedColumn !== null) {
+      onColumnPriceSet?.(selectedColumn, null); // null = reset to base
+    }
   };
 
   return (
@@ -71,6 +102,64 @@ const SeatPricingPanel = ({
           ))}
         </div>
       </Card>
+
+      {/* ── Column Pricing ── */}
+      {selectedColumn !== null && (
+        <Card>
+          <h3 className="font-semibold text-v-text mb-3 flex items-center gap-2">
+            <FaColumns size={16} className="text-blue-500" />
+            Column {colLabel} — Set Price
+          </h3>
+          <p className="text-v-text-muted mb-3">
+            Apply a single price to every seat in column {colLabel}.
+          </p>
+
+          {editingColumnPrice ? (
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-v-text-muted">₹</span>
+                <input
+                  type="number"
+                  min={0}
+                  value={columnPriceInput}
+                  onChange={(e) => setColumnPriceInput(e.target.value)}
+                  autoFocus
+                  placeholder="Enter price"
+                  className="w-full pl-7 pr-3 py-2 rounded-lg border border-v-accent-border bg-v-primary-bg text-v-text focus:outline-none focus:ring-2 focus:ring-v-accent transition-colors"
+                />
+              </div>
+              <button
+                onClick={handleConfirmColumnPrice}
+                className="p-2 rounded-lg bg-green-50 text-green-600 border border-green-200 hover:bg-green-100 transition-colors"
+              >
+                <FaCheck size={14} />
+              </button>
+              <button
+                onClick={() => setEditingColumnPrice(false)}
+                className="p-2 rounded-lg bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100 transition-colors"
+              >
+                <FaTimes size={14} />
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={handleStartColumnEdit}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors"
+              >
+                <FaRupeeSign size={12} />
+                Set Column Price
+              </button>
+              <button
+                onClick={handleResetColumnPrice}
+                className="text-v-critical hover:underline font-medium self-start"
+              >
+                Reset column to base prices
+              </button>
+            </div>
+          )}
+        </Card>
+      )}
 
       {/* ── Selected Seat Override ── */}
       {selectedSeat && (

@@ -1,49 +1,60 @@
 import { useState, useMemo } from 'react';
-import { FaLock, FaUnlock, FaPencilAlt, FaCheck, FaTimes } from 'react-icons/fa';
-import SeatCell from './SeatCell';
+import { FaLock, FaUnlock, FaPencilAlt, FaCheck, FaTimes, FaColumns } from 'react-icons/fa';
+import TripSeatGrid from './TripSeatGrid';
 import Card from '../../../components/ui/Card';
+import { flattenSeats } from '../data/dummyTrips';
 
 /* ══════════════════════════════════════════════════════
-   TripSeatMap — renders the trip seat grid.
-   Allows operator to block/unblock & override price.
-   Layout structure cannot be modified.
+   TripSeatMap — renders the trip seat grid using
+   TripSeatGrid (2D layout with aisles, row labels,
+   column headers, sleeper spanning).
+   Allows: block/unblock, price override, column pricing.
    ══════════════════════════════════════════════════════ */
 
-const TripSeatMap = ({ tripSeats, onSeatsChange, isReadOnly = false }) => {
+const TripSeatMap = ({ tripSeatGrid, onGridChange, isReadOnly = false }) => {
   const [selectedSeatId, setSelectedSeatId] = useState(null);
+  const [selectedColumn, setSelectedColumn] = useState(null);
   const [editingPrice, setEditingPrice] = useState(false);
   const [priceInput, setPriceInput] = useState('');
+  const [editingColPrice, setEditingColPrice] = useState(false);
+  const [colPriceInput, setColPriceInput] = useState('');
 
-  const selectedSeat = tripSeats.find((s) => s.id === selectedSeatId) || null;
+  const flatSeats = useMemo(() => flattenSeats(tripSeatGrid), [tripSeatGrid]);
+  const selectedSeat = flatSeats.find((s) => s.id === selectedSeatId) || null;
 
-  /* ── Build grid from flat array ── */
-  const seatGrid = useMemo(() => {
-    if (tripSeats.length === 0) return { rows: 0, cols: 0, grid: [] };
-    const maxRow = Math.max(...tripSeats.map((s) => s.row));
-    const maxCol = Math.max(...tripSeats.map((s) => s.col));
-    const grid = [];
-    for (let r = 0; r <= maxRow; r++) {
-      const row = [];
-      for (let c = 0; c <= maxCol; c++) {
-        row.push(tripSeats.find((s) => s.row === r && s.col === c) || null);
-      }
-      grid.push(row);
-    }
-    return { rows: maxRow + 1, cols: maxCol + 1, grid };
-  }, [tripSeats]);
+  const aisleIndex = tripSeatGrid?.[0]?.indexOf(null) ?? -1;
+  const colLabel =
+    selectedColumn !== null && aisleIndex >= 0
+      ? `C${selectedColumn < aisleIndex ? selectedColumn + 1 : selectedColumn}`
+      : '';
+
+  /* ── Helper: update a cell in the 2D grid ── */
+  const updateGrid = (updater) => {
+    onGridChange(
+      tripSeatGrid.map((row) =>
+        row.map((cell) => {
+          if (!cell || cell.merged || cell.removed) return cell;
+          return updater(cell);
+        })
+      )
+    );
+  };
 
   /* ── Block / Unblock ── */
   const handleToggleBlock = () => {
     if (!selectedSeat || isReadOnly) return;
-    if (selectedSeat.status === 'booked') return; // can't block booked seats
-
+    if (selectedSeat.status === 'booked') return;
     const newStatus = selectedSeat.status === 'blocked' ? 'available' : 'blocked';
-    onSeatsChange(
-      tripSeats.map((s) => (s.id === selectedSeat.id ? { ...s, status: newStatus } : s))
+    onGridChange(
+      tripSeatGrid.map((row) =>
+        row.map((cell) =>
+          cell && cell.id === selectedSeat.id ? { ...cell, status: newStatus } : cell
+        )
+      )
     );
   };
 
-  /* ── Price override ── */
+  /* ── Individual Price override ── */
   const handleStartPriceEdit = () => {
     setPriceInput(String(selectedSeat?.customPrice ?? selectedSeat?.finalPrice ?? ''));
     setEditingPrice(true);
@@ -52,11 +63,13 @@ const TripSeatMap = ({ tripSeats, onSeatsChange, isReadOnly = false }) => {
   const handleConfirmPrice = () => {
     const price = parseFloat(priceInput);
     if (!isNaN(price) && price >= 0 && selectedSeat) {
-      onSeatsChange(
-        tripSeats.map((s) =>
-          s.id === selectedSeat.id
-            ? { ...s, customPrice: price, finalPrice: price }
-            : s
+      onGridChange(
+        tripSeatGrid.map((row) =>
+          row.map((cell) =>
+            cell && cell.id === selectedSeat.id
+              ? { ...cell, customPrice: price, finalPrice: price }
+              : cell
+          )
         )
       );
     }
@@ -65,19 +78,56 @@ const TripSeatMap = ({ tripSeats, onSeatsChange, isReadOnly = false }) => {
 
   const handleResetPrice = () => {
     if (!selectedSeat) return;
-    onSeatsChange(
-      tripSeats.map((s) =>
-        s.id === selectedSeat.id
-          ? { ...s, customPrice: null, finalPrice: s.basePrice }
-          : s
+    onGridChange(
+      tripSeatGrid.map((row) =>
+        row.map((cell) =>
+          cell && cell.id === selectedSeat.id
+            ? { ...cell, customPrice: null, finalPrice: cell.basePrice }
+            : cell
+        )
+      )
+    );
+  };
+
+  /* ── Column pricing ── */
+  const handleStartColPriceEdit = () => {
+    setColPriceInput('');
+    setEditingColPrice(true);
+  };
+
+  const handleConfirmColPrice = () => {
+    const price = parseFloat(colPriceInput);
+    if (!isNaN(price) && price >= 0 && selectedColumn !== null) {
+      onGridChange(
+        tripSeatGrid.map((row) =>
+          row.map((cell, colIdx) => {
+            if (!cell || cell.merged || cell.removed) return cell;
+            if (colIdx !== selectedColumn) return cell;
+            return { ...cell, customPrice: price, finalPrice: price };
+          })
+        )
+      );
+    }
+    setEditingColPrice(false);
+  };
+
+  const handleResetColPrice = () => {
+    if (selectedColumn === null) return;
+    onGridChange(
+      tripSeatGrid.map((row) =>
+        row.map((cell, colIdx) => {
+          if (!cell || cell.merged || cell.removed) return cell;
+          if (colIdx !== selectedColumn) return cell;
+          return { ...cell, customPrice: null, finalPrice: cell.basePrice };
+        })
       )
     );
   };
 
   /* ── Stats ── */
-  const available = tripSeats.filter((s) => s.status === 'available').length;
-  const booked = tripSeats.filter((s) => s.status === 'booked').length;
-  const blocked = tripSeats.filter((s) => s.status === 'blocked').length;
+  const available = flatSeats.filter((s) => s.status === 'available').length;
+  const booked = flatSeats.filter((s) => s.status === 'booked').length;
+  const blocked = flatSeats.filter((s) => s.status === 'blocked').length;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -86,11 +136,9 @@ const TripSeatMap = ({ tripSeats, onSeatsChange, isReadOnly = false }) => {
         <Card>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-v-text">Seat Map</h3>
-            <div className="flex items-center gap-3">
-              <span className="text-v-text-muted">
-                {available} available • {booked} booked • {blocked} blocked
-              </span>
-            </div>
+            <span className="text-v-text-muted">
+              {available} available • {booked} booked • {blocked} blocked
+            </span>
           </div>
 
           {/* Legend */}
@@ -111,42 +159,71 @@ const TripSeatMap = ({ tripSeats, onSeatsChange, isReadOnly = false }) => {
 
           {/* Grid */}
           <div className="overflow-x-auto">
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: `repeat(${seatGrid.cols}, 3.5rem)`,
-                gridTemplateRows: `repeat(${seatGrid.rows}, 3.5rem)`,
-                gap: '6px',
-              }}
-            >
-              {seatGrid.grid.flatMap((row, rowIdx) =>
-                row.map((seat, colIdx) => (
-                  <div
-                    key={`${rowIdx}-${colIdx}`}
-                    style={{
-                      gridRow: rowIdx + 1,
-                      gridColumn: colIdx + 1,
-                    }}
-                  >
-                    {seat ? (
-                      <SeatCell
-                        seat={seat}
-                        isSelected={seat.id === selectedSeatId}
-                        onSelect={setSelectedSeatId}
-                      />
-                    ) : (
-                      <div className="w-full h-full" />
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
+            <TripSeatGrid
+              grid={tripSeatGrid}
+              selectedSeatId={selectedSeatId}
+              selectedColumn={selectedColumn}
+              onSelectSeat={setSelectedSeatId}
+              onSelectColumn={setSelectedColumn}
+            />
           </div>
         </Card>
       </div>
 
-      {/* ── Seat Actions Panel (right) ── */}
-      <div className="lg:col-span-1">
+      {/* ── Actions Panel (right) ── */}
+      <div className="lg:col-span-1 flex flex-col gap-5">
+        {/* Column pricing card */}
+        {selectedColumn !== null && !isReadOnly && (
+          <Card>
+            <h3 className="font-semibold text-v-text mb-3 flex items-center gap-2">
+              <FaColumns size={16} className="text-blue-500" />
+              Column {colLabel} — Price
+            </h3>
+            <p className="text-v-text-muted mb-3">
+              Set a custom price for every seat in column {colLabel}.
+            </p>
+
+            {editingColPrice ? (
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-v-text-muted">₹</span>
+                  <input
+                    type="number"
+                    min={0}
+                    value={colPriceInput}
+                    onChange={(e) => setColPriceInput(e.target.value)}
+                    autoFocus
+                    placeholder="Enter price"
+                    className="w-full pl-7 pr-3 py-2 rounded-lg border border-v-accent-border bg-v-primary-bg text-v-text focus:outline-none focus:ring-2 focus:ring-v-accent transition-colors"
+                  />
+                </div>
+                <button onClick={handleConfirmColPrice} className="p-2 rounded-lg bg-green-50 text-green-600 border border-green-200 hover:bg-green-100 transition-colors">
+                  <FaCheck size={14} />
+                </button>
+                <button onClick={() => setEditingColPrice(false)} className="p-2 rounded-lg bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100 transition-colors">
+                  <FaTimes size={14} />
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={handleStartColPriceEdit}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors"
+                >
+                  Set Column Price
+                </button>
+                <button
+                  onClick={handleResetColPrice}
+                  className="text-v-critical hover:underline font-medium self-start"
+                >
+                  Reset column to base prices
+                </button>
+              </div>
+            )}
+          </Card>
+        )}
+
+        {/* Seat detail card */}
         {selectedSeat ? (
           <Card>
             <h3 className="font-semibold text-v-text mb-4">
@@ -160,15 +237,11 @@ const TripSeatMap = ({ tripSeats, onSeatsChange, isReadOnly = false }) => {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-v-text-muted">Status</span>
-                <span
-                  className={`font-medium capitalize ${
-                    selectedSeat.status === 'booked'
-                      ? 'text-green-600'
-                      : selectedSeat.status === 'blocked'
-                      ? 'text-gray-500'
-                      : 'text-v-text'
-                  }`}
-                >
+                <span className={`font-medium capitalize ${
+                  selectedSeat.status === 'booked' ? 'text-green-600'
+                  : selectedSeat.status === 'blocked' ? 'text-gray-500'
+                  : 'text-v-text'
+                }`}>
                   {selectedSeat.status}
                 </span>
               </div>
@@ -190,7 +263,6 @@ const TripSeatMap = ({ tripSeats, onSeatsChange, isReadOnly = false }) => {
 
             {!isReadOnly && (
               <div className="flex flex-col gap-2.5 mt-5 pt-4 border-t border-v-border">
-                {/* Block / Unblock (not for booked) */}
                 {selectedSeat.status !== 'booked' && (
                   <button
                     onClick={handleToggleBlock}
@@ -201,24 +273,17 @@ const TripSeatMap = ({ tripSeats, onSeatsChange, isReadOnly = false }) => {
                     }`}
                   >
                     {selectedSeat.status === 'blocked' ? (
-                      <>
-                        <FaUnlock size={14} /> Unblock Seat
-                      </>
+                      <><FaUnlock size={14} /> Unblock Seat</>
                     ) : (
-                      <>
-                        <FaLock size={14} /> Block Seat
-                      </>
+                      <><FaLock size={14} /> Block Seat</>
                     )}
                   </button>
                 )}
 
-                {/* Price Override */}
                 {editingPrice ? (
                   <div className="flex items-center gap-2">
                     <div className="relative flex-1">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-v-text-muted">
-                        ₹
-                      </span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-v-text-muted">₹</span>
                       <input
                         type="number"
                         min={0}
@@ -228,16 +293,10 @@ const TripSeatMap = ({ tripSeats, onSeatsChange, isReadOnly = false }) => {
                         className="w-full pl-7 pr-3 py-2 rounded-lg border border-v-accent-border bg-v-primary-bg text-v-text focus:outline-none focus:ring-2 focus:ring-v-accent transition-colors"
                       />
                     </div>
-                    <button
-                      onClick={handleConfirmPrice}
-                      className="p-2 rounded-lg bg-green-50 text-green-600 border border-green-200 hover:bg-green-100 transition-colors"
-                    >
+                    <button onClick={handleConfirmPrice} className="p-2 rounded-lg bg-green-50 text-green-600 border border-green-200 hover:bg-green-100 transition-colors">
                       <FaCheck size={14} />
                     </button>
-                    <button
-                      onClick={() => setEditingPrice(false)}
-                      className="p-2 rounded-lg bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100 transition-colors"
-                    >
+                    <button onClick={() => setEditingPrice(false)} className="p-2 rounded-lg bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100 transition-colors">
                       <FaTimes size={14} />
                     </button>
                   </div>
@@ -277,6 +336,9 @@ const TripSeatMap = ({ tripSeats, onSeatsChange, isReadOnly = false }) => {
               <p className="font-medium text-v-text">Select a Seat</p>
               <p className="text-v-text-muted mt-1">
                 Click on a seat to view details, block/unblock, or override pricing.
+              </p>
+              <p className="text-v-text-muted mt-1">
+                Click a column header (C1, C2…) to set price for the entire column.
               </p>
             </div>
           </Card>

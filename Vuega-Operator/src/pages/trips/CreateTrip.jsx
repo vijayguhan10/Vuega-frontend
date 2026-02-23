@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaRocket, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import TripForm from './components/TripForm';
 import SeatPricingPanel from './components/SeatPricingPanel';
-import SeatCell from './components/SeatCell';
+import TripSeatGrid from './components/TripSeatGrid';
 import {
   availableRoutes,
   availableBuses,
-  getLayoutSeats,
-  buildTripSeats,
+  getLayoutTemplate,
+  buildTripSeatGrid,
+  flattenSeats,
   generateTripId,
 } from './data/dummyTrips';
 
@@ -30,13 +31,17 @@ const CreateTrip = () => {
     'semi-sleeper': 0,
   });
 
-  const [tripSeats, setTripSeats] = useState([]);
+  const [tripSeatGrid, setTripSeatGrid] = useState([]);
   const [selectedSeatId, setSelectedSeatId] = useState(null);
+  const [selectedColumn, setSelectedColumn] = useState(null);
   const [showSeatMap, setShowSeatMap] = useState(false);
 
   /* ── Derived data ── */
   const selectedRoute = availableRoutes.find((r) => r.id === form.routeId);
   const selectedBus = availableBuses.find((b) => b.id === form.busId);
+  const flatSeats = useMemo(() => flattenSeats(tripSeatGrid), [tripSeatGrid]);
+
+  const aisleIndex = tripSeatGrid?.[0]?.indexOf(null) ?? -1;
 
   const isValid =
     form.routeId &&
@@ -47,20 +52,23 @@ const CreateTrip = () => {
     selectedBus?.layoutTemplateId &&
     selectedBus?.status === 'active';
 
-  /* ── When bus changes, load layout seats ── */
+  /* ── When bus changes, load layout grid ── */
   const handleFormChange = (newForm) => {
     setForm(newForm);
 
     if (newForm.busId !== form.busId) {
       const bus = availableBuses.find((b) => b.id === newForm.busId);
       if (bus?.layoutTemplateId) {
-        const layout = getLayoutSeats(bus.layoutTemplateId);
-        const seats = buildTripSeats(layout, pricing);
-        setTripSeats(seats);
-        setSelectedSeatId(null);
-        setShowSeatMap(true);
+        const tpl = getLayoutTemplate(bus.layoutTemplateId);
+        if (tpl) {
+          const grid = buildTripSeatGrid(tpl.grid, pricing);
+          setTripSeatGrid(grid);
+          setSelectedSeatId(null);
+          setSelectedColumn(null);
+          setShowSeatMap(true);
+        }
       } else {
-        setTripSeats([]);
+        setTripSeatGrid([]);
         setShowSeatMap(false);
       }
     }
@@ -69,48 +77,52 @@ const CreateTrip = () => {
   /* ── Pricing change → recalculate all non-overridden seats ── */
   const handlePricingChange = (newPricing) => {
     setPricing(newPricing);
-    setTripSeats((prev) =>
-      prev.map((s) => {
-        const newBase = newPricing[s.type] || 0;
-        return {
-          ...s,
-          basePrice: newBase,
-          finalPrice: s.customPrice !== null ? s.customPrice : newBase,
-        };
-      })
+    setTripSeatGrid((prev) =>
+      prev.map((row) =>
+        row.map((cell) => {
+          if (!cell || cell.merged || cell.removed) return cell;
+          const newBase = newPricing[cell.type] || 0;
+          return {
+            ...cell,
+            basePrice: newBase,
+            finalPrice: cell.customPrice !== null ? cell.customPrice : newBase,
+          };
+        })
+      )
     );
   };
 
-  /* ── Custom price override ── */
+  /* ── Individual seat custom price override ── */
   const handleCustomPriceSet = (seatId, price) => {
-    setTripSeats((prev) =>
-      prev.map((s) => {
-        if (s.id !== seatId) return s;
-        if (price === null) {
-          return { ...s, customPrice: null, finalPrice: s.basePrice };
-        }
-        return { ...s, customPrice: price, finalPrice: price };
-      })
+    setTripSeatGrid((prev) =>
+      prev.map((row) =>
+        row.map((cell) => {
+          if (!cell || cell.id !== seatId) return cell;
+          if (price === null) {
+            return { ...cell, customPrice: null, finalPrice: cell.basePrice };
+          }
+          return { ...cell, customPrice: price, finalPrice: price };
+        })
+      )
     );
   };
 
-  const selectedSeat = tripSeats.find((s) => s.id === selectedSeatId) || null;
+  /* ── Column price set/reset ── */
+  const handleColumnPriceSet = (colIndex, price) => {
+    setTripSeatGrid((prev) =>
+      prev.map((row) =>
+        row.map((cell, ci) => {
+          if (!cell || cell.merged || cell.removed || ci !== colIndex) return cell;
+          if (price === null) {
+            return { ...cell, customPrice: null, finalPrice: cell.basePrice };
+          }
+          return { ...cell, customPrice: price, finalPrice: price };
+        })
+      )
+    );
+  };
 
-  /* ── Build seat grid from flat array ── */
-  const seatGrid = useMemo(() => {
-    if (tripSeats.length === 0) return { rows: 0, cols: 0, grid: [] };
-    const maxRow = Math.max(...tripSeats.map((s) => s.row));
-    const maxCol = Math.max(...tripSeats.map((s) => s.col));
-    const grid = [];
-    for (let r = 0; r <= maxRow; r++) {
-      const row = [];
-      for (let c = 0; c <= maxCol; c++) {
-        row.push(tripSeats.find((s) => s.row === r && s.col === c) || null);
-      }
-      grid.push(row);
-    }
-    return { rows: maxRow + 1, cols: maxCol + 1, grid };
-  }, [tripSeats]);
+  const selectedSeat = flatSeats.find((s) => s.id === selectedSeatId) || null;
 
   /* ── Create Trip ── */
   const handleCreate = () => {
@@ -127,10 +139,12 @@ const CreateTrip = () => {
       arrivalTime: form.arrivalTime,
       status: 'scheduled',
       occupancy: 0,
-      totalSeats: tripSeats.length,
+      totalSeats: flatSeats.length,
       bookedSeats: 0,
       pricing: { ...pricing },
-      tripSeats: tripSeats.map((s) => ({ ...s })),
+      tripSeatGrid: tripSeatGrid.map((row) =>
+        row.map((cell) => (cell ? { ...cell } : null))
+      ),
     };
 
     console.log('═══════════════════════════════════════');
@@ -165,7 +179,7 @@ const CreateTrip = () => {
       <TripForm form={form} onChange={handleFormChange} selectedBus={selectedBus} />
 
       {/* ── Section B: Pricing + Seat Map ── */}
-      {tripSeats.length > 0 && (
+      {flatSeats.length > 0 && (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Pricing Panel (left) */}
@@ -175,7 +189,10 @@ const CreateTrip = () => {
                 onPricingChange={handlePricingChange}
                 selectedSeat={selectedSeat}
                 onCustomPriceSet={handleCustomPriceSet}
-                tripSeats={tripSeats}
+                tripSeats={flatSeats}
+                selectedColumn={selectedColumn}
+                onColumnPriceSet={handleColumnPriceSet}
+                aisleIndex={aisleIndex}
               />
             </div>
 
@@ -187,7 +204,7 @@ const CreateTrip = () => {
                   className="w-full flex items-center justify-between px-5 py-4 hover:bg-v-secondary/20 transition-colors"
                 >
                   <h3 className="font-semibold text-v-text">
-                    Seat Map Preview ({tripSeats.length} seats)
+                    Seat Map Preview ({flatSeats.length} seats)
                   </h3>
                   {showSeatMap ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
                 </button>
@@ -195,7 +212,7 @@ const CreateTrip = () => {
                 {showSeatMap && (
                   <div className="px-5 pb-5">
                     <p className="text-v-text-muted mb-4">
-                      Click a seat to select it and override its price in the panel.
+                      Click a seat to override its price. Click a column header to set price for the entire column.
                     </p>
 
                     {/* Legend */}
@@ -216,36 +233,13 @@ const CreateTrip = () => {
 
                     {/* Grid */}
                     <div className="overflow-x-auto">
-                      <div
-                        style={{
-                          display: 'grid',
-                          gridTemplateColumns: `repeat(${seatGrid.cols}, 3.5rem)`,
-                          gridTemplateRows: `repeat(${seatGrid.rows}, 3.5rem)`,
-                          gap: '6px',
-                        }}
-                      >
-                        {seatGrid.grid.flatMap((row, rowIdx) =>
-                          row.map((seat, colIdx) => (
-                            <div
-                              key={`${rowIdx}-${colIdx}`}
-                              style={{
-                                gridRow: rowIdx + 1,
-                                gridColumn: colIdx + 1,
-                              }}
-                            >
-                              {seat ? (
-                                <SeatCell
-                                  seat={seat}
-                                  isSelected={seat.id === selectedSeatId}
-                                  onSelect={setSelectedSeatId}
-                                />
-                              ) : (
-                                <div className="w-full h-full" />
-                              )}
-                            </div>
-                          ))
-                        )}
-                      </div>
+                      <TripSeatGrid
+                        grid={tripSeatGrid}
+                        selectedSeatId={selectedSeatId}
+                        selectedColumn={selectedColumn}
+                        onSelectSeat={setSelectedSeatId}
+                        onSelectColumn={setSelectedColumn}
+                      />
                     </div>
                   </div>
                 )}

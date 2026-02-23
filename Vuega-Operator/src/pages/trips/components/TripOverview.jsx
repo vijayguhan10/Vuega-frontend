@@ -1,5 +1,6 @@
 import Card from '../../../components/ui/Card';
 import StatusBadge from '../../../components/ui/StatusBadge';
+import { flattenSeats } from '../data/dummyTrips';
 import {
   FaRoute,
   FaBus,
@@ -15,9 +16,10 @@ import {
    ══════════════════════════════════════════════════════ */
 
 const TripOverview = ({ trip }) => {
-  const availableSeats = trip.tripSeats.filter((s) => s.status === 'available').length;
-  const bookedSeats = trip.tripSeats.filter((s) => s.status === 'booked').length;
-  const blockedSeats = trip.tripSeats.filter((s) => s.status === 'blocked').length;
+  const seats = flattenSeats(trip.tripSeatGrid);
+  const availableSeats = seats.filter((s) => s.status === 'available').length;
+  const bookedSeats = seats.filter((s) => s.status === 'booked').length;
+  const blockedSeats = seats.filter((s) => s.status === 'blocked').length;
 
   const fields = [
     { icon: <FaRoute size={18} />, label: 'Route', value: trip.route },
