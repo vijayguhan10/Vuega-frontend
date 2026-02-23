@@ -1,12 +1,13 @@
-import './App.css'
+import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from './hooks/useAuth';
+import Allroutes from './routes/Allroutes';
 
-function App() {
-
+export default function App() {
   return (
-    <div className=''>
-
-    </div>
-  )
+    <BrowserRouter>
+      <AuthProvider>
+        <Allroutes />
+      </AuthProvider>
+    </BrowserRouter>
+  );
 }
-
-export default App
