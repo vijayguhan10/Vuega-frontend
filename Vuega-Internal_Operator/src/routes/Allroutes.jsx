@@ -1,14 +1,15 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import AppLayout from '../components/layout/AppLayout';
 import Login from '../pages/Login';
 import Home from '../pages/Home';
 import Passengers from '../pages/Passengers';
 import SeatMap from '../pages/Seat/SeatMap';
 import Profile from '../pages/Profile';
+import { isLoggedIn } from '../utils/authStorage';
 
 export default function Allroutes() {
-  const { isAuthenticated } = useAuth();
+  useLocation();
+  const isAuthenticated = isLoggedIn();
 
   return (
     <Routes>

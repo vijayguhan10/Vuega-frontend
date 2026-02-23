@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
 import { FaBus, FaTachometerAlt, FaUsers, FaChair, FaUserCircle, FaSignOutAlt } from 'react-icons/fa';
+import { clearAuthSession } from '../utils/authStorage';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: FaTachometerAlt },
@@ -11,11 +11,10 @@ const navItems = [
 ];
 
 function Sidebar() {
-  const { logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    await logout();
+  const handleLogout = () => {
+    clearAuthSession();
     navigate('/login', { replace: true });
   };
 

@@ -1,27 +1,35 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
 import { FaBus, FaIdCard, FaLock, FaSignInAlt, FaRoute, FaUsers, FaShieldAlt } from 'react-icons/fa';
+import { setAuthSession } from '../utils/authStorage';
 
 export default function Login() {
   const [busNumber, setBusNumber] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { login, loading, error, clearError } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = useCallback(
-    async (e) => {
+    (e) => {
       e.preventDefault();
-      if (!busNumber.trim() || !password.trim()) return;
-      try {
-        await login(busNumber.trim(), password);
-        navigate('/', { replace: true });
-      } catch {
-        // error is set in context
+      const trimmedBusNumber = busNumber.trim();
+      const trimmedPassword = password.trim();
+
+      if (!trimmedBusNumber || !trimmedPassword) {
+        setError('Bus number and password are required.');
+        return;
       }
+
+      setLoading(true);
+      setError('');
+
+      setAuthSession(trimmedBusNumber, trimmedPassword);
+      setLoading(false);
+      navigate('/', { replace: true });
     },
-    [busNumber, password, login, navigate]
+    [busNumber, password, navigate]
   );
 
   return (
@@ -103,7 +111,7 @@ export default function Login() {
                 <span className="text-[#960000] text-sm">⚠</span>
                 <p className="text-sm text-[#960000] font-medium flex-1">{error}</p>
                 <button
-                  onClick={clearError}
+                  onClick={() => setError('')}
                   className="text-[#960000]/60 hover:text-[#960000] text-lg leading-none transition-colors"
                   aria-label="Dismiss"
                 >
