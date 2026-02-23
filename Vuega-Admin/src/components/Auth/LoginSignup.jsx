@@ -54,99 +54,99 @@ function LoginSignup() {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+    <div className="flex min-h-screen bg-primary">
+      {/* Left Side - Branding (30% Secondary zone) */}
+      <div className="hidden lg:flex lg:w-1/2 bg-secondary relative overflow-hidden">
         {/* Background pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-20 left-20 w-72 h-72 border border-white/20 rounded-full" />
-          <div className="absolute bottom-32 right-16 w-96 h-96 border border-white/10 rounded-full" />
-          <div className="absolute top-1/2 left-1/3 w-48 h-48 border border-white/15 rounded-full" />
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-20 w-72 h-72 border border-text/20 rounded-full" />
+          <div className="absolute bottom-32 right-16 w-96 h-96 border border-text/10 rounded-full" />
+          <div className="absolute top-1/2 left-1/3 w-48 h-48 border border-text/15 rounded-full" />
         </div>
 
         <div className="relative z-10 flex flex-col justify-between p-12 w-full">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="bg-blue-600 p-2.5 rounded-xl">
-              <Bus className="w-6 h-6 text-white" />
+            <div className="bg-accent p-2.5 rounded-xl">
+              <Bus className="w-6 h-6 text-text" />
             </div>
             <div>
-              <h1 className="text-white text-xl font-bold">Vuega</h1>
-              <p className="text-slate-400 text-xs">Bus Operations Platform</p>
+              <h1 className="text-text text-xl font-bold">Vuega</h1>
+              <p className="text-text-muted text-xs">Bus Operations Platform</p>
             </div>
           </div>
 
           {/* Center content */}
           <div className="flex flex-col gap-6">
-            <h2 className="text-4xl font-bold text-white leading-tight">
+            <h2 className="text-4xl font-bold text-text leading-tight">
               Manage Your<br />
               Fleet Operations<br />
-              <span className="text-blue-400">With Confidence</span>
+              <span>With Confidence</span>
             </h2>
-            <p className="text-slate-400 text-base max-w-md">
+            <p className="text-text-muted text-base max-w-md">
               The unified platform for bus companies to manage trips, routes,
               bookings, and operations — all in one place.
             </p>
             <div className="flex flex-col gap-3 mt-4">
-              <div className="flex items-center gap-3 text-slate-300 text-sm">
-                <Shield className="w-4 h-4 text-blue-400 shrink-0" />
+              <div className="flex items-center gap-3 text-text text-sm">
+                <Shield className="w-4 h-4 text-alert shrink-0" />
                 <span>Role-based access control for every team member</span>
               </div>
-              <div className="flex items-center gap-3 text-slate-300 text-sm">
-                <Shield className="w-4 h-4 text-blue-400 shrink-0" />
+              <div className="flex items-center gap-3 text-text text-sm">
+                <Shield className="w-4 h-4 text-alert shrink-0" />
                 <span>Multi-tenant data isolation per company</span>
               </div>
-              <div className="flex items-center gap-3 text-slate-300 text-sm">
-                <Shield className="w-4 h-4 text-blue-400 shrink-0" />
+              <div className="flex items-center gap-3 text-text text-sm">
+                <Shield className="w-4 h-4 text-alert shrink-0" />
                 <span>Real-time trip monitoring and analytics</span>
               </div>
             </div>
           </div>
 
           {/* Footer */}
-          <p className="text-slate-500 text-xs">
+          <p className="text-text-muted text-xs">
             &copy; {new Date().getFullYear()} Vuega Technologies. All rights reserved.
           </p>
         </div>
       </div>
 
-      {/* Right Side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
+      {/* Right Side - Login Form (60% Primary zone) */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-primary">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="flex items-center gap-3 mb-10 lg:hidden">
-            <div className="bg-blue-600 p-2.5 rounded-xl">
-              <Bus className="w-6 h-6 text-white" />
+            <div className="bg-accent p-2.5 rounded-xl">
+              <Bus className="w-6 h-6 text-text" />
             </div>
             <div>
-              <h1 className="text-slate-900 text-xl font-bold">Vuega</h1>
-              <p className="text-slate-400 text-xs">Bus Operations Platform</p>
+              <h1 className="text-text text-xl font-bold">Vuega</h1>
+              <p className="text-text-muted text-xs">Bus Operations Platform</p>
             </div>
           </div>
 
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-slate-900">Welcome back</h2>
-            <p className="text-slate-500 text-sm mt-1">
+            <h2 className="text-2xl font-bold text-text">Welcome back</h2>
+            <p className="text-text-muted text-sm mt-1">
               Sign in to your Super Admin account
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">
+              <div className="bg-alert/10 border border-alert/20 text-alert text-sm px-4 py-3 rounded-lg">
                 {error}
               </div>
             )}
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-slate-700">
+              <label className="text-sm font-medium text-text">
                 Email address
               </label>
               <input
                 type="email"
                 name="email"
                 placeholder="admin@company.com"
-                className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-3 rounded-lg border border-border bg-primary text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
                 value={formData.email}
                 onChange={handleChange}
               />
@@ -154,12 +154,12 @@ function LoginSignup() {
 
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-slate-700">
+                <label className="text-sm font-medium text-text">
                   Password
                 </label>
                 <button
                   type="button"
-                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-sm text-alert hover:text-alert/80 font-medium"
                 >
                   Forgot password?
                 </button>
@@ -169,13 +169,13 @@ function LoginSignup() {
                   type={showPassword ? "text" : "password"}
                   name="password"
                   placeholder="Enter your password"
-                  className="w-full px-4 py-3 pr-11 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 pr-11 rounded-lg border border-border bg-primary text-text placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
                   value={formData.password}
                   onChange={handleChange}
                 />
                 <button
                   type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
@@ -190,7 +190,7 @@ function LoginSignup() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+              className="w-full bg-text text-primary py-3 rounded-lg font-semibold hover:bg-text/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -203,7 +203,7 @@ function LoginSignup() {
             </button>
           </form>
 
-          <p className="text-center text-slate-400 text-xs mt-8">
+          <p className="text-center text-text-muted text-xs mt-8">
             Protected by role-based access control
           </p>
         </div>

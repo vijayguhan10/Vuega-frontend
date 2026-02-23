@@ -3,29 +3,28 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import AdminLayout from '../layouts/AdminLayout'
 import LoginSignup from '../components/Auth/LoginSignup'
 import Dashboard from '../pages/Dashboard/Dashboard'
-import TripSchedule from '../pages/Schedule/TripSchedule'
-import Inventory from '../pages/seatInventory/Inventory'
+import BusApprovals from '../pages/BusApprovals/BusApprovals'
+import CompanyManagement from '../pages/Companies/CompanyManagement'
+import PlatformAnalytics from '../pages/Analytics/PlatformAnalytics'
 
 const AllRoutes = () => {
-  return (
-    <Routes>
-      {/* Public route */}
-      <Route path='/' element={<LoginSignup />} />
+    return (
+        <Routes>
+            {/* Public route */}
+            <Route path='/' element={<LoginSignup />} />
 
-      {/* Protected routes with shared layout */}
-      <Route element={<AdminLayout />}>
-        <Route path='/dashboard' element={<Dashboard />} />
-        <Route path='/companies' element={<div className="text-slate-500 text-sm">Companies page — coming soon</div>} />
-        <Route path='/bus-approvals' element={<div className="text-slate-500 text-sm">Bus Approvals page — coming soon</div>} />
-        <Route path='/analytics' element={<div className="text-slate-500 text-sm">Analytics page — coming soon</div>} />
-        <Route path='/tripSchedule' element={<TripSchedule />} />
-        <Route path='/inventory' element={<Inventory />} />
-      </Route>
+            {/* Protected routes with shared layout */}
+            <Route element={<AdminLayout />}>
+                <Route path='/dashboard' element={<Dashboard />} />
+                <Route path='/companies' element={<CompanyManagement />} />
+                <Route path='/bus-approvals' element={<BusApprovals />} />
+                <Route path='/analytics' element={<PlatformAnalytics />} />
+            </Route>
 
-      {/* Catch-all */}
-      <Route path='*' element={<Navigate to='/' replace />} />
-    </Routes>
-  )
+            {/* Catch-all */}
+            <Route path='*' element={<Navigate to='/' replace />} />
+        </Routes>
+    )
 }
 
 export default AllRoutes

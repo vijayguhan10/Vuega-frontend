@@ -49,34 +49,33 @@ const SideBar = ({ isOpen, onClose }) => {
 
       <aside
         ref={sidebarRef}
-        className={`fixed top-0 left-0 z-40 w-64 h-screen bg-white border-r border-slate-200 transition-transform duration-300 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } sm:translate-x-0`}
+        className={`fixed top-0 left-0 z-40 w-64 h-screen bg-primary border-r border-border transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"
+          } sm:translate-x-0`}
       >
         <div className="flex flex-col h-full px-4 py-5">
           {/* Logo + Mobile close */}
           <div className="flex items-center justify-between mb-8 px-2">
             <div className="flex items-center gap-3">
-              <div className="bg-blue-600 p-2 rounded-xl">
-                <Bus className="w-5 h-5 text-white" />
+              <div className="bg-accent p-2 rounded-xl">
+                <Bus className="w-5 h-5 text-text" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-slate-900">Vuega</h1>
-                <p className="text-[11px] text-slate-400 leading-tight">
+                <h1 className="text-lg font-bold text-text">Vuega</h1>
+                <p className="text-[11px] text-text-muted leading-tight">
                   Super Admin
                 </p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 sm:hidden"
+              className="p-1 rounded-lg hover:bg-secondary text-text-muted sm:hidden"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
           </div>
 
           {/* Navigation Label */}
-          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-3 mb-2">
+          <p className="text-[10px] font-semibold text-text-muted uppercase tracking-wider px-3 mb-2">
             Main Menu
           </p>
 
@@ -88,10 +87,9 @@ const SideBar = ({ isOpen, onClose }) => {
                 to={path}
                 onClick={onClose}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-blue-600 text-white shadow-sm"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive
+                    ? "bg-accent/30 text-text shadow-sm"
+                    : "text-text-muted hover:bg-secondary hover:text-text"
                   }`
                 }
               >
@@ -99,7 +97,7 @@ const SideBar = ({ isOpen, onClose }) => {
                   <>
                     <Icon
                       size={20}
-                      className={isActive ? "text-white" : "text-slate-400"}
+                      className={isActive ? "text-text" : "text-text-muted"}
                       strokeWidth={isActive ? 2.2 : 1.8}
                     />
                     <span>{name}</span>
@@ -110,10 +108,10 @@ const SideBar = ({ isOpen, onClose }) => {
           </nav>
 
           {/* Logout */}
-          <div className="mt-auto pt-4 border-t border-slate-200">
+          <div className="mt-auto pt-4 border-t border-border">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 text-red-600 hover:bg-red-50 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors"
+              className="w-full flex items-center gap-3 text-alert hover:bg-alert/10 px-3 py-2.5 rounded-lg font-medium text-sm transition-colors"
             >
               <LogOut size={20} />
               Logout
