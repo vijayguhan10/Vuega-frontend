@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaEye, FaEyeSlash, FaBus, FaShieldAlt, FaArrowRight } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaCog, FaShieldAlt, FaArrowRight } from "react-icons/fa";
 
 function LoginSignup() {
  const [showPassword, setShowPassword] = useState(false);
@@ -31,13 +31,14 @@ function LoginSignup() {
  setError("");
 
  try {
- // TODO: Replace with actual API call
- // const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, {
+ // TODO: Replace with actual API call to Spring Boot backend
+ // const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
  // email: formData.email,
  // password: formData.password,
- // role: "super_admin"
+ // role: "technical_operator"
  // });
  // localStorage.setItem("token", response.data.token);
+ // localStorage.setItem("user", JSON.stringify(response.data.user));
 
  // Simulate login for now
  await new Promise((resolve) => setTimeout(resolve, 800));
@@ -54,9 +55,9 @@ function LoginSignup() {
  };
 
  return (
- <div className="flex min-h-screen bg-slate-50">
+ <div className="flex min-h-screen bg-v-primary-bg">
  {/* Left Side - Branding */}
- <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+ <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-v-brand-dark via-v-brand-darker to-v-brand-dark relative overflow-hidden">
  {/* Background pattern */}
  <div className="absolute inset-0 opacity-5">
  <div className="absolute top-20 left-20 w-72 h-72 border border-white/20 rounded-full" />
@@ -67,44 +68,44 @@ function LoginSignup() {
  <div className="relative z-10 flex flex-col justify-between p-12 w-full">
  {/* Logo */}
  <div className="flex items-center gap-3">
- <div className="bg-blue-600 p-2.5 rounded-xl">
- <FaBus className="w-6 h-6 text-white" />
+ <div className="bg-v-accent p-2.5 rounded-xl">
+ <FaCog className="w-6 h-6 text-v-text" />
  </div>
  <div>
  <h1 className="text-white font-bold">Vuega</h1>
- <p className="text-slate-400 ">Bus Operations Platform</p>
+ <p className="text-gray-400 ">Technical Operator Portal</p>
  </div>
  </div>
 
  {/* Center content */}
  <div className="flex flex-col gap-6">
  <h2 className=" font-bold text-white leading-tight">
- Manage Your<br />
- Fleet Operations<br />
- <span className="text-blue-400">With Confidence</span>
+ Configure &<br />
+ Operate Your Fleet<br />
+ <span className="text-v-accent">With Precision</span>
  </h2>
- <p className="text-slate-400 max-w-md">
- The unified platform for bus companies to manage trips, routes,
- bookings, and operations — all in one place.
+ <p className="text-gray-400 max-w-md">
+ Design seat layouts, schedule trips, assign drivers, configure
+ pricing, and manage bus maintenance — all from one dashboard.
  </p>
  <div className="flex flex-col gap-3 mt-4">
- <div className="flex items-center gap-3 text-slate-300 ">
- <FaShieldAlt className="w-4 h-4 text-blue-400 shrink-0" />
- <span>Role-based access control for every team member</span>
+ <div className="flex items-center gap-3 text-gray-300 ">
+ <FaShieldAlt className="w-4 h-4 text-v-accent shrink-0" />
+ <span>Seat layout design and bus configuration</span>
  </div>
- <div className="flex items-center gap-3 text-slate-300 ">
- <FaShieldAlt className="w-4 h-4 text-blue-400 shrink-0" />
- <span>Multi-tenant data isolation per company</span>
+ <div className="flex items-center gap-3 text-gray-300 ">
+ <FaShieldAlt className="w-4 h-4 text-v-accent shrink-0" />
+ <span>Trip scheduling with driver assignment</span>
  </div>
- <div className="flex items-center gap-3 text-slate-300 ">
- <FaShieldAlt className="w-4 h-4 text-blue-400 shrink-0" />
- <span>Real-time trip monitoring and analytics</span>
+ <div className="flex items-center gap-3 text-gray-300 ">
+ <FaShieldAlt className="w-4 h-4 text-v-accent shrink-0" />
+ <span>Per-trip pricing and maintenance tracking</span>
  </div>
  </div>
  </div>
 
  {/* Footer */}
- <p className="text-slate-500 ">
+ <p className="text-gray-500 ">
  &copy; {new Date().getFullYear()} Vuega Technologies. All rights reserved.
  </p>
  </div>
@@ -115,38 +116,38 @@ function LoginSignup() {
  <div className="w-full max-w-md">
  {/* Mobile logo */}
  <div className="flex items-center gap-3 mb-10 lg:hidden">
- <div className="bg-blue-600 p-2.5 rounded-xl">
- <FaBus className="w-6 h-6 text-white" />
+ <div className="bg-v-accent p-2.5 rounded-xl">
+ <FaCog className="w-6 h-6 text-v-text" />
  </div>
  <div>
- <h1 className="text-slate-900 font-bold">Vuega</h1>
- <p className="text-slate-400 ">Bus Operations Platform</p>
+ <h1 className="text-v-text font-bold">Vuega</h1>
+ <p className="text-v-text-muted ">Technical Operator Portal</p>
  </div>
  </div>
 
  <div className="mb-8">
- <h2 className=" font-bold text-slate-900">Welcome back</h2>
- <p className="text-slate-500 mt-1">
- Sign in to your Super Admin account
+ <h2 className=" font-bold text-v-text">Welcome back</h2>
+ <p className="text-v-text-muted mt-1">
+ Sign in to your Technical Operator account
  </p>
  </div>
 
  <form onSubmit={handleSubmit} className="space-y-5">
  {error && (
- <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+ <div className="bg-v-critical-light border border-v-critical-border text-v-critical px-4 py-3 rounded-lg">
  {error}
  </div>
  )}
 
  <div className="flex flex-col gap-1.5">
- <label className=" font-medium text-slate-700">
+ <label className=" font-medium text-v-text-secondary">
  Email address
  </label>
  <input
  type="email"
  name="email"
- placeholder="admin@company.com"
- className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+ placeholder="operator@company.com"
+ className="w-full px-4 py-3 rounded-lg border border-v-border bg-v-primary-bg text-v-text placeholder-v-text-placeholder focus:outline-none focus:ring-2 focus:ring-v-accent/50 focus:border-v-accent-border transition-all"
  value={formData.email}
  onChange={handleChange}
  />
@@ -154,12 +155,12 @@ function LoginSignup() {
 
  <div className="flex flex-col gap-1.5">
  <div className="flex items-center justify-between">
- <label className=" font-medium text-slate-700">
+ <label className=" font-medium text-v-text-secondary">
  Password
  </label>
  <button
  type="button"
- className=" text-blue-600 hover:text-blue-700 font-medium"
+ className=" text-v-text-muted hover:text-v-text font-medium transition-colors"
  >
  Forgot password?
  </button>
@@ -169,13 +170,13 @@ function LoginSignup() {
  type={showPassword ? "text" : "password"}
  name="password"
  placeholder="Enter your password"
- className="w-full px-4 py-3 pr-11 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+ className="w-full px-4 py-3 pr-11 rounded-lg border border-v-border bg-v-primary-bg text-v-text placeholder-v-text-placeholder focus:outline-none focus:ring-2 focus:ring-v-accent/50 focus:border-v-accent-border transition-all"
  value={formData.password}
  onChange={handleChange}
  />
  <button
  type="button"
- className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+ className="absolute right-3 top-1/2 -translate-y-1/2 text-v-text-muted hover:text-v-text-secondary"
  onClick={() => setShowPassword(!showPassword)}
  >
  {showPassword ? (
@@ -190,10 +191,10 @@ function LoginSignup() {
  <button
  type="submit"
  disabled={isLoading}
- className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+ className="w-full bg-v-accent hover:bg-v-accent-hover text-v-text py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
  >
  {isLoading ? (
- <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+ <div className="w-5 h-5 border-2 border-v-text/30 border-t-v-text rounded-full animate-spin" />
  ) : (
  <>
  Sign In
@@ -203,7 +204,7 @@ function LoginSignup() {
  </button>
  </form>
 
- <p className="text-center text-slate-400 mt-8">
+ <p className="text-center text-v-text-muted mt-8">
  Protected by role-based access control
  </p>
  </div>
