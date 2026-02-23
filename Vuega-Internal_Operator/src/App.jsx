@@ -1,12 +1,16 @@
-import './App.css'
+import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from './hooks/useAuth';
+import { TripProvider } from './hooks/useTrip';
+import AppRoutes from './routes/AppRoutes';
 
-function App() {
-
+export default function App() {
   return (
-    <div className=''>
-
-    </div>
-  )
+    <BrowserRouter>
+      <AuthProvider>
+        <TripProvider>
+          <AppRoutes />
+        </TripProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  );
 }
-
-export default App
