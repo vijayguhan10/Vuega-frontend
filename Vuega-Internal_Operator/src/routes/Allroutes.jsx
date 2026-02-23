@@ -1,36 +1,33 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import AppLayout from '../components/layout/AppLayout';
-import Login from '../pages/Login';
-import Home from '../pages/Home';
-import Passengers from '../pages/Passengers';
-import SeatMap from '../pages/Seat/SeatMap';
-import Profile from '../pages/Profile';
-import { isLoggedIn } from '../utils/authStorage';
+import React from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import AdminLayout from '../layouts/AdminLayout'
+import LoginSignup from '../components/Auth/LoginSignup'
+import Dashboard from '../pages/Dashboard/Dashboard'
+import Integration from '../pages/integration/Integration'
+import TripSchedule from '../pages/Schedule/TripSchedule'
+import Inventory from '../pages/seatInventory/Inventory'
 
-export default function Allroutes() {
-  useLocation();
-  const isAuthenticated = isLoggedIn();
-
+const AllRoutes = () => {
   return (
     <Routes>
-      <Route
-        path="/login"
-        element={isAuthenticated ? <Navigate to="/" replace /> : <Login />}
-      />
+      {/* Public route */}
+      <Route path='/' element={<LoginSignup />} />
 
-      <Route
-        element={isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />}
-      >
-        <Route path="/" element={<Home />} />
-        <Route path="/passengers" element={<Passengers />} />
-        <Route path="/seat-map" element={<SeatMap />} />
-        <Route path="/profile" element={<Profile />} />
+      {/* Protected routes with shared layout */}
+      <Route element={<AdminLayout />}>
+        <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/companies' element={<div className="text-slate-500 text-sm">Companies page — coming soon</div>} />
+        <Route path='/bus-approvals' element={<div className="text-slate-500 text-sm">Bus Approvals page — coming soon</div>} />
+        <Route path='/analytics' element={<div className="text-slate-500 text-sm">Analytics page — coming soon</div>} />
+        <Route path='/integration' element={<Integration />} />
+        <Route path='/tripSchedule' element={<TripSchedule />} />
+        <Route path='/inventory' element={<Inventory />} />
       </Route>
 
-      <Route
-        path="*"
-        element={<Navigate to={isAuthenticated ? '/' : '/login'} replace />}
-      />
+      {/* Catch-all */}
+      <Route path='*' element={<Navigate to='/' replace />} />
     </Routes>
-  );
+  )
 }
+
+export default AllRoutes
