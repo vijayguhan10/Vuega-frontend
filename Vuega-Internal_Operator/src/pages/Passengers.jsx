@@ -1,8 +1,5 @@
-import { useState, useMemo, useCallback } from 'react';
-import { useTrip } from '../hooks/useTrip';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import PageHeader from '../Navs/PageHeader';
-import Loader from '../components/common/Loader';
-import ErrorBanner from '../components/common/ErrorBanner';
 import EmptyState from '../components/common/EmptyState';
 import StatusBadge from '../components/common/StatusBadge';
 import {
@@ -18,17 +15,31 @@ const FILTERS = ['all', 'pending', 'boarded', 'no-show'];
 const PAGE_SIZE = 10;
 const STATUS_ORDER = { pending: 0, boarded: 1, 'no-show': 2 };
 
+const MOCK_TRIP = {
+  id: 'trip-001',
+  busNumber: 'KA-01-F-1234',
+  route: 'Bangalore → Chennai',
+};
+
+const MOCK_PASSENGERS = [
+  { id: 'p-001', name: 'Arun Sharma', seatNumber: 1, phone: '+919876543210', boardingPoint: 'Majestic', status: 'pending', remark: '' },
+  { id: 'p-002', name: 'Priya Nair', seatNumber: 2, phone: '+919876543211', boardingPoint: 'Majestic', status: 'pending', remark: '' },
+  { id: 'p-003', name: 'Vikram Singh', seatNumber: 3, phone: '+919876543212', boardingPoint: 'Electronic City', status: 'boarded', remark: 'Window seat requested' },
+  { id: 'p-004', name: 'Meena Kumari', seatNumber: 4, phone: '+919876543213', boardingPoint: 'Silk Board', status: 'pending', remark: '' },
+  { id: 'p-005', name: 'Sanjay Patel', seatNumber: 5, phone: '+919876543214', boardingPoint: 'Majestic', status: 'no-show', remark: 'Called twice, unreachable' },
+  { id: 'p-006', name: 'Deepa Rao', seatNumber: 6, phone: '+919876543215', boardingPoint: 'Electronic City', status: 'boarded', remark: '' },
+  { id: 'p-007', name: 'Rahul Menon', seatNumber: 7, phone: '+919876543216', boardingPoint: 'Madiwala', status: 'pending', remark: '' },
+  { id: 'p-008', name: 'Kavitha S', seatNumber: 8, phone: '+919876543217', boardingPoint: 'Silk Board', status: 'pending', remark: '' },
+  { id: 'p-009', name: 'Manoj V', seatNumber: 9, phone: '+919876543218', boardingPoint: 'Majestic', status: 'boarded', remark: '' },
+  { id: 'p-010', name: 'Anitha Raj', seatNumber: 10, phone: '+919876543219', boardingPoint: 'Electronic City', status: 'pending', remark: 'Needs wheelchair assistance' },
+  { id: 'p-011', name: 'Sunil Das', seatNumber: 11, phone: '+919876543220', boardingPoint: 'Madiwala', status: 'pending', remark: '' },
+  { id: 'p-012', name: 'Lakshmi B', seatNumber: 12, phone: '+919876543221', boardingPoint: 'Majestic', status: 'no-show', remark: '' },
+];
+
 export default function Passengers() {
-  const {
-    trip,
-    passengers,
-    loading,
-    error,
-    updatingIds,
-    updatePassengerStatus,
-    addRemark,
-    clearError,
-  } = useTrip();
+  const trip = MOCK_TRIP;
+  const [passengers, setPassengers] = useState(MOCK_PASSENGERS);
+  const [updatingIds, setUpdatingIds] = useState(new Set());
 
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
@@ -65,7 +76,7 @@ export default function Passengers() {
   }, [passengers, search, filter]);
 
   // Reset page when search/filter changes
-  useMemo(() => setPage(1), [search, filter]);
+  useEffect(() => setPage(1), [search, filter]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paginated = useMemo(
@@ -73,26 +84,30 @@ export default function Passengers() {
     [filtered, page]
   );
 
-  const handleBoarded = useCallback(
-    (id) => updatePassengerStatus(id, 'boarded'),
-    [updatePassengerStatus]
-  );
+  const setPassengerStatus = useCallback((id, status) => {
+    setUpdatingIds((prev) => new Set(prev).add(id));
+    setTimeout(() => {
+      setPassengers((prev) => prev.map((p) => (p.id === id ? { ...p, status } : p)));
+      setUpdatingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }, 200);
+  }, []);
 
-  const handleNoShow = useCallback(
-    (id) => updatePassengerStatus(id, 'no-show'),
-    [updatePassengerStatus]
-  );
+  const handleBoarded = useCallback((id) => setPassengerStatus(id, 'boarded'), [setPassengerStatus]);
+
+  const handleNoShow = useCallback((id) => setPassengerStatus(id, 'no-show'), [setPassengerStatus]);
 
   const handleRemarkSubmit = useCallback(async () => {
     if (!remarkModal || !remarkText.trim()) return;
-    await addRemark(remarkModal, remarkText.trim());
+    setPassengers((prev) =>
+      prev.map((p) => (p.id === remarkModal ? { ...p, remark: remarkText.trim() } : p))
+    );
     setRemarkModal(null);
     setRemarkText('');
-  }, [remarkModal, remarkText, addRemark]);
-
-  if (loading && !passengers.length) {
-    return <Loader message="Loading passengers..." />;
-  }
+  }, [remarkModal, remarkText]);
 
   return (
     <div>
@@ -100,9 +115,6 @@ export default function Passengers() {
         title="Passengers"
         subtitle={trip ? `${trip.route} — Bus #${trip.busNumber}` : undefined}
       />
-
-      <ErrorBanner message={error} onDismiss={clearError} />
-
       {/* Search */}
       <div className="px-4 md:px-6 lg:px-8 pt-3">
         <input

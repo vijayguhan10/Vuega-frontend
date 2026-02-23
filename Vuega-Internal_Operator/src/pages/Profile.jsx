@@ -1,59 +1,47 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { useTrip } from '../hooks/useTrip';
-import realTripService from '../services/tripService';
-import mockTripService from '../services/mockTripService';
 import PageHeader from '../Navs/PageHeader';
-import Loader from '../components/common/Loader';
-import ErrorBanner from '../components/common/ErrorBanner';
 import { FaBus, FaRoute, FaSignOutAlt } from 'react-icons/fa';
 
-const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false';
-const tripService = USE_MOCK ? mockTripService : realTripService;
+const MOCK_TRIP = {
+  route: 'Bangalore → Chennai',
+  departureTime: '06:30 AM',
+  arrivalTime: '12:45 PM',
+  status: 'Active',
+};
+
+const MOCK_BUS_PROFILE = {
+  id: 'bus-001',
+  busNumber: 'KA-01-F-1234',
+  registration: 'KA01F1234',
+  type: 'AC Sleeper',
+  capacity: 40,
+  driverName: 'Rajesh Kumar',
+  cleanerName: 'Suresh M',
+};
 
 export default function Profile() {
   const { user, logout } = useAuth();
-  const { trip } = useTrip();
+  const trip = MOCK_TRIP;
   const navigate = useNavigate();
 
-  const [busProfile, setBusProfile] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const fetchProfile = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await tripService.getBusProfile();
-      setBusProfile(data);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load profile.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const [busProfile, setBusProfile] = useState(MOCK_BUS_PROFILE);
 
   useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    setBusProfile((prev) => prev || MOCK_BUS_PROFILE);
+  }, []);
 
   const handleLogout = useCallback(async () => {
     await logout();
     navigate('/login', { replace: true });
   }, [logout, navigate]);
 
-  if (loading && !busProfile) {
-    return <Loader message="Loading profile..." />;
-  }
-
-  const profile = busProfile || user;
+  const profile = user || busProfile;
 
   return (
     <div>
-      <PageHeader title="Profile" />
-
-      <ErrorBanner message={error} onRetry={fetchProfile} onDismiss={() => setError(null)} />
+      <PageHeader title="Profile" subtitle={profile?.driverName || 'Driver Information'} />
 
       <div className="px-4 md:px-5 lg:px-6 py-4 md:py-4 space-y-3 md:space-y-2.5">
         <div className="space-y-3 md:space-y-3">
@@ -99,7 +87,6 @@ export default function Profile() {
             </div>
           )}
         </div>
-
         <button
           type="button"
           onClick={handleLogout}

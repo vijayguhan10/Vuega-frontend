@@ -1,9 +1,5 @@
 import { useMemo } from 'react';
-import { useTrip } from '../hooks/useTrip';
 import PageHeader from '../Navs/PageHeader';
-import Loader from '../components/common/Loader';
-import ErrorBanner from '../components/common/ErrorBanner';
-import EmptyState from '../components/common/EmptyState';
 import StatCard from '../components/common/StatCard';
 import {
   FaUsers,
@@ -13,8 +9,31 @@ import {
   FaBus,
 } from 'react-icons/fa';
 
+const MOCK_TRIP = {
+  id: 'trip-001',
+  busNumber: 'KA-01-F-1234',
+  route: 'Bangalore → Chennai',
+  departureTime: '06:30 AM',
+  arrivalTime: '12:45 PM',
+  status: 'Active',
+};
+
+const MOCK_PASSENGERS = [
+  { id: 'p-001', status: 'pending' },
+  { id: 'p-002', status: 'pending' },
+  { id: 'p-003', status: 'boarded' },
+  { id: 'p-004', status: 'pending' },
+  { id: 'p-005', status: 'no-show' },
+  { id: 'p-006', status: 'boarded' },
+  { id: 'p-007', status: 'pending' },
+  { id: 'p-008', status: 'pending' },
+  { id: 'p-009', status: 'boarded' },
+  { id: 'p-010', status: 'pending' },
+];
+
 export default function Home() {
-  const { trip, passengers, loading, error, fetchTrip, clearError } = useTrip();
+  const trip = MOCK_TRIP;
+  const passengers = MOCK_PASSENGERS;
 
   const counts = useMemo(() => {
     const total = passengers.length;
@@ -30,10 +49,6 @@ export default function Home() {
     return [from || '--', to || '--'];
   }, [trip?.route]);
 
-  if (loading && !trip) {
-    return <Loader message="Loading trip data..." />;
-  }
-
   return (
     <div className="min-h-full">
       <PageHeader
@@ -41,16 +56,7 @@ export default function Home() {
         subtitle="Bus Personnel Panel"
       />
 
-      <ErrorBanner message={error} onRetry={fetchTrip} onDismiss={clearError} />
-
-      {!trip ? (
-        <EmptyState
-          icon="🚌"
-          title="No Active Trip Scheduled."
-          description="There is no trip assigned to this bus right now."
-        />
-      ) : (
-        <div className="px-4 py-4 md:px-5 md:py-4 lg:px-6 space-y-4 md:space-y-4">
+      <div className="px-4 py-4 md:px-5 md:py-4 lg:px-6 space-y-4 md:space-y-4">
           {/* Section: Trip Overview */}
           <div>
             <h2 className="text-sm md:text-base font-bold md:text-xl md:text-gray-900 mb-1">Trip Overview</h2>
@@ -128,8 +134,7 @@ export default function Home() {
           </div>
 
 
-        </div>
-      )}
+      </div>
     </div>
   );
 }
