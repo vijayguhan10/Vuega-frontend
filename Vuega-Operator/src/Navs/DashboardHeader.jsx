@@ -36,18 +36,6 @@ const DashboardHeader = ({ onMenuClick }) => {
  </div>
  </div>
 
- {/* Center: Search */}
- <div className="hidden md:flex relative max-w-sm w-full mx-6">
- <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
- <FaSearch className="w-4 h-4 text-v-text-muted" />
- </div>
- <input
- type="text"
- placeholder="Search buses, routes, trips..."
- className="w-full py-2 pl-10 pr-4 text-v-text bg-v-secondary border border-v-border rounded-lg placeholder-v-text-placeholder focus:ring-2 focus:ring-v-accent/50 focus:border-v-accent-border focus:bg-v-primary-bg outline-none transition-all"
- />
- </div>
-
  {/* Right: Notifications + Profile */}
  <div className="flex items-center gap-3">
  <button className="relative p-2 text-v-text-muted rounded-lg hover:bg-v-secondary transition-colors">

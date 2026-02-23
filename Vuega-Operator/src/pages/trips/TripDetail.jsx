@@ -61,7 +61,7 @@ const TripDetail = () => {
           />
         );
       case 'passengers':
-        return <PassengerList />;
+        return <PassengerList tripSeatGrid={tripSeatGrid} />;
       case 'logs':
         return (
           <Card>

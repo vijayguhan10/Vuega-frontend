@@ -107,7 +107,7 @@ export function buildTripSeatGrid(layoutGrid, pricing) {
   return layoutGrid.map((row) =>
     row.map((cell) => {
       if (!cell) return null; // aisle
-      if (cell.merged) return { ...cell, status: 'available', basePrice: 0, customPrice: null, finalPrice: 0 };
+      if (cell.merged) return { ...cell, status: 'available', basePrice: 0, customPrice: null, finalPrice: 0, passenger: null };
       const basePrice = pricing[cell.type] || 0;
       return {
         ...cell,
@@ -115,10 +115,43 @@ export function buildTripSeatGrid(layoutGrid, pricing) {
         basePrice,
         customPrice: null,
         finalPrice: basePrice,
+        passenger: null,
       };
     })
   );
 }
+
+/* ── Dummy passenger names for pre-booked seats ── */
+const DUMMY_PASSENGERS = [
+  { name: 'Arjun Kumar', phone: '9876543210', email: 'arjun@email.com', gender: 'male', age: 28 },
+  { name: 'Priya Sharma', phone: '9876543211', email: 'priya@email.com', gender: 'female', age: 25 },
+  { name: 'Rahul Verma', phone: '9876543212', email: 'rahul@email.com', gender: 'male', age: 34 },
+  { name: 'Sneha Reddy', phone: '9876543213', email: 'sneha@email.com', gender: 'female', age: 22 },
+  { name: 'Vikram Singh', phone: '9876543214', email: 'vikram@email.com', gender: 'male', age: 41 },
+  { name: 'Ananya Iyer', phone: '9876543215', email: 'ananya@email.com', gender: 'female', age: 30 },
+  { name: 'Karthik Nair', phone: '9876543216', email: 'karthik@email.com', gender: 'male', age: 27 },
+  { name: 'Deepa Menon', phone: '9876543217', email: 'deepa@email.com', gender: 'female', age: 35 },
+  { name: 'Suresh Pillai', phone: '9876543218', email: 'suresh@email.com', gender: 'male', age: 45 },
+  { name: 'Lakshmi Bhat', phone: '9876543219', email: 'lakshmi@email.com', gender: 'female', age: 29 },
+  { name: 'Aditya Rao', phone: '9876543220', email: 'aditya@email.com', gender: 'male', age: 33 },
+  { name: 'Meera Joshi', phone: '9876543221', email: 'meera@email.com', gender: 'female', age: 26 },
+  { name: 'Naveen Das', phone: '9876543222', email: 'naveen@email.com', gender: 'male', age: 38 },
+  { name: 'Revathi Sundaram', phone: '9876543223', email: 'revathi@email.com', gender: 'female', age: 31 },
+  { name: 'Ganesh Prasad', phone: '9876543224', email: 'ganesh@email.com', gender: 'male', age: 50 },
+  { name: 'Kavitha Rajan', phone: '9876543225', email: 'kavitha@email.com', gender: 'female', age: 24 },
+  { name: 'Mohan Lal', phone: '9876543226', email: 'mohan@email.com', gender: 'male', age: 55 },
+  { name: 'Divya Krishnan', phone: '9876543227', email: 'divya@email.com', gender: 'female', age: 23 },
+  { name: 'Ravi Shankar', phone: '9876543228', email: 'ravi@email.com', gender: 'male', age: 36 },
+  { name: 'Shalini Gupta', phone: '9876543229', email: 'shalini@email.com', gender: 'female', age: 32 },
+  { name: 'Harish Babu', phone: '9876543230', email: 'harish@email.com', gender: 'male', age: 29 },
+  { name: 'Pooja Hegde', phone: '9876543231', email: 'pooja@email.com', gender: 'female', age: 27 },
+  { name: 'Manoj Tiwari', phone: '9876543232', email: 'manoj@email.com', gender: 'male', age: 42 },
+  { name: 'Nandini Rao', phone: '9876543233', email: 'nandini@email.com', gender: 'female', age: 28 },
+  { name: 'Prashanth Kaul', phone: '9876543234', email: 'prashanth@email.com', gender: 'male', age: 39 },
+  { name: 'Isha Patel', phone: '9876543235', email: 'isha@email.com', gender: 'female', age: 21 },
+  { name: 'Venkat Subbu', phone: '9876543236', email: 'venkat@email.com', gender: 'male', age: 47 },
+  { name: 'Sanya Malhotra', phone: '9876543237', email: 'sanya@email.com', gender: 'female', age: 26 },
+];
 
 /* ── Helper: mark first N real seats as booked in 2D grid ── */
 function markBookedInGrid(grid, count) {
@@ -126,7 +159,11 @@ function markBookedInGrid(grid, count) {
   return grid.map((row) =>
     row.map((cell) => {
       if (!cell || cell.merged || cell.removed) return cell;
-      if (marked < count) { marked++; return { ...cell, status: 'booked' }; }
+      if (marked < count) {
+        const passenger = { ...DUMMY_PASSENGERS[marked % DUMMY_PASSENGERS.length] };
+        marked++;
+        return { ...cell, status: 'booked', passenger };
+      }
       return cell;
     })
   );

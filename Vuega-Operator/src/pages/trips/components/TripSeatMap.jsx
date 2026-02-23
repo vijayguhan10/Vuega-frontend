@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
-import { FaLock, FaUnlock, FaPencilAlt, FaCheck, FaTimes, FaColumns } from 'react-icons/fa';
+import { FaLock, FaUnlock, FaPencilAlt, FaCheck, FaTimes, FaColumns, FaTicketAlt, FaUser, FaPhone, FaEnvelope, FaVenusMars, FaCalendarAlt, FaTimesCircle } from 'react-icons/fa';
 import TripSeatGrid from './TripSeatGrid';
+import BookSeatModal from './BookSeatModal';
 import Card from '../../../components/ui/Card';
 import { flattenSeats } from '../data/dummyTrips';
 
@@ -18,6 +19,7 @@ const TripSeatMap = ({ tripSeatGrid, onGridChange, isReadOnly = false }) => {
   const [priceInput, setPriceInput] = useState('');
   const [editingColPrice, setEditingColPrice] = useState(false);
   const [colPriceInput, setColPriceInput] = useState('');
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
 
   const flatSeats = useMemo(() => flattenSeats(tripSeatGrid), [tripSeatGrid]);
   const selectedSeat = flatSeats.find((s) => s.id === selectedSeatId) || null;
@@ -120,6 +122,34 @@ const TripSeatMap = ({ tripSeatGrid, onGridChange, isReadOnly = false }) => {
           if (colIdx !== selectedColumn) return cell;
           return { ...cell, customPrice: null, finalPrice: cell.basePrice };
         })
+      )
+    );
+  };
+
+  /* ── Book / Unbook seat ── */
+  const handleBookSeat = (passenger) => {
+    if (!selectedSeat) return;
+    onGridChange(
+      tripSeatGrid.map((row) =>
+        row.map((cell) =>
+          cell && cell.id === selectedSeat.id
+            ? { ...cell, status: 'booked', passenger }
+            : cell
+        )
+      )
+    );
+    setBookingModalOpen(false);
+  };
+
+  const handleUnbookSeat = () => {
+    if (!selectedSeat) return;
+    onGridChange(
+      tripSeatGrid.map((row) =>
+        row.map((cell) =>
+          cell && cell.id === selectedSeat.id
+            ? { ...cell, status: 'available', passenger: null }
+            : cell
+        )
       )
     );
   };
@@ -263,6 +293,15 @@ const TripSeatMap = ({ tripSeatGrid, onGridChange, isReadOnly = false }) => {
 
             {!isReadOnly && (
               <div className="flex flex-col gap-2.5 mt-5 pt-4 border-t border-v-border">
+                {selectedSeat.status === 'available' && (
+                  <button
+                    onClick={() => setBookingModalOpen(true)}
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-white bg-green-600 border border-green-700 hover:bg-green-700 transition-colors shadow-sm"
+                  >
+                    <FaTicketAlt size={14} /> Book Seat
+                  </button>
+                )}
+
                 {selectedSeat.status !== 'booked' && (
                   <button
                     onClick={handleToggleBlock}
@@ -321,9 +360,56 @@ const TripSeatMap = ({ tripSeatGrid, onGridChange, isReadOnly = false }) => {
               </div>
             )}
 
-            {selectedSeat.status === 'booked' && (
+            {selectedSeat.status === 'booked' && selectedSeat.passenger && (
+              <div className="mt-5 pt-4 border-t border-v-border">
+                <h4 className="font-semibold text-v-text mb-3 flex items-center gap-2">
+                  <FaUser size={14} className="text-green-600" />
+                  Passenger Details
+                </h4>
+                <div className="flex flex-col gap-2.5 px-3 py-3 rounded-lg bg-green-50/50 border border-green-200">
+                  <div className="flex items-center gap-2">
+                    <FaUser size={12} className="text-v-text-muted" />
+                    <span className="text-v-text-muted">Name:</span>
+                    <span className="font-medium text-v-text">{selectedSeat.passenger.name}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <FaPhone size={12} className="text-v-text-muted" />
+                    <span className="text-v-text-muted">Phone:</span>
+                    <span className="font-medium text-v-text">{selectedSeat.passenger.phone}</span>
+                  </div>
+                  {selectedSeat.passenger.email && (
+                    <div className="flex items-center gap-2">
+                      <FaEnvelope size={12} className="text-v-text-muted" />
+                      <span className="text-v-text-muted">Email:</span>
+                      <span className="font-medium text-v-text">{selectedSeat.passenger.email}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <FaVenusMars size={12} className="text-v-text-muted" />
+                    <span className="text-v-text-muted">Gender:</span>
+                    <span className="font-medium text-v-text capitalize">{selectedSeat.passenger.gender}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <FaCalendarAlt size={12} className="text-v-text-muted" />
+                    <span className="text-v-text-muted">Age:</span>
+                    <span className="font-medium text-v-text">{selectedSeat.passenger.age}</span>
+                  </div>
+                </div>
+
+                {!isReadOnly && (
+                  <button
+                    onClick={handleUnbookSeat}
+                    className="inline-flex items-center justify-center gap-2 mt-3 px-4 py-2.5 rounded-lg font-medium text-v-critical bg-red-50 border border-red-200 hover:bg-red-100 transition-colors w-full"
+                  >
+                    <FaTimesCircle size={14} /> Cancel Booking
+                  </button>
+                )}
+              </div>
+            )}
+
+            {selectedSeat.status === 'booked' && !selectedSeat.passenger && (
               <p className="mt-4 px-3 py-2 rounded-lg bg-green-50 border border-green-200 text-green-700 font-medium">
-                This seat is booked and cannot be modified.
+                This seat is booked (no passenger details available).
               </p>
             )}
           </Card>
@@ -344,6 +430,14 @@ const TripSeatMap = ({ tripSeatGrid, onGridChange, isReadOnly = false }) => {
           </Card>
         )}
       </div>
+
+      {/* ── Booking Modal ── */}
+      <BookSeatModal
+        isOpen={bookingModalOpen}
+        onClose={() => setBookingModalOpen(false)}
+        seat={selectedSeat}
+        onConfirm={handleBookSeat}
+      />
     </div>
   );
 };
