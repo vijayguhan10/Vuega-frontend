@@ -1,1 +1,6 @@
-@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════
+   Global Base Tag Sizes — single source of truth.
+   No individual text-size classes in components.
+   ═══════════════════════════════════════════════ */
+
