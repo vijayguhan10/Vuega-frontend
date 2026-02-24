@@ -60,14 +60,14 @@ const CompanyDetailDrawer = ({ isOpen, onClose, company, initialTab = 'overview'
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop — covers the content area */}
       <div
-        className="fixed inset-0 z-40 bg-black/30 transition-opacity"
+        className="absolute inset-0 z-40 bg-black/30 transition-opacity"
         onClick={onClose}
       />
 
-      {/* Drawer panel */}
-      <div className="fixed inset-y-0 right-0 z-50 w-full max-w-lg bg-primary shadow-2xl flex flex-col animate-slide-in-right">
+      {/* Drawer panel — fills content area (sidebar + header stay visible) */}
+      <div className="absolute inset-0 z-50 bg-primary flex flex-col animate-slide-in-right">
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
           <div className="flex flex-col gap-0.5">
