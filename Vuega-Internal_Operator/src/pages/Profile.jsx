@@ -52,8 +52,8 @@ export default function Profile() {
                 <FaBus className="text-sm text-gray-700" />
               </div>
               <div>
-                <p className="text-[13px] font-semibold text-gray-900">Bus #{profile?.busNumber || 'N/A'}</p>
-                <p className="text-[11px] text-gray-400">{profile?.type || 'AC Sleeper'}</p>
+                <p className="text-sm font-semibold text-v-text">Bus #{profile?.busNumber || 'N/A'}</p>
+                <p className="text-xs font-normal text-v-text-muted">{profile?.type || 'AC Sleeper'}</p>
               </div>
             </div>
 
@@ -73,8 +73,8 @@ export default function Profile() {
                   <FaRoute className="text-sm text-gray-700" />
                 </div>
                 <div>
-                  <p className="text-[13px] font-semibold text-gray-900">Assigned Trip</p>
-                  <p className="text-[11px] text-gray-400">Current route information</p>
+                  <p className="text-sm font-semibold text-v-text">Assigned Trip</p>
+                  <p className="text-xs font-normal text-v-text-muted">Current route information</p>
                 </div>
               </div>
 
@@ -96,9 +96,6 @@ export default function Profile() {
           Sign Out
         </button>
 
-        <p className="text-center text-[11px] text-gray-400 pt-1">
-          Session will auto-expire after 8 hours
-        </p>
       </div>
     </div>
   );
@@ -107,8 +104,8 @@ export default function Profile() {
 function DetailRow({ label, value }) {
   return (
     <div className="flex items-center justify-between gap-4 rounded-lg border border-gray-100 px-3 py-2 md:py-1.5">
-      <span className="text-[12px] font-medium text-gray-500">{label}</span>
-      <span className="text-[13px] font-semibold text-gray-900 text-right">{value}</span>
+      <span className="text-xs font-medium text-v-text-secondary">{label}</span>
+      <span className="text-sm font-semibold text-v-text text-right">{value}</span>
     </div>
   );
 }

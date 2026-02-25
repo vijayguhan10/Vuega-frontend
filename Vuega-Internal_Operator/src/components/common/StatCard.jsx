@@ -39,7 +39,7 @@ function StatCard({
     >
       {/* Top row: label + icon */}
       <div className="flex items-start justify-between">
-        <p className="text-[10px] md:text-[11px] font-semibold text-gray-400 uppercase tracking-wider leading-tight">
+        <p className="text-xs font-semibold text-v-text-muted uppercase tracking-wider leading-tight">
           {label}
         </p>
         {Icon && (
@@ -58,15 +58,15 @@ function StatCard({
       {trend && (
         <div className="flex items-center gap-1.5 mt-3">
           {isUp ? (
-            <FaArrowUp className="text-[10px] text-green-600" />
+            <FaArrowUp className="text-xs text-green-600" />
           ) : (
-            <FaArrowDown className="text-[10px] text-[#960000]" />
+            <FaArrowDown className="text-xs text-[#960000]" />
           )}
-          <span className={`text-[11px] font-semibold ${isUp ? 'text-green-600' : 'text-[#960000]'}`}>
+          <span className={`text-xs font-semibold ${isUp ? 'text-green-600' : 'text-[#960000]'}`}>
             {trend}
           </span>
           {trendNote && (
-            <span className="text-[11px] text-gray-400 ml-0.5">{trendNote}</span>
+            <span className="text-xs font-normal text-v-text-muted ml-0.5">{trendNote}</span>
           )}
         </div>
       )}

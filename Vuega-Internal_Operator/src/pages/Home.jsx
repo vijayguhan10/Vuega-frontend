@@ -59,8 +59,8 @@ export default function Home() {
       <div className="px-4 py-4 md:px-5 md:py-4 lg:px-6 space-y-4 md:space-y-4">
           {/* Section: Trip Overview */}
           <div>
-            <h2 className="text-sm md:text-base font-bold md:text-xl md:text-gray-900 mb-1">Trip Overview</h2>
-            <p className="text-[11px] md:text-xs text-gray-400 mb-3">
+            <h2 className="text-xl font-bold text-v-text mb-1">Trip Overview</h2>
+            <p className="text-sm font-normal text-v-text-muted mb-3">
               Current active trip details and passenger summary.
             </p>
           </div>
@@ -71,8 +71,8 @@ export default function Home() {
                 <FaBus className="text-sm text-gray-700" />
               </div>
               <div>
-                <p className="text-[13px] font-semibold text-gray-900">Trip Details</p>
-                <p className="text-[11px] text-gray-400">Current assigned bus information</p>
+                <p className="text-sm font-semibold text-v-text">Trip Details</p>
+                <p className="text-xs font-normal text-v-text-muted">Current assigned bus information</p>
               </div>
             </div>
 
@@ -142,8 +142,8 @@ export default function Home() {
 function DetailRow({ label, value }) {
   return (
     <div className="flex items-center justify-between gap-4 rounded-lg border border-gray-100 px-3 py-2.5">
-      <span className="text-[12px] font-medium text-gray-500">{label}</span>
-      <span className="text-[13px] font-semibold text-gray-900 text-right">{value}</span>
+      <span className="text-xs font-medium text-v-text-secondary">{label}</span>
+      <span className="text-sm font-semibold text-v-text text-right">{value}</span>
     </div>
   );
 }

@@ -1,11 +1,11 @@
 import { memo } from 'react';
 import { NavLink } from 'react-router-dom';
-import { FaHome, FaUsers, FaThLarge, FaUserCircle } from 'react-icons/fa';
+import { FaHome, FaUsers, FaChair, FaUserCircle } from 'react-icons/fa';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: FaHome },
   { to: '/passengers', label: 'Passengers', icon: FaUsers },
-  { to: '/seat-map', label: 'Seats', icon: FaThLarge },
+  { to: '/seat-map', label: 'Seats', icon: FaChair },
   { to: '/profile', label: 'Profile', icon: FaUserCircle },
 ];
 

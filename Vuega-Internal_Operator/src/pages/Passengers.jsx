@@ -122,17 +122,17 @@ export default function Passengers() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search name or seat..."
-          className="w-full h-11 md:h-12 px-4 rounded-xl border border-gray-200 text-sm md:text-base md:text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#C6EDFF] focus:border-transparent"
+          className="w-full h-11 md:h-12 px-4 rounded-xl border border-gray-200 text-sm font-normal text-v-text placeholder:text-v-text-placeholder focus:outline-none focus:ring-2 focus:ring-[#C6EDFF] focus:border-transparent"
         />
       </div>
 
       {/* Filter Tabs */}
-      <div className="px-4 md:px-6 lg:px-8 pt-3 flex gap-2 overflow-x-auto overflow-y-hidden passenger-filters-scroll pb-1">
+      <div className="px-4 md:px-6 lg:px-8 pt-3 flex flex-wrap md:flex-nowrap gap-2 md:overflow-x-auto md:overflow-y-hidden passenger-filters-scroll pb-1">
         {FILTERS.map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`shrink-0 px-3 py-1 md:px-4 md:py-1.5 rounded-full text-xs font-semibold capitalize transition-colors ${
+            className={`shrink-0 px-3 py-1 md:px-4 md:py-1.5 rounded-full text-xs font-medium capitalize transition-colors ${
               filter === f
                 ? 'bg-[#C6EDFF] text-[#960000]'
                 : 'bg-gray-100 text-gray-600 active:bg-gray-200'
@@ -181,17 +181,17 @@ export default function Passengers() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-3 py-2 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-100 active:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                className="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 active:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 ← Prev
               </button>
-              <span className="text-sm font-medium text-gray-500">
+              <span className="text-sm font-normal text-gray-500">
                 Page {page} of {totalPages}
               </span>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="px-3 py-2 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-100 active:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                className="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 active:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 Next →
               </button>
@@ -226,7 +226,7 @@ function PassengerCard({ passenger, isUpdating, onBoarded, onNoShow, onAddRemark
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-semibold text-gray-400">Seat {seatNumber}</span>
+            <span className="text-xs font-medium text-gray-400">Seat {seatNumber}</span>
             <StatusBadge status={status} />
           </div>
           <h3 className="text-base font-semibold text-gray-900 truncate">{name}</h3>
@@ -251,7 +251,7 @@ function PassengerCard({ passenger, isUpdating, onBoarded, onNoShow, onAddRemark
 
       {/* Remark */}
       {passenger.remark && (
-        <p className="text-xs text-gray-500 italic mb-3 truncate inline-flex items-center gap-1.5">
+        <p className="text-xs font-normal text-gray-500 mb-3 truncate inline-flex items-center gap-1.5">
           <FaCommentDots className="text-[11px] text-gray-400" />
           {passenger.remark}
         </p>
@@ -263,7 +263,7 @@ function PassengerCard({ passenger, isUpdating, onBoarded, onNoShow, onAddRemark
           <button
             onClick={() => onBoarded(id)}
             disabled={isUpdating}
-            className="flex-1 h-9 bg-[#C6EDFF] text-[#960000] text-xs font-medium rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.97] disabled:opacity-50"
+            className="flex-1 h-9 bg-[#C6EDFF] text-[#960000] text-sm font-medium rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.97] disabled:opacity-50"
           >
             {isUpdating ? (
               <span className="w-3.5 h-3.5 border-2 border-[#960000]/30 border-t-[#960000] rounded-full animate-spin" />
@@ -275,7 +275,7 @@ function PassengerCard({ passenger, isUpdating, onBoarded, onNoShow, onAddRemark
           <button
             onClick={() => onNoShow(id)}
             disabled={isUpdating}
-            className="flex-1 h-9 bg-[#960000] text-white text-xs font-medium rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.97] disabled:opacity-50"
+            className="flex-1 h-9 bg-[#960000] text-white text-sm font-medium rounded-xl flex items-center justify-center gap-1.5 active:scale-[0.97] disabled:opacity-50"
           >
             {isUpdating ? (
               <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -290,7 +290,7 @@ function PassengerCard({ passenger, isUpdating, onBoarded, onNoShow, onAddRemark
       {/* Add remark link */}
       <button
         onClick={onAddRemark}
-        className="mt-2 text-xs font-medium text-gray-400 active:text-gray-600"
+        className="mt-2 text-xs font-medium text-gray-500 active:text-gray-600"
       >
         + Add remark
       </button>
@@ -303,10 +303,10 @@ function RemarkModal({ remarkText, onChangeText, onSubmit, onClose }) {
     <div className="fixed inset-0 bg-black/40 z-50 flex items-end md:items-center justify-center md:p-6">
       <div className="w-full max-w-lg bg-white rounded-t-2xl md:rounded-2xl p-5 pb-8 md:pb-5 space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-base font-bold text-gray-900">Add Remark</h3>
+          <h3 className="text-base font-semibold text-gray-900">Add Remark</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 text-2xl leading-none"
+            className="text-gray-400 text-xl leading-none"
             aria-label="Close"
           >
             ×
@@ -318,12 +318,12 @@ function RemarkModal({ remarkText, onChangeText, onSubmit, onClose }) {
           placeholder="Enter a short remark..."
           maxLength={200}
           rows={3}
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#C6EDFF] resize-none"
+          className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm font-normal text-v-text placeholder:text-v-text-placeholder focus:outline-none focus:ring-2 focus:ring-[#C6EDFF] resize-none"
         />
         <button
           onClick={onSubmit}
           disabled={!remarkText.trim()}
-          className="w-full h-10 bg-[#C6EDFF] text-[#960000] text-xs font-semibold rounded-xl disabled:opacity-50 active:scale-[0.98]"
+          className="w-full h-10 bg-[#C6EDFF] text-[#960000] text-sm font-medium rounded-xl disabled:opacity-50 active:scale-[0.98]"
         >
           Save Remark
         </button>
