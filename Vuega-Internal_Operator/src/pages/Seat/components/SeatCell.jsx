@@ -1,6 +1,6 @@
 import { memo } from 'react';
-import sleeperSvg from '../../../assets/sleeper.jpeg';
-import seaterSvg from '../../../assets/seater.jpeg';
+import sleeperSvg from '../../../assets/sleeper1.png';
+import seaterSvg from '../../../assets/seater1.png';
 
 const TYPE_SVG = {
   seater: seaterSvg,
@@ -10,19 +10,19 @@ const TYPE_SVG = {
 
 const STATUS_STYLES = {
   boarded: {
-    container: 'bg-[#16A34A] border-[#16A34A] text-white',
+    container: 'bg-[#E6F6EC] border-[#7BC89A] text-[#166534]',
     label: 'Boarded',
   },
   pending: {
-    container: 'bg-[#FFFADF] border-yellow-300 text-yellow-900',
+    container: 'bg-[#FFF7DB] border-yellow-200 text-yellow-900',
     label: 'Booked',
   },
   'no-show': {
-    container: 'bg-[#960000] border-[#960000] text-white',
+    container: 'bg-[#FCE8E8] border-[#E7A8A8] text-[#7F1D1D]',
     label: 'No-show',
   },
   empty: {
-    container: 'bg-[#FFFBEA] border-yellow-200 text-gray-600',
+    container: 'bg-[#FFFCF0] border-yellow-100 text-gray-600',
     label: 'Available',
   },
 };

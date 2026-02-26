@@ -38,6 +38,10 @@ export default function Profile() {
   }, [navigate]);
 
   const profile = user || busProfile;
+  const hasNumeric = (value) => /\d/.test(String(value || ''));
+  const displayBusNumber = hasNumeric(user?.busNumber)
+    ? user.busNumber
+    : busProfile?.busNumber || 'N/A';
 
   return (
     <div>
@@ -52,13 +56,13 @@ export default function Profile() {
                 <FaBus className="text-sm text-gray-700" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-v-text">Bus #{profile?.busNumber || 'N/A'}</p>
+                <p className="text-sm font-semibold text-v-text">Bus #{displayBusNumber}</p>
                 <p className="text-xs font-normal text-v-text-muted">{profile?.type || 'AC Sleeper'}</p>
               </div>
             </div>
 
             <div className="mt-2.5 space-y-2">
-              <DetailRow label="Registration" value={profile?.registration || 'N/A'} />
+              <DetailRow label="Registration" value={displayBusNumber || 'N/A'} />
               <DetailRow label="Capacity" value={profile?.capacity ? `${profile.capacity} seats` : 'N/A'} />
               <DetailRow label="Driver" value={profile?.driverName || 'N/A'} />
               <DetailRow label="Cleaner" value={profile?.cleanerName || 'N/A'} />
@@ -104,8 +108,8 @@ export default function Profile() {
 function DetailRow({ label, value }) {
   return (
     <div className="flex items-center justify-between gap-4 rounded-lg border border-gray-100 px-3 py-2 md:py-1.5">
-      <span className="text-xs font-medium text-v-text-secondary">{label}</span>
-      <span className="text-sm font-semibold text-v-text text-right">{value}</span>
+      <span className="text-sm font-medium text-v-text-secondary">{label}</span>
+      <span className="text-sm font-normal text-v-text text-right">{value}</span>
     </div>
   );
 }

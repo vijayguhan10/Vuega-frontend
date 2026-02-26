@@ -9,7 +9,7 @@ function PageHeader({ title, subtitle, rightAction }) {
     <header className="hidden md:block sticky top-0 bg-v-primary-bg z-30 border-b border-v-border px-5 py-3 md:px-6 md:py-3.5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-v-text leading-tight">{title}</h1>
+          <h1 className="text-xl font-bold text-v-text leading-tight">{title}</h1>
           {subtitle && (
             <p className="text-sm font-normal text-v-text-secondary mt-0.5">{subtitle}</p>
           )}
@@ -28,7 +28,7 @@ function PageHeader({ title, subtitle, rightAction }) {
               <p className="text-base font-semibold text-v-text leading-tight">
                 {user?.driverName || 'Driver'}
               </p>
-              <p className="text-sm font-normal text-v-text-muted leading-tight">
+              <p className="text-sm font-normal text-v-text-muted">
                 {user?.type || 'Bus Crew'}
               </p>
             </div>

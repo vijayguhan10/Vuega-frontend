@@ -1,124 +1,340 @@
 import { useMemo, useState } from 'react';
 import PageHeader from '../../Navs/PageHeader';
-import SeatCell from './components/SeatCell';
+import SeatMapToolbar from './components/SeatMapToolbar';
+import SeatDeckLayout from './components/SeatDeckLayout';
+import SeatInfoCard from './components/SeatInfoCard';
 
-const BUS_LAYOUT_FLAG = 'semiSleeperSleeper';
+const BUS_LAYOUT_FLAG = 'semiSleeperSleeper'; // Change to 'seater' to test seater layout
 
-const MOCK_TRIP = {
-  id: 'trip-001',
-  busNumber: 'KA-01-F-1234',
-  route: 'Bangalore → Chennai',
+const MOCK_DRIVER_TRIP_DATA = {
+  semiSleeperSleeper: {
+    tripId: 'TRIP-2026-002',
+    busNumber: 'TN 09 AB 5678',
+    route: 'Chennai → Bangalore',
+    departureTime: '2026-03-15T21:00:00',
+    totalSeats: 80,
+    lowerDeck: [
+      [
+        { seatNumber: '1', type: 'seater', status: 'booked', passenger: { name: 'Rahul', boardingStatus: 'pending' } },
+        { seatNumber: '2', type: 'seater', status: 'available', passenger: null },
+        null,
+        { seatNumber: '3', type: 'sleeper', status: 'available', passenger: null },
+        { seatNumber: '4', type: 'sleeper', status: 'blocked', passenger: null },
+      ],
+      [
+        { seatNumber: '5', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '6', type: 'seater', status: 'booked', passenger: { name: 'Anita', boardingStatus: 'boarded' } },
+        null,
+        { seatNumber: '7', type: 'sleeper', status: 'booked', passenger: { name: 'Vikram', boardingStatus: 'pending' } },
+        { seatNumber: '8', type: 'sleeper', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: '9', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '10', type: 'seater', status: 'available', passenger: null },
+        null,
+        { seatNumber: '11', type: 'sleeper', status: 'available', passenger: null },
+        { seatNumber: '12', type: 'sleeper', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: '13', type: 'seater', status: 'booked', passenger: { name: 'Meena', boardingStatus: 'pending' } },
+        { seatNumber: '14', type: 'seater', status: 'available', passenger: null },
+        null,
+        { seatNumber: '15', type: 'sleeper', status: 'available', passenger: null },
+        { seatNumber: '16', type: 'sleeper', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: '17', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '18', type: 'seater', status: 'available', passenger: null },
+        null,
+        { seatNumber: '19', type: 'sleeper', status: 'booked', passenger: { name: 'Arun', boardingStatus: 'pending' } },
+        { seatNumber: '20', type: 'sleeper', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: '21', type: 'seater', status: 'booked', passenger: { name: 'Divya', boardingStatus: 'boarded' } },
+        { seatNumber: '22', type: 'seater', status: 'available', passenger: null },
+        null,
+      ],
+      [
+        { seatNumber: '25', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '26', type: 'seater', status: 'available', passenger: null },
+        null,
+      ],
+      [
+        { seatNumber: '29', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '30', type: 'seater', status: 'booked', passenger: { name: 'Nisha', boardingStatus: 'boarded' } },
+        null,
+      ],
+      [
+        { seatNumber: '33', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '34', type: 'seater', status: 'available', passenger: null },
+        null,
+      ],
+      [
+        { seatNumber: '37', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '38', type: 'seater', status: 'available', passenger: null },
+        null,
+      ],
+    ],
+    upperDeck: [
+      [
+        { seatNumber: 'U1', type: 'sleeper', status: 'booked', passenger: { name: 'Priya', boardingStatus: 'pending' } },
+        { seatNumber: 'U2', type: 'sleeper', status: 'available', passenger: null },
+        null,
+        { seatNumber: 'U3', type: 'sleeper', status: 'available', passenger: null },
+        { seatNumber: 'U4', type: 'sleeper', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: 'U5', type: 'sleeper', status: 'available', passenger: null },
+        { seatNumber: 'U6', type: 'sleeper', status: 'booked', passenger: { name: 'Deepak', boardingStatus: 'boarded' } },
+        null,
+        { seatNumber: 'U7', type: 'sleeper', status: 'available', passenger: null },
+        { seatNumber: 'U8', type: 'sleeper', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: 'U9', type: 'sleeper', status: 'available', passenger: null },
+        { seatNumber: 'U10', type: 'sleeper', status: 'available', passenger: null },
+        null,
+        { seatNumber: 'U11', type: 'sleeper', status: 'booked', passenger: { name: 'Sneha', boardingStatus: 'pending' } },
+        { seatNumber: 'U12', type: 'sleeper', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: 'U13', type: 'sleeper', status: 'available', passenger: null },
+        { seatNumber: 'U14', type: 'sleeper', status: 'available', passenger: null },
+        null,
+        { seatNumber: 'U15', type: 'sleeper', status: 'available', passenger: null },
+        { seatNumber: 'U16', type: 'sleeper', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: 'U17', type: 'sleeper', status: 'booked', passenger: { name: 'Ravi', boardingStatus: 'pending' } },
+        { seatNumber: 'U18', type: 'sleeper', status: 'available', passenger: null },
+        null,
+        { seatNumber: 'U19', type: 'sleeper', status: 'available', passenger: null },
+        { seatNumber: 'U20', type: 'sleeper', status: 'available', passenger: null },
+      ],
+    ],
+  },
+  seater: {
+    tripId: 'TRIP-2026-003',
+    busNumber: 'TN 07 CD 2244',
+    route: 'Coimbatore → Chennai',
+    departureTime: '2026-03-18T22:15:00',
+    totalSeats: 40,
+    lowerDeck: [
+      [
+        { seatNumber: '1', type: 'seater', status: 'booked', passenger: { name: 'Karan', boardingStatus: 'pending' } },
+        { seatNumber: '2', type: 'seater', status: 'available', passenger: null },
+        null,
+        { seatNumber: '3', type: 'seater', status: 'blocked', passenger: null },
+        { seatNumber: '4', type: 'seater', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: '5', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '6', type: 'seater', status: 'booked', passenger: { name: 'Neha', boardingStatus: 'boarded' } },
+        null,
+        { seatNumber: '7', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '8', type: 'seater', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: '9', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '10', type: 'seater', status: 'booked', passenger: { name: 'Suresh', boardingStatus: 'pending' } },
+        null,
+        { seatNumber: '11', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '12', type: 'seater', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: '13', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '14', type: 'seater', status: 'available', passenger: null },
+        null,
+        { seatNumber: '15', type: 'seater', status: 'booked', passenger: { name: 'Asha', boardingStatus: 'pending' } },
+        { seatNumber: '16', type: 'seater', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: '17', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '18', type: 'seater', status: 'available', passenger: null },
+        null,
+        { seatNumber: '19', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '20', type: 'seater', status: 'booked', passenger: { name: 'Rohit', boardingStatus: 'boarded' } },
+      ],
+      [
+        { seatNumber: '21', type: 'seater', status: 'booked', passenger: { name: 'Isha', boardingStatus: 'pending' } },
+        { seatNumber: '22', type: 'seater', status: 'available', passenger: null },
+        null,
+        { seatNumber: '23', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '24', type: 'seater', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: '25', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '26', type: 'seater', status: 'available', passenger: null },
+        null,
+        { seatNumber: '27', type: 'seater', status: 'booked', passenger: { name: 'Varun', boardingStatus: 'pending' } },
+        { seatNumber: '28', type: 'seater', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: '29', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '30', type: 'seater', status: 'available', passenger: null },
+        null,
+        { seatNumber: '31', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '32', type: 'seater', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: '33', type: 'seater', status: 'booked', passenger: { name: 'Priyanka', boardingStatus: 'pending' } },
+        { seatNumber: '34', type: 'seater', status: 'available', passenger: null },
+        null,
+        { seatNumber: '35', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '36', type: 'seater', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: '37', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '38', type: 'seater', status: 'booked', passenger: { name: 'Gopal', boardingStatus: 'boarded' } },
+        null,
+        { seatNumber: '39', type: 'seater', status: 'available', passenger: null },
+        { seatNumber: '40', type: 'seater', status: 'available', passenger: null },
+      ],
+    ],
+    upperDeck: [
+      [
+        { seatNumber: 'U1', type: 'sleeper', status: 'booked', passenger: { name: 'Priya', boardingStatus: 'pending' } },
+        { seatNumber: 'U2', type: 'sleeper', status: 'available', passenger: null },
+        null,
+        { seatNumber: 'U3', type: 'sleeper', status: 'available', passenger: null },
+        { seatNumber: 'U4', type: 'sleeper', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: 'U5', type: 'sleeper', status: 'available', passenger: null },
+        { seatNumber: 'U6', type: 'sleeper', status: 'booked', passenger: { name: 'Deepak', boardingStatus: 'boarded' } },
+        null,
+        { seatNumber: 'U7', type: 'sleeper', status: 'available', passenger: null },
+        { seatNumber: 'U8', type: 'sleeper', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: 'U9', type: 'sleeper', status: 'available', passenger: null },
+        { seatNumber: 'U10', type: 'sleeper', status: 'available', passenger: null },
+        null,
+        { seatNumber: 'U11', type: 'sleeper', status: 'booked', passenger: { name: 'Sneha', boardingStatus: 'pending' } },
+        { seatNumber: 'U12', type: 'sleeper', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: 'U13', type: 'sleeper', status: 'available', passenger: null },
+        { seatNumber: 'U14', type: 'sleeper', status: 'available', passenger: null },
+        null,
+        { seatNumber: 'U15', type: 'sleeper', status: 'available', passenger: null },
+        { seatNumber: 'U16', type: 'sleeper', status: 'available', passenger: null },
+      ],
+      [
+        { seatNumber: 'U17', type: 'sleeper', status: 'booked', passenger: { name: 'Ravi', boardingStatus: 'pending' } },
+        { seatNumber: 'U18', type: 'sleeper', status: 'available', passenger: null },
+        null,
+        { seatNumber: 'U19', type: 'sleeper', status: 'available', passenger: null },
+        { seatNumber: 'U20', type: 'sleeper', status: 'available', passenger: null },
+      ],
+    ],
+  },
 };
 
-const MOCK_PASSENGERS = [
-  { id: 'p-001', name: 'Arun Sharma', phone: '+919876543210', seatNumber: 1, status: 'pending' },
-  { id: 'p-002', name: 'Priya Nair', phone: '+919876543211', seatNumber: 2, status: 'pending' },
-  { id: 'p-003', name: 'Vikram Singh', phone: '+919876543212', seatNumber: 6, status: 'boarded' },
-  { id: 'p-004', name: 'Meena Kumari', phone: '+919876543213', seatNumber: 10, status: 'pending' },
-  { id: 'p-005', name: 'Sanjay Patel', phone: '+919876543214', seatNumber: 14, status: 'no-show' },
-  { id: 'p-006', name: 'Deepa Rao', phone: '+919876543215', seatNumber: 17, status: 'pending' },
-  { id: 'p-007', name: 'Rahul Menon', phone: '+919876543216', seatNumber: 28, status: 'pending' },
-  { id: 'p-008', name: 'Kavitha S', phone: '+919876543217', seatNumber: 36, status: 'boarded' },
-  { id: 'p-009', name: 'Manoj V', phone: '+919876543218', seatNumber: 42, status: 'pending' },
-  { id: 'p-010', name: 'Anitha Raj', phone: '+919876543219', seatNumber: 52, status: 'pending' },
-  { id: 'p-011', name: 'Sunil Das', phone: '+919876543220', seatNumber: 60, status: 'boarded' },
-  { id: 'p-012', name: 'Lakshmi B', phone: '+919876543221', seatNumber: 67, status: 'pending' },
-];
+function normalizeDeckRows(rows = [], fallbackColumnTypes = []) {
+  return rows.map((row, rowIndex) => {
+    const compactRow = row.filter((_, colIndex) => colIndex !== 2);
 
-function buildSeaterDeck(startSeat = 1, rows = 10) {
-  return Array.from({ length: rows }, (_, rowIndex) => {
-    const base = startSeat + rowIndex * 4;
-    return [
-      { seatNumber: base, row: rowIndex, col: 0, type: 'seater' },
-      { seatNumber: base + 1, row: rowIndex, col: 1, type: 'seater' },
-      { seatNumber: base + 2, row: rowIndex, col: 2, type: 'seater' },
-      { seatNumber: base + 3, row: rowIndex, col: 3, type: 'seater' },
-    ];
+    return compactRow.map((seat, colIndex) => {
+      if (!seat) return null;
+
+      return {
+        ...seat,
+        seatNumber: String(seat.seatNumber),
+        type: seat.type || fallbackColumnTypes[colIndex] || 'seater',
+        row: rowIndex,
+        col: colIndex,
+      };
+    });
   });
 }
 
-function buildSemiSleeperLowerDeck() {
-  return Array.from({ length: 10 }, (_, rowIndex) => {
-    const leftBase = 1 + rowIndex * 4;
-    const sleeperBlockIndex = Math.floor(rowIndex / 2);
-    const hasSleeperInRow = rowIndex % 2 === 0;
-    const rightBase = 3 + sleeperBlockIndex * 8;
+function buildBusLayout(tripData, busType) {
+  const upperDeckRows = normalizeDeckRows(tripData.upperDeck, ['sleeper', 'sleeper', 'sleeper', 'sleeper']);
+  const hasUpperDeck = upperDeckRows.some((row) => row.some(Boolean));
 
-    return [
-      { seatNumber: leftBase, row: rowIndex, col: 0, type: 'seater' },
-      { seatNumber: leftBase + 1, row: rowIndex, col: 1, type: 'seater' },
-      hasSleeperInRow ? { seatNumber: rightBase, row: rowIndex, col: 2, type: 'sleeper' } : null,
-      hasSleeperInRow
-        ? { seatNumber: rightBase + 1, row: rowIndex, col: 3, type: 'sleeper' }
-        : null,
-    ];
-  });
-}
-
-function buildSleeperUpperDeck() {
-  return Array.from({ length: 5 }, (_, rowIndex) => {
-    const base = 41 + rowIndex * 8;
-
-    return [
-      { seatNumber: base, row: rowIndex, col: 0, type: 'sleeper' },
-      { seatNumber: base + 1, row: rowIndex, col: 1, type: 'sleeper' },
-      { seatNumber: base + 2, row: rowIndex, col: 2, type: 'sleeper' },
-      { seatNumber: base + 3, row: rowIndex, col: 3, type: 'sleeper' },
-    ];
-  });
-}
-
-const BUS_LAYOUTS = {
-  seater: {
-    label: 'Seater',
-    showDeckTabs: false,
-    decks: [
+  if (busType === 'seater') {
+    const decks = [
       {
         id: 'lower',
         title: 'LOWER DECK',
         columnTypes: ['seater', 'seater', 'seater', 'seater'],
-        rows: buildSeaterDeck(1, 10),
+        rows: normalizeDeckRows(tripData.lowerDeck, ['seater', 'seater', 'seater', 'seater']),
       },
-    ],
-  },
-  semiSleeperSleeper: {
-    label: 'Semi Sleeper + Sleeper',
-    showDeckTabs: true,
-    decks: [
-      {
-        id: 'lower',
-        title: 'LOWER DECK',
-        columnTypes: ['seater', 'seater', 'sleeper', 'sleeper'],
-        rows: buildSemiSleeperLowerDeck(),
-      },
-      {
+    ];
+
+    if (hasUpperDeck) {
+      decks.push({
         id: 'upper',
         title: 'UPPER DECK',
         columnTypes: ['sleeper', 'sleeper', 'sleeper', 'sleeper'],
-        rows: buildSleeperUpperDeck(),
-      },
-    ],
-  },
-};
+        rows: upperDeckRows,
+      });
+    }
 
-function getPlaceholderClass(type = 'seater') {
-  if (type === 'sleeper') return 'w-9 h-[4rem] sm:w-11 sm:h-[4.7rem] md:w-12 md:h-[5.4rem]';
-  return 'w-9 h-12 sm:w-11 sm:h-14 md:w-12 md:h-[3.8rem]';
-}
-
-function getRowLabel(deckId, rowIndex) {
-  if (deckId === 'upper') {
-    const first = rowIndex * 2 + 1;
-    return [String(first), String(first + 1)];
+    return {
+      label: 'Seater',
+      showDeckTabs: hasUpperDeck,
+      decks,
+    };
   }
-  return [String(rowIndex + 1)];
+
+  const decks = [
+    {
+      id: 'lower',
+      title: 'LOWER DECK',
+      columnTypes: ['seater', 'seater', 'sleeper', 'sleeper'],
+      rows: normalizeDeckRows(tripData.lowerDeck, ['seater', 'seater', 'sleeper', 'sleeper']),
+    },
+  ];
+
+  if (hasUpperDeck) {
+    decks.push({
+      id: 'upper',
+      title: 'UPPER DECK',
+      columnTypes: ['sleeper', 'sleeper', 'sleeper', 'sleeper'],
+      rows: upperDeckRows,
+    });
+  }
+
+  return {
+    label: 'Semi Sleeper + Sleeper',
+    showDeckTabs: hasUpperDeck,
+    decks,
+  };
 }
+
+const STATUS_LEGEND_ITEMS = [
+  {
+    label: 'Boarded',
+    swatch: 'bg-[#E6F6EC] border-[#7BC89A]',
+    text: 'text-[#166534]',
+  },
+  {
+    label: 'Booked',
+    swatch: 'bg-[#FFF7DB] border-yellow-200',
+    text: 'text-yellow-900',
+  },
+  {
+    label: 'No-show',
+    swatch: 'bg-[#FCE8E8] border-[#E7A8A8]',
+    text: 'text-[#7F1D1D]',
+  },
+  {
+    label: 'Available',
+    swatch: 'bg-[#FFFCF0] border-yellow-100',
+    text: 'text-gray-700',
+  },
+];
 
 export default function SeatMap() {
-  const [passengers] = useState(MOCK_PASSENGERS);
+  const selectedTrip = MOCK_DRIVER_TRIP_DATA[BUS_LAYOUT_FLAG] || MOCK_DRIVER_TRIP_DATA.seater;
   const [selectedSeat, setSelectedSeat] = useState(null);
 
-  const selectedLayout = BUS_LAYOUTS[BUS_LAYOUT_FLAG] || BUS_LAYOUTS.seater;
+  const selectedLayout = useMemo(
+    () => buildBusLayout(selectedTrip, BUS_LAYOUT_FLAG),
+    [selectedTrip]
+  );
   const [activeDeckId, setActiveDeckId] = useState(selectedLayout.decks[0]?.id || 'lower');
 
   const activeDeck = useMemo(
@@ -133,11 +349,22 @@ export default function SeatMap() {
 
   const passengerBySeat = useMemo(() => {
     const map = {};
-    passengers.forEach((passenger) => {
-      map[passenger.seatNumber] = passenger;
+    allSeats.forEach((seat) => {
+      if (!seat?.passenger) return;
+
+      map[seat.seatNumber] = {
+        ...seat.passenger,
+        seatNumber: seat.seatNumber,
+        status:
+          seat.passenger.boardingStatus === 'boarded'
+            ? 'boarded'
+            : seat.status === 'blocked'
+              ? 'no-show'
+              : 'pending',
+      };
     });
     return map;
-  }, [passengers]);
+  }, [allSeats]);
 
   const occupiedSeats = useMemo(
     () => allSeats.filter((seat) => Boolean(passengerBySeat[seat.seatNumber])).length,
@@ -146,15 +373,29 @@ export default function SeatMap() {
 
   const totalSeats = allSeats.length;
 
+  const seatMetaByNumber = useMemo(() => {
+    const map = {};
+    allSeats.forEach((seat) => {
+      map[seat.seatNumber] = seat;
+    });
+    return map;
+  }, [allSeats]);
+
   const getSeatStatus = (seatNumber) => {
-    const passenger = passengerBySeat[seatNumber];
-    if (!passenger) return 'empty';
-    return passenger.status || 'pending';
+    const seat = seatMetaByNumber[seatNumber];
+    if (!seat || seat.status === 'available') return 'empty';
+    if (seat.status === 'blocked') return 'no-show';
+
+    if (seat.status === 'booked') {
+      return seat.passenger?.boardingStatus === 'boarded' ? 'boarded' : 'pending';
+    }
+
+    return 'pending';
   };
 
   const selectedPassenger = selectedSeat ? passengerBySeat[selectedSeat] : null;
   const selectedSeatMeta = selectedSeat
-    ? allSeats.find((seat) => seat.seatNumber === selectedSeat) || null
+    ? seatMetaByNumber[selectedSeat] || null
     : null;
 
   const lowerDeckSeaterRows = useMemo(() => {
@@ -165,157 +406,57 @@ export default function SeatMap() {
   const lowerDeckSleeperRows = useMemo(() => {
     if (activeDeck.id !== 'lower') return [];
     return activeDeck.rows
-      .filter((_, rowIndex) => rowIndex % 2 === 0)
-      .map((row) => [row[2], row[3]]);
+      .map((row) => [row[2], row[3]])
+      .filter((row) => row.some(Boolean));
   }, [activeDeck]);
 
   return (
     <div>
       <PageHeader
         title="Seat Map"
-        subtitle={`${MOCK_TRIP.route} — Bus #${MOCK_TRIP.busNumber}`}
+        subtitle={`${selectedTrip.route} — Bus #${selectedTrip.busNumber}`}
       />
 
       <div className="px-2 sm:px-4 md:px-6 lg:px-8 py-3 md:py-6 space-y-4">
         <div className="max-w-4xl mx-auto bg-white rounded-2xl border border-gray-200 p-3 sm:p-4 md:p-5 shadow-sm">
-          <div className="flex flex-wrap items-center gap-3 mb-5">
-            <StatPill label="Total seats" value={totalSeats} />
-            {selectedLayout.showDeckTabs && (
-              <div className="inline-flex rounded-lg border border-gray-200 overflow-hidden">
-                {selectedLayout.decks.map((deck) => (
-                  <button
-                    key={deck.id}
-                    onClick={() => setActiveDeckId(deck.id)}
-                    className={`px-4 py-1.5 text-sm font-medium transition-colors ${
-                      activeDeckId === deck.id
-                        ? 'bg-[#A5E1FF] text-gray-900'
-                        : 'bg-white text-gray-500 hover:bg-gray-50'
-                    }`}
-                  >
-                    {deck.id === 'lower' ? 'Lower Deck' : 'Upper Deck'}
-                  </button>
-                ))}
-              </div>
-            )}
-            <span className="text-sm text-gray-500">Type: {selectedLayout.label}</span>
-          </div>
+          <SeatMapToolbar
+            totalSeats={totalSeats}
+            selectedLayout={selectedLayout}
+            activeDeckId={activeDeckId}
+            setActiveDeckId={setActiveDeckId}
+          />
 
           <div className="flex items-center gap-3 mb-4">
             <h3 className="text-lg font-bold text-gray-700 tracking-wide">{activeDeck.title}</h3>
             <div className="h-px flex-1 bg-gray-200" />
           </div>
 
-          <div className="bg-[#F9FAFB] rounded-2xl p-2.5 sm:p-4 border border-gray-200 overflow-x-auto">
-            <div className="flex items-center justify-center gap-10 sm:gap-16 mb-3 min-w-[18.5rem] sm:min-w-0">
-              <div className="text-xs sm:text-sm font-semibold text-gray-500 tracking-wider">FRONT</div>
-              {activeDeck.id === 'lower' ? (
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl border border-gray-200 bg-gray-100 flex items-center justify-center">
-                  <SteeringIcon />
-                </div>
-              ) : (
-                <div className="w-10 h-10 sm:w-12 sm:h-12" aria-hidden="true" />
-              )}
-            </div>
-
-            {activeDeck.id === 'lower' ? (
-              <div className="w-fit min-w-[18.5rem] sm:min-w-0 mx-auto flex items-start gap-1.5 sm:gap-2">
-                <div className="space-y-0">
-                  <div className="flex items-center gap-1.5 sm:gap-2 pl-6 sm:pl-7 text-xs sm:text-sm font-semibold text-gray-500">
-                    <div className="w-9 sm:w-11 md:w-12 text-center">C1</div>
-                    <div className="w-9 sm:w-11 md:w-12 text-center">C2</div>
-                  </div>
-                  {lowerDeckSeaterRows.map((row, rowIndex) => (
-                    <div key={`left-${rowIndex}`} className="flex items-center gap-1.5 sm:gap-2 h-12 sm:h-14 md:h-[3.8rem]">
-                      <div className="w-6 sm:w-8 text-right text-xs sm:text-sm text-gray-500 pr-1">{rowIndex + 1}</div>
-                      {row.map((seat) => (
-                        <SeatCell
-                          key={seat.seatNumber}
-                          seat={seat}
-                          seatType={seat.type}
-                          status={getSeatStatus(seat.seatNumber)}
-                          isSelected={selectedSeat === seat.seatNumber}
-                          onSelect={(seatNumber) =>
-                            setSelectedSeat(selectedSeat === seatNumber ? null : seatNumber)
-                          }
-                        />
-                      ))}
-                    </div>
-                  ))}
-                </div>
-
-                <div className="w-4 sm:w-8" />
-
-                <div className="space-y-0">
-                  <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold text-gray-500">
-                    <div className="w-9 sm:w-11 md:w-12 text-center">C3</div>
-                    <div className="w-9 sm:w-11 md:w-12 text-center">C4</div>
-                  </div>
-                  {lowerDeckSleeperRows.map((row, rowIndex) => (
-                    <div key={`right-${rowIndex}`} className="flex items-center gap-1.5 sm:gap-2 h-[6rem] sm:h-[7rem] md:h-[7.6rem]">
-                      {row.map((seat, seatIdx) => (
-                        <SeatCell
-                          key={seat?.seatNumber || `empty-${rowIndex}-${seatIdx}`}
-                          seat={seat}
-                          seatType="sleeper"
-                          status={seat ? getSeatStatus(seat.seatNumber) : 'empty'}
-                          isSelected={seat ? selectedSeat === seat.seatNumber : false}
-                          onSelect={(seatNumber) =>
-                            setSelectedSeat(selectedSeat === seatNumber ? null : seatNumber)
-                          }
-                          className="h-[6rem] sm:h-[7rem] md:h-[7.6rem]"
-                        />
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="w-fit min-w-[18.5rem] sm:min-w-0 mx-auto space-y-1 sm:space-y-1.5">
-                <div className="flex items-center gap-1.5 sm:gap-2 pl-6 sm:pl-7 text-xs sm:text-sm font-semibold text-gray-500">
-                  <div className="w-9 sm:w-11 md:w-12 text-center">C1</div>
-                  <div className="w-9 sm:w-11 md:w-12 text-center">C2</div>
-                  <div className="w-4 sm:w-8" />
-                  <div className="w-9 sm:w-11 md:w-12 text-center">C3</div>
-                  <div className="w-9 sm:w-11 md:w-12 text-center">C4</div>
-                </div>
-
-                {activeDeck.rows.map((row, rowIndex) => (
-                  <div key={rowIndex} className="flex items-center gap-1.5 sm:gap-2">
-                    <div className="w-6 sm:w-8 text-right text-xs sm:text-sm text-gray-500 pr-1 h-[4rem] sm:h-[4.7rem] md:h-[5.4rem] flex flex-col justify-between leading-none">
-                      {getRowLabel(activeDeck.id, rowIndex).map((label) => (
-                        <span key={`${rowIndex}-${label}`}>{label}</span>
-                      ))}
-                    </div>
-
-                    {row.map((seat, colIndex) => (
-                      <div key={`${rowIndex}-${colIndex}`} className="flex items-center">
-                        {colIndex === 2 && <div className="w-4 sm:w-8" />}
-                        {seat ? (
-                          <SeatCell
-                            seat={seat}
-                            seatType={seat.type}
-                            status={getSeatStatus(seat.seatNumber)}
-                            isSelected={selectedSeat === seat.seatNumber}
-                            onSelect={(seatNumber) =>
-                              setSelectedSeat(selectedSeat === seatNumber ? null : seatNumber)
-                            }
-                          />
-                        ) : (
-                          <div className={`${getPlaceholderClass('sleeper')} rounded-lg`} />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="text-right mt-3 sm:mt-4 text-base sm:text-lg font-semibold tracking-wider text-gray-500">REAR</div>
-          </div>
+          <SeatDeckLayout
+            activeDeck={activeDeck}
+            lowerDeckSeaterRows={lowerDeckSeaterRows}
+            lowerDeckSleeperRows={lowerDeckSleeperRows}
+            selectedSeat={selectedSeat}
+            getSeatStatus={getSeatStatus}
+            onSeatToggle={(seatNumber) =>
+              setSelectedSeat(selectedSeat === seatNumber ? null : seatNumber)
+            }
+          />
 
           <div className="mt-4 text-sm text-gray-500">
             Occupied: <span className="font-semibold text-gray-700">{occupiedSeats}</span> · Available:{' '}
             <span className="font-semibold text-gray-700">{totalSeats - occupiedSeats}</span>
+          </div>
+
+          <div className="mt-3 border border-gray-200 rounded-xl bg-gray-50 px-3 py-2.5">
+            <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">Legend</p>
+            <div className="flex flex-wrap items-center gap-3">
+              {STATUS_LEGEND_ITEMS.map((item) => (
+                <div key={item.label} className="flex items-center gap-1.5">
+                  <span className={`w-3.5 h-3.5 rounded-sm border ${item.swatch}`} aria-hidden="true" />
+                  <span className={`text-xs font-semibold ${item.text}`}>{item.label}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -328,61 +469,5 @@ export default function SeatMap() {
         )}
       </div>
     </div>
-  );
-}
-
-function StatPill({ label, value }) {
-  return (
-    <div className="px-3 py-1.5 rounded-lg bg-[#FFFBEA] border border-yellow-200 text-gray-700 font-semibold text-sm">
-      {label}: {value}
-    </div>
-  );
-}
-
-function SeatInfoCard({ seat, passenger, onClose }) {
-  return (
-    <div className="mt-1 bg-[#C6EDFF] rounded-2xl p-4 md:p-5 max-w-4xl mx-auto border border-blue-100">
-      <div className="flex items-start justify-between mb-2">
-        <div>
-          <p className="text-[10px] md:text-xs font-bold text-blue-800 uppercase">Seat {seat?.seatNumber}</p>
-          <h3 className="text-base md:text-lg font-bold text-gray-900">
-            {passenger?.name || 'Passenger not assigned'}
-          </h3>
-        </div>
-        <button onClick={onClose} className="text-gray-500 text-xl leading-none" aria-label="Close">
-          ×
-        </button>
-      </div>
-      <div className="grid sm:grid-cols-2 gap-2 text-sm">
-        <DetailPill label="Passenger Name" value={passenger?.name || 'Not assigned'} />
-        <DetailPill label="Passenger Number" value={passenger?.phone || 'Not available'} />
-        <DetailPill label="Seat Type" value={seat?.type || 'seater'} />
-        <DetailPill
-          label="Status"
-          value={passenger?.status ? String(passenger.status).replace('-', ' ') : 'available'}
-        />
-      </div>
-    </div>
-  );
-}
-
-function DetailPill({ label, value }) {
-  return (
-    <div className="bg-white/70 rounded-lg border border-white/80 px-3 py-2">
-      <p className="text-[10px] uppercase tracking-wide text-gray-500 font-semibold">{label}</p>
-      <p className="text-[13px] font-semibold text-gray-900 mt-0.5">{value}</p>
-    </div>
-  );
-}
-
-function SteeringIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="7.5" stroke="#5A7393" strokeWidth="2" />
-      <circle cx="12" cy="12" r="2.2" fill="#5A7393" />
-      <path d="M12 9.8L16.8 10.9" stroke="#5A7393" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 9.8L7.2 10.9" stroke="#5A7393" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 14.2V18" stroke="#5A7393" strokeWidth="2" strokeLinecap="round" />
-    </svg>
   );
 }
