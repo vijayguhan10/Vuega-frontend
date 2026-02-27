@@ -71,7 +71,7 @@ function LoginSignup() {
               <Bus className="w-6 h-6 text-text" />
             </div>
             <div>
-              <h1 className="text-text text-xl font-bold">Vuega</h1>
+              <h1 className="text-text">Vuega</h1>
               <p className="text-text-muted text-xs">Bus Operations Platform</p>
             </div>
           </div>
@@ -119,14 +119,14 @@ function LoginSignup() {
               <Bus className="w-6 h-6 text-text" />
             </div>
             <div>
-              <h1 className="text-text text-xl font-bold">Vuega</h1>
+              <h1 className="text-text">Vuega</h1>
               <p className="text-text-muted text-xs">Bus Operations Platform</p>
             </div>
           </div>
 
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-text">Welcome back</h2>
-            <p className="text-text-muted text-sm mt-1">
+            <p className="text-text-muted mt-1">
               Sign in to your Super Admin account
             </p>
           </div>
@@ -139,7 +139,7 @@ function LoginSignup() {
             )}
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-text">
+              <label className="text-text">
                 Email address
               </label>
               <input
@@ -154,7 +154,7 @@ function LoginSignup() {
 
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-text">
+                <label className="text-text">
                   Password
                 </label>
                 <button

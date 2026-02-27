@@ -3,24 +3,15 @@ import { X } from 'lucide-react'
 import { FaShieldAlt } from 'react-icons/fa'
 import OverviewTab from './OverviewTab'
 import BusesTab from './BusesTab'
-import TripsTab from './TripsTab'
-import EmployeesTab from './EmployeesTab'
-import AnalyticsTab from './AnalyticsTab'
+import RoutesTab from './RoutesTab'
 import KYCTab from './KYCTab'
 import ActivityLogTab from './ActivityLogTab'
-
-// ═══════════════════════════════════════════════════════════════
-//  Data source:
-//    GET /api/companies/:id/details  → full company object
-// ═══════════════════════════════════════════════════════════════
 
 // Tab config
 const tabs = [
   { id: 'overview', label: 'Overview' },
   { id: 'buses', label: 'Buses' },
-  { id: 'trips', label: 'Trips' },
-  { id: 'employees', label: 'Employees' },
-  { id: 'analytics', label: 'Analytics' },
+  { id: 'routes', label: 'Routes' },
   { id: 'kyc', label: 'KYC' },
   { id: 'activity', label: 'Activity' },
 ]
@@ -43,12 +34,8 @@ const CompanyDetailDrawer = ({ isOpen, onClose, company, initialTab = 'overview'
         return <OverviewTab company={company} />
       case 'buses':
         return <BusesTab company={company} />
-      case 'trips':
-        return <TripsTab company={company} />
-      case 'employees':
-        return <EmployeesTab company={company} />
-      case 'analytics':
-        return <AnalyticsTab company={company} />
+      case 'routes':
+        return <RoutesTab company={company} />
       case 'kyc':
         return <KYCTab company={company} />
       case 'activity':
@@ -62,16 +49,16 @@ const CompanyDetailDrawer = ({ isOpen, onClose, company, initialTab = 'overview'
     <>
       {/* Backdrop — covers the content area */}
       <div
-        className="absolute inset-0 z-40 bg-black/30 transition-opacity"
+        className="fixed inset-0 sm:left-64 z-40 bg-black/30 transition-opacity"
         onClick={onClose}
       />
 
-      {/* Drawer panel — fills content area (sidebar + header stay visible) */}
-      <div className="absolute inset-0 z-50 bg-primary flex flex-col animate-slide-in-right">
+      {/* Drawer panel — fills content area (sidebar stays visible) */}
+      <div className="fixed inset-0 sm:left-64 z-50 bg-primary flex flex-col animate-slide-in-right">
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
           <div className="flex flex-col gap-0.5">
-            <h3 className="text-base font-bold text-text">{company.name}</h3>
+            <h3 className="font-bold text-text">{company.name}</h3>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-mono text-text-muted">
                 {company.operatorCode}
@@ -84,7 +71,7 @@ const CompanyDetailDrawer = ({ isOpen, onClose, company, initialTab = 'overview'
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-[#F5F5F4] transition-colors"
+            className="p-2 rounded-lg hover:bg-secondary transition-colors"
             aria-label="Close drawer"
           >
             <X className="w-4 h-4 text-text-muted" />
@@ -118,7 +105,7 @@ const CompanyDetailDrawer = ({ isOpen, onClose, company, initialTab = 'overview'
         </div>
 
         {/* ── Governance Footer ── */}
-        <div className="px-6 py-3 border-t border-border bg-white flex items-center gap-2 shrink-0">
+        <div className="px-6 py-3 border-t border-border bg-primary flex items-center gap-2 shrink-0">
           <FaShieldAlt className="w-3 h-3 text-text-muted shrink-0" />
           <span className="text-[10px] text-text-muted">
             Company details are read-only. Status changes must go through governance actions.

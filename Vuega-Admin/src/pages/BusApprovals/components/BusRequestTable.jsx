@@ -18,7 +18,7 @@ const BusRequestTable = ({ data, columns, isLoading, emptyMessage = 'No bus appr
       <div className="w-full h-48 flex items-center justify-center bg-primary rounded-xl border border-border">
         <div className="flex flex-col items-center gap-2">
           <div className="w-6 h-6 border-2 border-accent border-t-text rounded-full animate-spin" />
-          <span className="text-sm text-text-muted">Loading data...</span>
+          <span className="text-text-muted">Loading data...</span>
         </div>
       </div>
     )
@@ -27,7 +27,7 @@ const BusRequestTable = ({ data, columns, isLoading, emptyMessage = 'No bus appr
   if (!data || data.length === 0) {
     return (
       <div className="w-full h-48 flex items-center justify-center bg-primary rounded-xl border border-border">
-        <span className="text-sm text-text-muted">{emptyMessage}</span>
+        <span className="text-text-muted">{emptyMessage}</span>
       </div>
     )
   }
@@ -37,7 +37,7 @@ const BusRequestTable = ({ data, columns, isLoading, emptyMessage = 'No bus appr
       <table className="w-full text-left border-collapse">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="bg-white border-b border-border">
+            <tr key={headerGroup.id} className="bg-secondary/30 border-b border-border">
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
@@ -58,10 +58,10 @@ const BusRequestTable = ({ data, columns, isLoading, emptyMessage = 'No bus appr
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className="hover:bg-white transition-colors bg-white"
+              className="hover:bg-primary transition-colors bg-primary"
             >
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-6 py-4 text-sm text-text">
+                <td key={cell.id} className="px-6 py-4 text-text">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}

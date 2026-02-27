@@ -5,7 +5,8 @@ import {
   flexRender,
 } from '@tanstack/react-table'
 
-const CompanyTable = ({ data, columns, isLoading, emptyMessage = 'No companies found.' }) => {
+
+const RouteRequestTable = ({ data, columns, isLoading, emptyMessage = 'No route approval requests found' }) => {
   const table = useReactTable({
     data,
     columns,
@@ -17,7 +18,7 @@ const CompanyTable = ({ data, columns, isLoading, emptyMessage = 'No companies f
       <div className="w-full h-48 flex items-center justify-center bg-primary rounded-xl border border-border">
         <div className="flex flex-col items-center gap-2">
           <div className="w-6 h-6 border-2 border-accent border-t-text rounded-full animate-spin" />
-          <span className="text-text-muted">Loading companies...</span>
+          <span className="text-text-muted">Loading data...</span>
         </div>
       </div>
     )
@@ -53,11 +54,11 @@ const CompanyTable = ({ data, columns, isLoading, emptyMessage = 'No companies f
             </tr>
           ))}
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-border/10">
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className="bg-primary"
+              className="hover:bg-primary transition-colors bg-primary"
             >
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id} className="px-6 py-4 text-text">
@@ -72,4 +73,4 @@ const CompanyTable = ({ data, columns, isLoading, emptyMessage = 'No companies f
   )
 }
 
-export default CompanyTable
+export default RouteRequestTable

@@ -38,7 +38,7 @@ const actionConfig = {
 }
 
 // Mock activity logs per company
-// TODO: Replace with real data from GET /api/companies/:id/details
+// Mock activity log data for demonstration
 const companyActivityMap = {
   'C-101': [
     { id: 'AL-1001', action: 'KYC_VERIFIED', performedBy: 'Admin-01', timestamp: 'Feb 20, 2026 • 3:45 PM', remarks: 'Pollution Certificate verified.' },
@@ -96,7 +96,7 @@ const ActivityLogTab = ({ company }) => {
         <div className="w-12 h-12 rounded-xl bg-[#F5F5F4] flex items-center justify-center">
           <Activity className="w-6 h-6 text-text-muted/40" />
         </div>
-        <span className="text-sm text-text-muted">No activity recorded yet.</span>
+        <span className="text-text-muted">No activity recorded yet.</span>
         <span className="text-[10px] text-text-muted">
           All governance actions will be logged here automatically.
         </span>

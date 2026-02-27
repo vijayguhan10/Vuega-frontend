@@ -7,6 +7,7 @@ import CompanyStatusBadge from './components/CompanyStatusBadge'
 import ActionDropdown from './components/ActionDropdown'
 import ConfirmationModal from './components/ConfirmationModal'
 import CompanyDetailDrawer from './components/CompanyDetailDrawer'
+import MetricCards from '../../components/Common/MetricCards'
 
 // ═══════════════════════════════════════════════════════════════
 //  SECURITY AWARENESS
@@ -241,18 +242,10 @@ const CompanyManagement = () => {
   const [drawerCompany, setDrawerCompany] = useState(null)
   const [drawerInitialTab, setDrawerInitialTab] = useState('overview')
 
-  // Auto-open drawer when navigated from Dashboard "View" (?company=Name)
+  // Pre-fill search when navigated from Dashboard "View" (?company=Name)
   useEffect(() => {
     const companyName = searchParams.get('company')
-    if (!companyName) return
-    const match = initialTenantCompanies.find(
-      (c) => c.name.toLowerCase() === companyName.toLowerCase()
-    )
-    if (match) {
-      setDrawerCompany(match)
-      setDrawerInitialTab('overview')
-      setDrawerOpen(true)
-    }
+    if (companyName) setSearchQuery(companyName)
   }, [searchParams])
 
   // Governance summary (memoized)
@@ -366,9 +359,9 @@ const CompanyManagement = () => {
                 setDrawerInitialTab('overview')
                 setDrawerOpen(true)
               }}
-              className="flex flex-col gap-0.5 text-left group"
+              className="flex flex-col gap-0.5 text-left"
             >
-              <span className="font-semibold text-text group-hover:text-[#2E86AB] transition-colors">
+              <span className="font-semibold text-text">
                 {info.getValue()}
               </span>
               <span className="text-[10px] font-mono text-text-muted">{row.operatorCode}</span>
@@ -427,7 +420,7 @@ const CompanyManagement = () => {
         <h1 className="text-2xl font-bold text-text tracking-tight">
           Company Management
         </h1>
-        <p className="text-sm text-text-muted">
+        <p className="text-text-muted">
           Governance-level control over registered operators. Manage company
           lifecycle, compliance status, and platform access.
         </p>
@@ -436,62 +429,17 @@ const CompanyManagement = () => {
       {/* ═══════════════════════════════════════════════════════
            GOVERNANCE OVERVIEW CARDS
            ═══════════════════════════════════════════════════════ */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        {/* Total */}
-        <div className="bg-primary rounded-xl border border-border p-4 flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
-              <Building2 className="w-4 h-4 text-text" />
-            </div>
-            <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">Total</span>
-          </div>
-          <span className="text-2xl font-bold text-text">{govSummary.total}</span>
-        </div>
-
-        {/* Active */}
-        <div className="bg-primary rounded-xl border border-border p-4 flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-accent/30 flex items-center justify-center">
-              <ShieldCheck className="w-4 h-4 text-[#2E86AB]" />
-            </div>
-            <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">Active</span>
-          </div>
-          <span className="text-2xl font-bold text-text">{govSummary.activeCount}</span>
-        </div>
-
-        {/* Pending */}
-        <div className="bg-primary rounded-xl border border-border p-4 flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
-              <Building2 className="w-4 h-4 text-text" />
-            </div>
-            <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">Pending</span>
-          </div>
-          <span className="text-2xl font-bold text-text">{govSummary.pendingCount}</span>
-        </div>
-
-        {/* Suspended */}
-        <div className="bg-primary rounded-xl border border-border p-4 flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-alert/10 flex items-center justify-center">
-              <FaShieldAlt className="w-3.5 h-3.5 text-alert" />
-            </div>
-            <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">Suspended</span>
-          </div>
-          <span className="text-2xl font-bold text-alert">{govSummary.suspendedCount}</span>
-        </div>
-
-        {/* Rejected */}
-        <div className="bg-primary rounded-xl border border-border p-4 flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-alert/10 flex items-center justify-center">
-              <FaShieldAlt className="w-3.5 h-3.5 text-alert" />
-            </div>
-            <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">Rejected</span>
-          </div>
-          <span className="text-2xl font-bold text-text-muted">{govSummary.rejectedCount}</span>
-        </div>
-      </div>
+      <MetricCards
+        cards={[
+          { label: 'Total', value: govSummary.total, icon: Building2, iconBg: 'bg-secondary', iconColor: 'text-text' },
+          { label: 'Active', value: govSummary.activeCount, icon: ShieldCheck, iconBg: 'bg-accent/30', iconColor: 'text-[#2E86AB]' },
+          { label: 'Pending', value: govSummary.pendingCount, icon: Building2, iconBg: 'bg-secondary', iconColor: 'text-text' },
+          { label: 'Suspended', value: govSummary.suspendedCount, icon: FaShieldAlt, iconBg: 'bg-alert/10', iconColor: 'text-alert', valueColor: 'text-alert' },
+          { label: 'Rejected', value: govSummary.rejectedCount, icon: FaShieldAlt, iconBg: 'bg-alert/10', iconColor: 'text-alert', valueColor: 'text-text-muted' },
+        ]}
+        variant="default"
+        gridCols="grid-cols-2 md:grid-cols-5"
+      />
 
       {/* ═══════════════════════════════════════════════════════
            MAIN TABLE CARD
@@ -509,7 +457,7 @@ const CompanyManagement = () => {
               placeholder="Search by name, email, or operator code..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full py-2 pl-10 pr-4 text-sm text-text bg-white border border-border rounded-lg placeholder-text-muted focus:ring-2 focus:ring-accent/50 focus:border-accent focus:bg-primary outline-none transition-all"
+              className="w-full py-2 pl-10 pr-4 text-text bg-primary border border-border rounded-lg placeholder-text-muted focus:ring-2 focus:ring-accent/50 focus:border-accent focus:bg-primary outline-none transition-all"
             />
           </div>
 
@@ -517,7 +465,7 @@ const CompanyManagement = () => {
           <div className="relative">
             <button
               onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
-              className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-text bg-white border border-border rounded-lg hover:bg-[#FAFAFA] transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-xs font-medium text-text bg-primary border border-border rounded-lg hover:bg-secondary transition-colors"
             >
               <span>Status: {statusFilter === 'all' ? 'All' : statusFilter}</span>
               <ChevronDown className={`w-3.5 h-3.5 text-text-muted transition-transform ${filterDropdownOpen ? 'rotate-180' : ''}`} />
@@ -534,7 +482,7 @@ const CompanyManagement = () => {
                     className={`w-full text-left px-3 py-2 text-xs font-medium transition-colors ${
                       statusFilter === opt.value
                         ? 'bg-accent/20 text-text'
-                        : 'text-text-muted hover:bg-[#F5F5F4] hover:text-text'
+                        : 'text-text-muted hover:bg-secondary hover:text-text'
                     }`}
                   >
                     {opt.label}
@@ -554,7 +502,7 @@ const CompanyManagement = () => {
         />
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-border bg-white flex justify-between items-center">
+        <div className="px-6 py-3 border-t border-border bg-primary flex justify-between items-center">
           <span className="text-xs text-text-muted">
             Showing {filteredCompanies.length} of {controlPlaneCompanies.length} companies
           </span>

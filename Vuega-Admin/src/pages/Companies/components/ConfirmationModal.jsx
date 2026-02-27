@@ -108,7 +108,7 @@ const ConfirmationModal = ({ action, company, onConfirm, onCancel }) => {
                 onChange={(e) => setRemarks(e.target.value)}
                 rows={3}
                 placeholder={`Provide reason for ${action}...`}
-                className="w-full p-3 text-sm text-text bg-white border border-border rounded-lg placeholder-text-muted focus:ring-2 focus:ring-alert/30 focus:border-alert outline-none transition-all resize-none"
+                className="w-full p-3 text-text bg-primary border border-border rounded-lg placeholder-text-muted focus:ring-2 focus:ring-alert/30 focus:border-alert outline-none transition-all resize-none"
               />
             </div>
           )}
@@ -117,9 +117,9 @@ const ConfirmationModal = ({ action, company, onConfirm, onCancel }) => {
           <div className="flex items-start gap-2 rounded-lg bg-[#F5F5F4] border border-border p-3">
             <ShieldCheck className="w-3 h-3 text-text-muted mt-0.5 shrink-0" />
             <p className="text-[10px] leading-relaxed text-text-muted">
-              This action will be <span className="font-bold text-text">permanently recorded</span> in the
-              platform audit ledger. Performed by <span className="font-semibold text-text">Super Admin</span> •
-              Timestamp auto-captured • <span className="font-semibold text-text">Immutable — cannot be reversed.</span>
+              This action will be <span className="text-[10px] text-text">permanently recorded</span> in the
+              platform audit ledger. Performed by <span className="text-[10px] text-text">Super Admin</span> •
+              Timestamp auto-captured • <span className="text-[10px] text-text">Immutable — cannot be reversed.</span>
             </p>
           </div>
         </div>
@@ -128,7 +128,7 @@ const ConfirmationModal = ({ action, company, onConfirm, onCancel }) => {
         <div className="px-6 py-4 border-t border-border flex items-center justify-end gap-3">
           <button
             onClick={onCancel}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-text-muted hover:bg-[#F5F5F4] transition-colors"
+            className="px-4 py-2 rounded-lg text-sm font-medium text-text-muted hover:bg-secondary transition-colors"
           >
             Cancel
           </button>

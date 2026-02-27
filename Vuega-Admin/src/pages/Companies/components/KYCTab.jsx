@@ -19,7 +19,7 @@ import {
 // ═══════════════════════════════════════════════════════════════
 
 // Mock KYC documents per company
-// TODO: Replace with real data from GET /api/companies/:id/details
+// Mock KYC data for demonstration
 const companyKYCMap = {
   'C-101': [
     { id: 'KYC-1001', name: 'Certificate of Incorporation', type: 'PDF', size: '2.4 MB', status: 'Verified', uploadedDate: 'Jan 10, 2025', verifiedBy: 'Admin-01', verifiedDate: 'Jan 12, 2025' },
@@ -92,11 +92,11 @@ const KYCProgress = ({ documents }) => {
           <ShieldCheck className="w-4 h-4 text-text-muted" />
           <span className="text-xs font-bold text-text">KYC Completion</span>
         </div>
-        <span className={`text-sm font-bold ${pct === 100 ? 'text-[#2E86AB]' : 'text-text'}`}>
+        <span className={`font-bold ${pct === 100 ? 'text-[#2E86AB]' : 'text-text'}`}>
           {pct}%
         </span>
       </div>
-      <div className="w-full h-2 bg-white rounded-full overflow-hidden">
+      <div className="w-full h-2 bg-primary rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all ${barColor}`}
           style={{ width: `${pct}%` }}
@@ -126,7 +126,7 @@ const KYCTab = ({ company }) => {
         <div className="w-12 h-12 rounded-xl bg-[#F5F5F4] flex items-center justify-center">
           <FileText className="w-6 h-6 text-text-muted/40" />
         </div>
-        <span className="text-sm text-text-muted">No KYC documents uploaded.</span>
+        <span className="text-text-muted">No KYC documents uploaded.</span>
         <span className="text-[10px] text-text-muted">
           Documents will appear once the company submits KYC paperwork.
         </span>
@@ -255,12 +255,12 @@ const KYCTab = ({ company }) => {
                     <>
                       <button
                         onClick={() => setActioningDoc(doc.id)}
-                        className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold bg-[#F5F5F4] text-text-muted rounded-md hover:bg-[#EBEBEA] transition-colors"
+                        className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold bg-[#F5F5F4] text-text-muted rounded-md hover:bg-secondary transition-colors"
                       >
                         <Eye className="w-3 h-3" />
                         Review
                       </button>
-                      <button className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold bg-[#F5F5F4] text-text-muted rounded-md hover:bg-[#EBEBEA] transition-colors">
+                      <button className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold bg-[#F5F5F4] text-text-muted rounded-md hover:bg-secondary transition-colors">
                         <Download className="w-3 h-3" />
                         Download
                       </button>

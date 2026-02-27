@@ -11,10 +11,10 @@ import {
 } from 'lucide-react'
 import { FaShieldAlt } from 'react-icons/fa'
 import CompanyStatusBadge from './CompanyStatusBadge'
+import MetricCards from '../../../components/Common/MetricCards'
 
 
 // ═══════════════════════════════════════════════════════════════
-//  Data source:
 //    GET /api/companies/:id/details  → overview section
 // ═══════════════════════════════════════════════════════════════
 
@@ -30,7 +30,7 @@ const InfoRow = ({ icon: Icon, label, value, mono = false }) => (
       <span className="text-[10px] uppercase tracking-wider font-semibold text-text-muted/70">
         {label}
       </span>
-      <span className={`text-sm text-text ${mono ? 'font-mono' : 'font-medium'}`}>
+      <span className={`text-text ${mono ? 'font-mono' : 'font-medium'}`}>
         {value}
       </span>
     </div>
@@ -100,7 +100,7 @@ const OverviewTab = ({ company }) => {
               <Building2 className="w-5 h-5 text-text" />
             </div>
             <div className="flex flex-col gap-0.5">
-              <span className="text-sm font-bold text-text">{company.name}</span>
+              <span className="font-bold text-text">{company.name}</span>
               <span className="text-[10px] font-mono text-text-muted">
                 {company.operatorCode}
               </span>
@@ -122,53 +122,7 @@ const OverviewTab = ({ company }) => {
         </div>
       </div>
 
-      {/* ── Compliance Status Card ── */}
-      <div className="bg-primary rounded-xl border border-border p-4 flex flex-col gap-3">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-text-muted">
-          Compliance Status
-        </h4>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div
-              className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                compliance.status === 'Compliant'
-                  ? 'bg-accent/20'
-                  : compliance.status === 'Non-Compliant'
-                    ? 'bg-alert/10'
-                    : 'bg-secondary'
-              }`}
-            >
-              <ComplianceIcon
-                className={`w-4 h-4 ${
-                  compliance.status === 'Compliant'
-                    ? 'text-[#2E86AB]'
-                    : compliance.status === 'Non-Compliant'
-                      ? 'text-alert'
-                      : 'text-text-muted'
-                }`}
-              />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-text">
-                {compliance.status}
-              </span>
-              <span className="text-[10px] text-text-muted">
-                Governance compliance assessment
-              </span>
-            </div>
-          </div>
 
-          {/* Score */}
-          <div className="flex flex-col items-center">
-            <span className={`text-xl font-bold ${scoreColor}`}>
-              {compliance.score}
-            </span>
-            <span className="text-[9px] uppercase tracking-wider text-text-muted font-semibold">
-              Score
-            </span>
-          </div>
-        </div>
-      </div>
 
       {/* ── Entitlements Summary ── */}
       <div className="bg-primary rounded-xl border border-border p-4 flex flex-col gap-4">
@@ -190,20 +144,15 @@ const OverviewTab = ({ company }) => {
       </div>
 
       {/* ── Quick Stats ── */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-primary rounded-xl border border-border p-3 flex flex-col gap-1 items-center">
-          <span className="text-lg font-bold text-text">{company.totalBuses}</span>
-          <span className="text-[10px] uppercase tracking-wider font-semibold text-text-muted">
-            Total Buses
-          </span>
-        </div>
-        <div className="bg-primary rounded-xl border border-border p-3 flex flex-col gap-1 items-center">
-          <span className="text-lg font-bold text-text">{company.activeTrips}</span>
-          <span className="text-[10px] uppercase tracking-wider font-semibold text-text-muted">
-            Active Trips
-          </span>
-        </div>
-      </div>
+      <MetricCards
+        cards={[
+          { label: 'Total Buses', value: company.totalBuses },
+          { label: 'Active Trips', value: company.activeTrips },
+        ]}
+        variant="centered"
+        gridCols="grid-cols-2"
+        gap="gap-3"
+      />
     </div>
   )
 }

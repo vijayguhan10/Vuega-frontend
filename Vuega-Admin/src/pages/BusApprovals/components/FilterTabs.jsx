@@ -3,7 +3,7 @@ import React from 'react'
 
 const FilterTabs = ({ tabs, activeTab, onTabChange }) => {
   return (
-    <div className="flex items-center gap-1 bg-white rounded-lg p-1 border border-border">
+    <div className="flex items-center gap-1 bg-primary rounded-lg p-1 border border-border">
       {tabs.map((tab) => (
         <button
           key={tab.value}

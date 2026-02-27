@@ -15,11 +15,11 @@ const AuditNotice = ({ action = 'approve', performedBy = 'Super Admin' }) => {
       <FaLock className="w-3 h-3 text-text-muted mt-0.5 shrink-0" />
       <p className="text-[10px] leading-relaxed text-text-muted">
         This {actionLabel.toLowerCase()} action will be{' '}
-        <span className="font-bold text-text">permanently recorded</span> in the
+        <span className="text-[10px] text-text">permanently recorded</span> in the
         platform audit ledger. Performed by{' '}
-        <span className="font-semibold text-text">{performedBy}</span> •{' '}
+        <span className="text-[10px] text-text">{performedBy}</span> •{' '}
         Timestamp auto-captured • Action ID auto-generated •{' '}
-        <span className="font-semibold text-text">Immutable — cannot be reversed.</span>
+        <span className="text-[10px] text-text">Immutable — cannot be reversed.</span>
       </p>
     </div>
   )

@@ -6,6 +6,7 @@ import Dashboard from '../pages/Dashboard/Dashboard'
 import BusApprovals from '../pages/BusApprovals/BusApprovals'
 import CompanyManagement from '../pages/Companies/CompanyManagement'
 import PlatformAnalytics from '../pages/Analytics/PlatformAnalytics'
+import RouteApprovals from '../pages/RouteApprovals/RouteApprovals'
 
 const AllRoutes = () => {
     return (
@@ -18,6 +19,7 @@ const AllRoutes = () => {
                 <Route path='/dashboard' element={<Dashboard />} />
                 <Route path='/companies' element={<CompanyManagement />} />
                 <Route path='/bus-approvals' element={<BusApprovals />} />
+                <Route path='/route-approvals' element={<RouteApprovals />} />
                 <Route path='/analytics' element={<PlatformAnalytics />} />
             </Route>
 

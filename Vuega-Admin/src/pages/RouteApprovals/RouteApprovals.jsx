@@ -1,74 +1,46 @@
 import React, { useState, useMemo, useEffect, useSyncExternalStore } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Search, ShieldCheck, Key, AlertTriangle } from 'lucide-react'
+import { Search, ShieldCheck, Key, CheckCircle, XCircle, AlertTriangle } from 'lucide-react'
 import { FaShieldAlt } from 'react-icons/fa'
-import FilterTabs from './components/FilterTabs'
-import BusRequestTable from './components/BusRequestTable'
-import StatusBadge from './components/StatusBadge'
-import RiskBadge from './components/RiskBadge'
+import FilterTabs from '../BusApprovals/components/FilterTabs'
+import StatusBadge from '../BusApprovals/components/StatusBadge'
+import AuditNotice from '../BusApprovals/components/AuditNotice'
+import RouteRequestTable from './components/RouteRequestTable'
 import MetricCards from '../../components/Common/MetricCards'
-import LicenseBanner from './components/LicenseBanner'
-import AuditNotice from './components/AuditNotice'
 import { requestsStore } from '../../data/requestsStore'
-
 
 
 // ═══════════════════════════════════════════════════════════════
 //  BACKEND INTEGRATION ENDPOINTS (placeholder comments)
 // ═══════════════════════════════════════════════════════════════
-// GET    /api/control-plane/bus-requests
-//          → Returns list with license, risk, audit data per request
-// GET    /api/control-plane/operators/:companyId/license
-//          → Returns { licenseNumber, validUntil, status }
-// GET    /api/control-plane/operators/:companyId/risk-score
-//          → Returns { level, score, factors[] }
-// PATCH  /api/control-plane/bus-requests/:id/approve
-//          → Validates license + entitlement server-side
-//          → Generates signed, time-bound approval token
-//          → POST /api/control-plane/approval-token
-//          → Audit log: action = BUS_APPROVED
-// PATCH  /api/control-plane/bus-requests/:id/reject
+// GET    /api/control-plane/route-requests
+//          → Returns list with entitlement data per request
+// PATCH  /api/control-plane/route-requests/:id/approve
+//          → Validates entitlement server-side
+//          → Audit log: action = ROUTE_APPROVED
+// PATCH  /api/control-plane/route-requests/:id/reject
 //          → Requires mandatory remarks
-//          → Audit log: action = BUS_REJECTED
+//          → Audit log: action = ROUTE_REJECTED
 // GET    /api/control-plane/audit/:requestId
 //          → Returns immutable audit trail for the request
 // ═══════════════════════════════════════════════════════════════
 
 
-
 /**
- * @typedef {Object} BusApprovalRequest
+ * @typedef {Object} RouteApprovalRequest
  * @property {string}  id
  * @property {string}  companyId
  * @property {string}  companyName
- * @property {string}  busNumber
- * @property {string}  layoutType
+ * @property {string}  origin
+ * @property {string}  destination
+ * @property {string}  distance
+ * @property {string}  duration
  * @property {string}  submittedDate
- * @property {number}  currentBusCount
- * @property {number}  busLimit
+ * @property {number}  currentRouteCount
+ * @property {number}  routeLimit
  * @property {string}  status          — Pending | Approved | Rejected
  * @property {string}  [remarks]
- * @property {string}  riskLevel       — Low | Medium | High | Critical
- * @property {number}  riskScore       — 0–100
- * @property {LicenseInfo} license
- * @property {ApprovalToken} [approvalToken]
  * @property {AuditEvent[]} auditHistory
- */
-
-/**
- * @typedef {Object} LicenseInfo
- * @property {string} licenseNumber
- * @property {string} validUntil
- * @property {'valid' | 'expiring' | 'expired'} status
- * @property {number} daysRemaining
- */
-
-/**
- * @typedef {Object} ApprovalToken
- * @property {string} tokenId
- * @property {string} issuedAt
- * @property {string} expiresAt
- * @property {'active' | 'consumed' | 'expired' | 'revoked'} state
  */
 
 /**
@@ -78,25 +50,26 @@ import { requestsStore } from '../../data/requestsStore'
  * @property {string} performedBy
  * @property {string} timestamp
  * @property {string} [remarks]
- * @property {Object} [metadata]
  */
 
+
 // ═══════════════════════════════════════════════════════════════
-//  GOVERNANCE SUMMARY — computed from request data
+//  SUMMARY — computed from request data
 // ═══════════════════════════════════════════════════════════════
 
-const computeGovernanceSummary = (requests) => {
+const computeSummary = (requests) => {
   const pending = requests.filter((r) => r.status === 'Pending')
-  const highRisk = requests.filter((r) => r.riskLevel === 'High' || r.riskLevel === 'Critical')
-  const expiredLicense = requests.filter((r) => r.license.status === 'expired')
-  const atLimit = requests.filter((r) => r.currentBusCount >= r.busLimit)
+  const approved = requests.filter((r) => r.status === 'Approved')
+  const rejected = requests.filter((r) => r.status === 'Rejected')
+  const atLimit = requests.filter((r) => r.currentRouteCount >= r.routeLimit && r.status === 'Pending')
   return {
     totalPending: pending.length,
-    highRiskCount: highRisk.length,
-    expiredLicenseCount: expiredLicense.length,
-    entitlementBlockedCount: atLimit.filter((r) => r.status === 'Pending').length,
+    totalApproved: approved.length,
+    totalRejected: rejected.length,
+    atLimitCount: atLimit.length,
   }
 }
+
 
 // ═══════════════════════════════════════════════════════════════
 //  FILTER TAB CONFIGURATION
@@ -109,18 +82,19 @@ const filterTabs = [
   { label: 'Rejected', value: 'Rejected' },
 ]
 
+
 // ═══════════════════════════════════════════════════════════════
-//  BUS APPROVALS PAGE COMPONENT — Governance-Aware
+//  ROUTE APPROVALS PAGE COMPONENT
 // ═══════════════════════════════════════════════════════════════
 
-const BusApprovals = () => {
+const RouteApprovals = () => {
   // --- State ---
   const [searchParams] = useSearchParams()
-  const requests = useSyncExternalStore(requestsStore.subscribe, requestsStore.getBusSnapshot)
+  const requests = useSyncExternalStore(requestsStore.subscribe, requestsStore.getRouteSnapshot)
   const [activeTab, setActiveTab] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
 
-  // Pre-fill search from Dashboard "View" navigation (?company=Name)
+  // Pre-fill search from Dashboard navigation (?company=Name)
   useEffect(() => {
     const company = searchParams.get('company')
     if (company) setSearchQuery(company)
@@ -131,10 +105,8 @@ const BusApprovals = () => {
   const [rejectModalOpen, setRejectModalOpen] = useState(false)
   const [selectedRequest, setSelectedRequest] = useState(null)
 
-
-
-  // Governance summary (memoized)
-  const govSummary = useMemo(() => computeGovernanceSummary(requests), [requests])
+  // Summary (memoized)
+  const summary = useMemo(() => computeSummary(requests), [requests])
 
   // --- Filtering logic ---
   const filteredRequests = useMemo(() => {
@@ -145,13 +117,14 @@ const BusApprovals = () => {
       result = result.filter((r) => r.status === activeTab)
     }
 
-    // Search filter (company name, bus number, or request ID)
+    // Search filter (company name, origin, destination, or request ID)
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase()
       result = result.filter(
         (r) =>
           r.companyName.toLowerCase().includes(q) ||
-          r.busNumber.toLowerCase().includes(q) ||
+          r.origin.toLowerCase().includes(q) ||
+          r.destination.toLowerCase().includes(q) ||
           r.id.toLowerCase().includes(q)
       )
     }
@@ -170,42 +143,19 @@ const BusApprovals = () => {
     setRejectModalOpen(true)
   }
 
-
-
   // --- Approve confirm (simulated) ---
   const confirmApprove = () => {
-    // TODO: PATCH /api/control-plane/bus-requests/:id/approve
-    // TODO: POST /api/control-plane/approval-token
-    //   → Server validates license status + entitlement before approval
-    //   → Generate signed, time-bound token for the Operator Data Plane
-    //   → Audit log: action = BUS_APPROVED, performedBy = currentUser
     const now = new Date()
-    const expiry = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
-    const tokenId = `TKN-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`
-
-    requestsStore.updateBusRequest(selectedRequest.id, (r) => ({
+    requestsStore.updateRouteRequest(selectedRequest.id, (r) => ({
       ...r,
       status: 'Approved',
-      approvalToken: {
-        tokenId,
-        issuedAt: now.toLocaleString(),
-        expiresAt: expiry.toLocaleString(),
-        state: 'active',
-      },
       auditHistory: [
         ...r.auditHistory,
         {
           id: `A-${Date.now()}`,
-          action: 'BUS_APPROVED',
+          action: 'ROUTE_APPROVED',
           performedBy: 'Admin (SA-001)',
           timestamp: now.toLocaleString(),
-        },
-        {
-          id: `A-${Date.now() + 1}`,
-          action: 'TOKEN_ISSUED',
-          performedBy: 'System',
-          timestamp: now.toLocaleString(),
-          metadata: { tokenId, tokenExpiry: expiry.toLocaleDateString() },
         },
       ],
     }))
@@ -215,11 +165,8 @@ const BusApprovals = () => {
 
   // --- Reject confirm (simulated) ---
   const confirmReject = (remarks) => {
-    // TODO: PATCH /api/control-plane/bus-requests/:id/reject
-    //   → Body: { remarks }
-    //   → Audit log: action = BUS_REJECTED, performedBy = currentUser
     const now = new Date()
-    requestsStore.updateBusRequest(selectedRequest.id, (r) => ({
+    requestsStore.updateRouteRequest(selectedRequest.id, (r) => ({
       ...r,
       status: 'Rejected',
       remarks,
@@ -227,7 +174,7 @@ const BusApprovals = () => {
         ...r.auditHistory,
         {
           id: `A-${Date.now()}`,
-          action: 'BUS_REJECTED',
+          action: 'ROUTE_REJECTED',
           performedBy: 'Admin (SA-001)',
           timestamp: now.toLocaleString(),
           remarks,
@@ -239,7 +186,7 @@ const BusApprovals = () => {
   }
 
   // ═══════════════════════════════════════════════════════════
-  //  TABLE COLUMNS — Governance-enhanced
+  //  TABLE COLUMNS
   // ═══════════════════════════════════════════════════════════
 
   const columns = useMemo(
@@ -258,18 +205,29 @@ const BusApprovals = () => {
         },
       },
       {
-        header: 'Bus Number',
-        accessorKey: 'busNumber',
-        cell: (info) => (
-          <span className="font-mono text-text-muted">{info.getValue()}</span>
-        ),
+        header: 'Route',
+        id: 'route',
+        accessorFn: (row) => `${row.origin} → ${row.destination}`,
+        cell: (info) => {
+          const row = info.row.original
+          return (
+            <div className="flex items-center gap-1.5">
+              <span className="font-medium text-text">{row.origin}</span>
+              <span className="text-text-muted">→</span>
+              <span className="font-medium text-text">{row.destination}</span>
+            </div>
+          )
+        },
       },
       {
-        header: 'Layout Type',
-        accessorKey: 'layoutType',
-        cell: (info) => (
-          <span className="text-text-muted text-xs">{info.getValue()}</span>
-        ),
+        header: 'Distance / Duration',
+        id: 'distanceDuration',
+        cell: (info) => {
+          const row = info.row.original
+          return (
+            <span className="text-text-muted text-xs">{row.distance} · {row.duration}</span>
+          )
+        },
       },
       {
         header: 'Submitted',
@@ -279,18 +237,18 @@ const BusApprovals = () => {
         ),
       },
       {
-        header: 'Entitlement',
-        id: 'busUsage',
+        header: 'Route Entitlement',
+        id: 'routeUsage',
         accessorFn: (row) => row,
         cell: (info) => {
           const row = info.getValue()
-          const atLimit = row.currentBusCount >= row.busLimit
-          const usage = Math.round((row.currentBusCount / row.busLimit) * 100)
+          const atLimit = row.currentRouteCount >= row.routeLimit
+          const usage = Math.round((row.currentRouteCount / row.routeLimit) * 100)
           return (
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 min-w-[100px]">
               <div className="flex items-center justify-between">
                 <span className={`text-xs font-semibold ${atLimit ? 'text-alert' : 'text-text'}`}>
-                  {row.currentBusCount}/{row.busLimit}
+                  {row.currentRouteCount}/{row.routeLimit}
                 </span>
                 <span className={`text-[10px] ${atLimit ? 'text-alert' : 'text-text-muted'}`}>
                   {usage}%
@@ -309,11 +267,6 @@ const BusApprovals = () => {
         },
       },
       {
-        header: 'Risk',
-        accessorKey: 'riskLevel',
-        cell: (info) => <RiskBadge level={info.getValue()} />,
-      },
-      {
         header: 'Status',
         accessorKey: 'status',
         cell: (info) => <StatusBadge status={info.getValue()} />,
@@ -328,18 +281,16 @@ const BusApprovals = () => {
               {row.status === 'Pending' && (
                 <>
                   <button
-                    disabled={row.currentBusCount >= row.busLimit || row.license.status === 'expired'}
+                    disabled={row.currentRouteCount >= row.routeLimit}
                     onClick={() => handleApproveClick(row)}
                     className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-colors ${
-                      row.currentBusCount >= row.busLimit || row.license.status === 'expired'
+                      row.currentRouteCount >= row.routeLimit
                         ? 'bg-border text-text-muted cursor-not-allowed'
                         : 'bg-accent text-text hover:bg-accent/80'
                     }`}
                     title={
-                      row.license.status === 'expired'
-                        ? 'License expired — cannot approve'
-                        : row.currentBusCount >= row.busLimit
-                        ? 'Bus limit reached — cannot approve'
+                      row.currentRouteCount >= row.routeLimit
+                        ? 'Route limit reached — cannot approve'
                         : 'Approve this request'
                     }
                   >
@@ -353,7 +304,6 @@ const BusApprovals = () => {
                   </button>
                 </>
               )}
-
             </div>
           )
         },
@@ -371,23 +321,23 @@ const BusApprovals = () => {
       {/* ── Page Header ── */}
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-bold text-text tracking-tight">
-          Bus Approval Management
+          Route Approval Management
         </h1>
         <p className="text-text-muted">
-          Review and approve operator bus expansion requests under platform
-          governance policies. All actions are permanently audit-logged.
+          Review and approve operator route expansion requests. All actions are
+          permanently audit-logged.
         </p>
       </div>
 
       {/* ═══════════════════════════════════════════════════════
-           GOVERNANCE OVERVIEW CARDS
+           OVERVIEW CARDS
            ═══════════════════════════════════════════════════════ */}
       <MetricCards
         cards={[
-          { label: 'Pending', value: govSummary.totalPending, icon: ShieldCheck, iconBg: 'bg-secondary', iconColor: 'text-text', subText: 'Awaiting review' },
-          { label: 'High Risk', value: govSummary.highRiskCount, icon: AlertTriangle, iconBg: 'bg-alert/10', iconColor: 'text-alert', valueColor: 'text-alert', subText: 'Flagged operators' },
-          { label: 'License Issues', value: govSummary.expiredLicenseCount, icon: FaShieldAlt, iconBg: 'bg-alert/10', iconColor: 'text-alert', valueColor: 'text-alert', subText: 'Expired licenses blocking approval' },
-          { label: 'At Limit', value: govSummary.entitlementBlockedCount, icon: Key, iconBg: 'bg-secondary', iconColor: 'text-text', subText: 'Requests blocked by entitlement cap' },
+          { label: 'Pending', value: summary.totalPending, icon: ShieldCheck, iconBg: 'bg-secondary', iconColor: 'text-text', subText: 'Awaiting review' },
+          { label: 'At Limit', value: summary.atLimitCount, icon: Key, iconBg: 'bg-secondary', iconColor: 'text-text', subText: 'Blocked by entitlement cap' },
+          { label: 'Total Rejected', value: summary.totalRejected, icon: XCircle, iconBg: 'bg-alert/10', iconColor: 'text-alert', valueColor: 'text-alert', subText: 'Rejected requests' },
+          { label: 'Total Approved', value: summary.totalApproved, icon: CheckCircle, iconBg: 'bg-accent/30', iconColor: 'text-[#2E86AB]', valueColor: 'text-[#2E86AB]', subText: 'Approved requests' },
         ]}
         variant="default"
         gridCols="grid-cols-2 md:grid-cols-4"
@@ -406,7 +356,7 @@ const BusApprovals = () => {
             </div>
             <input
               type="text"
-              placeholder="Search by company, bus number, or ID..."
+              placeholder="Search by company, route, or ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full py-2 pl-10 pr-4 text-text bg-primary border border-border rounded-lg placeholder-text-muted focus:ring-2 focus:ring-accent/50 focus:border-accent focus:bg-primary outline-none transition-all"
@@ -422,11 +372,11 @@ const BusApprovals = () => {
         </div>
 
         {/* Table */}
-        <BusRequestTable
+        <RouteRequestTable
           data={filteredRequests}
           columns={columns}
           isLoading={false}
-          emptyMessage="No bus approval requests match your filters."
+          emptyMessage="No route approval requests match your filters."
         />
 
         {/* Footer */}
@@ -436,13 +386,13 @@ const BusApprovals = () => {
           </span>
           <div className="flex items-center gap-2 text-[10px] text-text-muted">
             <FaShieldAlt className="w-3 h-3" />
-            <span>All actions are governance-enforced & audit-logged</span>
+            <span>All actions are audit-logged</span>
           </div>
         </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════
-           APPROVE MODAL — Enhanced with Governance
+           APPROVE MODAL
            ═══════════════════════════════════════════════════════ */}
       {approveModalOpen && selectedRequest && (
         <ApproveModal
@@ -456,7 +406,7 @@ const BusApprovals = () => {
       )}
 
       {/* ═══════════════════════════════════════════════════════
-           REJECT MODAL — Enhanced with Audit Notice
+           REJECT MODAL
            ═══════════════════════════════════════════════════════ */}
       {rejectModalOpen && selectedRequest && (
         <RejectModal
@@ -468,20 +418,19 @@ const BusApprovals = () => {
           }}
         />
       )}
-
-
     </div>
   )
 }
 
 
-const ApproveModal = ({ request, onConfirm, onCancel }) => {
-  const atLimit = request.currentBusCount >= request.busLimit
-  const licenseExpired = request.license.status === 'expired'
-  const isBlocked = atLimit || licenseExpired
+// ═══════════════════════════════════════════════════════════════
+//  APPROVE MODAL
+// ═══════════════════════════════════════════════════════════════
 
-  const projectedCount = request.currentBusCount + 1
-  const projectedUsage = Math.round((projectedCount / request.busLimit) * 100)
+const ApproveModal = ({ request, onConfirm, onCancel }) => {
+  const atLimit = request.currentRouteCount >= request.routeLimit
+  const projectedCount = request.currentRouteCount + 1
+  const projectedUsage = Math.round((projectedCount / request.routeLimit) * 100)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -493,21 +442,13 @@ const ApproveModal = ({ request, onConfirm, onCancel }) => {
               <ShieldCheck className="w-5 h-5 text-[#2E86AB]" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-text">Approve Bus Request</h3>
+              <h3 className="text-lg font-bold text-text">Approve Route Request</h3>
               <span className="text-xs font-mono text-text-muted">{request.id}</span>
             </div>
           </div>
         </div>
 
         <div className="px-6 py-4 flex flex-col gap-4">
-          {/* License Validation Banner */}
-          <LicenseBanner
-            licenseStatus={request.license.status}
-            licenseNumber={request.license.licenseNumber}
-            validUntil={request.license.validUntil}
-            daysRemaining={request.license.daysRemaining}
-          />
-
           {/* Request Details */}
           <div className="flex flex-col gap-2.5 text-sm text-text">
             <div className="flex justify-between">
@@ -515,16 +456,16 @@ const ApproveModal = ({ request, onConfirm, onCancel }) => {
               <span className="font-semibold">{request.companyName}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-text-muted">Bus Number</span>
-              <span className="font-mono">{request.busNumber}</span>
+              <span className="text-text-muted">Route</span>
+              <span className="font-semibold">{request.origin} → {request.destination}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-text-muted">Layout</span>
-              <span>{request.layoutType}</span>
+              <span className="text-text-muted">Distance</span>
+              <span>{request.distance}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-text-muted">Risk Score</span>
-              <RiskBadge level={request.riskLevel} />
+              <span className="text-text-muted">Est. Duration</span>
+              <span>{request.duration}</span>
             </div>
           </div>
 
@@ -532,20 +473,20 @@ const ApproveModal = ({ request, onConfirm, onCancel }) => {
           <div className="bg-[#F5F5F4] rounded-lg p-4 flex flex-col gap-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-text-muted flex items-center gap-1.5">
               <Key className="w-3 h-3" />
-              Entitlement Validation
+              Route Entitlement Validation
             </h4>
             <div className="grid grid-cols-3 gap-3">
               <div className="flex flex-col gap-0.5">
                 <span className="text-[10px] text-text-muted uppercase tracking-wider">Current</span>
-                <span className="text-lg font-bold text-text">{request.currentBusCount}</span>
+                <span className="text-lg font-bold text-text">{request.currentRouteCount}</span>
               </div>
               <div className="flex flex-col gap-0.5">
                 <span className="text-[10px] text-text-muted uppercase tracking-wider">Max Allowed</span>
-                <span className="text-lg font-bold text-text">{request.busLimit}</span>
+                <span className="text-lg font-bold text-text">{request.routeLimit}</span>
               </div>
               <div className="flex flex-col gap-0.5">
                 <span className="text-[10px] text-text-muted uppercase tracking-wider">Post-Approval</span>
-                <span className={`text-lg font-bold ${projectedCount > request.busLimit ? 'text-alert' : 'text-[#2E86AB]'}`}>
+                <span className={`text-lg font-bold ${projectedCount > request.routeLimit ? 'text-alert' : 'text-[#2E86AB]'}`}>
                   {projectedCount}
                 </span>
               </div>
@@ -569,13 +510,13 @@ const ApproveModal = ({ request, onConfirm, onCancel }) => {
             </div>
           </div>
 
-          {/* Entitlement warning */}
+          {/* At-limit warning */}
           {atLimit && (
             <div className="flex items-start gap-2 bg-alert/10 text-alert rounded-lg p-3 text-xs font-medium">
               <span className="mt-0.5">⚠</span>
               <span>
-                This operator has reached their bus entitlement limit
-                ({request.busLimit}). Approval is blocked until the limit is
+                This operator has reached their route entitlement limit
+                ({request.routeLimit}). Approval is blocked until the limit is
                 increased.
               </span>
             </div>
@@ -594,15 +535,15 @@ const ApproveModal = ({ request, onConfirm, onCancel }) => {
             Cancel
           </button>
           <button
-            disabled={isBlocked}
+            disabled={atLimit}
             onClick={onConfirm}
             className={`px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${
-              isBlocked
+              atLimit
                 ? 'bg-border text-text-muted cursor-not-allowed'
                 : 'bg-accent text-text hover:bg-accent/80'
             }`}
           >
-            {isBlocked ? 'Approval Blocked' : 'Confirm Approval'}
+            {atLimit ? 'Approval Blocked' : 'Confirm Approval'}
           </button>
         </div>
       </div>
@@ -610,6 +551,10 @@ const ApproveModal = ({ request, onConfirm, onCancel }) => {
   )
 }
 
+
+// ═══════════════════════════════════════════════════════════════
+//  REJECT MODAL
+// ═══════════════════════════════════════════════════════════════
 
 const RejectModal = ({ request, onConfirm, onCancel }) => {
   const [remarks, setRemarks] = useState('')
@@ -625,7 +570,7 @@ const RejectModal = ({ request, onConfirm, onCancel }) => {
               <AlertTriangle className="w-5 h-5 text-alert" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-text">Reject Bus Request</h3>
+              <h3 className="text-lg font-bold text-text">Reject Route Request</h3>
               <span className="text-xs font-mono text-text-muted">{request.id}</span>
             </div>
           </div>
@@ -639,17 +584,13 @@ const RejectModal = ({ request, onConfirm, onCancel }) => {
               <span className="font-semibold">{request.companyName}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-text-muted">Bus Number</span>
-              <span className="font-mono">{request.busNumber}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-text-muted">Risk Score</span>
-              <RiskBadge level={request.riskLevel} />
+              <span className="text-text-muted">Route</span>
+              <span className="font-semibold">{request.origin} → {request.destination}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-text-muted">Current Usage</span>
               <span className="text-text">
-                {request.currentBusCount}/{request.busLimit}
+                {request.currentRouteCount}/{request.routeLimit}
               </span>
             </div>
           </div>
@@ -700,4 +641,4 @@ const RejectModal = ({ request, onConfirm, onCancel }) => {
   )
 }
 
-export default BusApprovals
+export default RouteApprovals

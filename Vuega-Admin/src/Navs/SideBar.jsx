@@ -3,6 +3,7 @@ import {
   LayoutDashboard,
   Building2,
   Bus,
+  Route,
   BarChart3,
   LogOut,
   ChevronLeft,
@@ -13,6 +14,7 @@ const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
   { name: "Companies", icon: Building2, path: "/companies" },
   { name: "Bus Approvals", icon: Bus, path: "/bus-approvals" },
+  { name: "Route Approvals", icon: Route, path: "/route-approvals" },
   { name: "Analytics", icon: BarChart3, path: "/analytics" },
 ];
 
@@ -60,7 +62,7 @@ const SideBar = ({ isOpen, onClose }) => {
                 <Bus className="w-5 h-5 text-text" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-text">Vuega</h1>
+                <h1 className="text-lg text-text">Vuega</h1>
                 <p className="text-[11px] text-text-muted leading-tight">
                   Super Admin
                 </p>
