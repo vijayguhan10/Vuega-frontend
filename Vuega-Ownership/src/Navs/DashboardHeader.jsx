@@ -31,7 +31,7 @@ const DashboardHeader = ({ onMenuClick }) => {
  <div>
  <h1 className=" font-bold text-v-text">{currentTitle}</h1>
  <p className=" text-v-text-muted hidden sm:block">
- Technical Operator Panel
+ Bus Company Owner Panel
  </p>
  </div>
  </div>

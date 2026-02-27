@@ -73,7 +73,7 @@ function LoginSignup() {
  </div>
  <div>
  <h1 className="text-white font-bold">Vuega</h1>
- <p className="text-gray-400 ">Technical Operator Portal</p>
+ <p className="text-gray-400 ">Bus Company Owner Portal</p>
  </div>
  </div>
 
@@ -121,14 +121,14 @@ function LoginSignup() {
  </div>
  <div>
  <h1 className="text-v-text font-bold">Vuega</h1>
- <p className="text-v-text-muted ">Technical Operator Portal</p>
+ <p className="text-v-text-muted ">Bus Company Owner Portal</p>
  </div>
  </div>
 
  <div className="mb-8">
  <h2 className=" font-bold text-v-text">Welcome back</h2>
  <p className="text-v-text-muted mt-1">
- Sign in to your Technical Operator account
+ Sign in to your Bus Company Owner account
  </p>
  </div>
 

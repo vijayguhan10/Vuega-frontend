@@ -72,7 +72,7 @@ const SideBar = ({ isOpen, onClose }) => {
  <div>
  <h1 className=" font-bold text-v-text">Vuega</h1>
  <p className=" text-v-text-muted leading-tight">
- Technical Operator
+ Bus Company Owner
  </p>
  </div>
  </div>
